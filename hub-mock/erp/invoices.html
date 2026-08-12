@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sales Invoice — Towell Auto Centre ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body class="surface-erp" data-surface="erp" data-nav="invoices"
+      data-step="erp-invoices"
+      data-crumbs="Accounts Receivable / Sales Invoice"
+      data-hint="This is the company's own ERP, unchanged. The only thing e-invoicing adds is the status column on the right.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title"><h1>Sales Invoice</h1><span class="tag">Towell Auto Centre LLC</span></div>
+        <p class="page-sub">Invoices are raised here exactly as they are today.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm" onclick="document.getElementById('q').focus()">Filter</button>
+        <button class="btn btn-sm btn-primary">+ New Invoice</button>
+      </div>
+    </div>
+
+    <div class="grid g3 mb16" id="tiles"></div>
+
+    <div class="card card-tight">
+      <div class="card-head">
+        <div class="row-tight grow">
+          <div class="search" style="width:250px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input class="input input-sm" id="q" placeholder="Search invoice or customer">
+          </div>
+          <select class="select select-sm" id="fStatus" style="width:auto">
+            <option value="">Status: All</option><option>Submitted</option><option>Draft</option>
+          </select>
+        </div>
+        <span class="small dim" id="recordCount"></span>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Invoice No.</th>
+              <th>Customer</th>
+              <th class="nowrap">Date</th>
+              <th class="r">Grand total (OMR)</th>
+              <th>Doc status</th>
+              <th>E-Invoice status</th>
+              <th class="c">Integration</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="card-foot">
+        <span class="small dim" id="more"></span>
+        <a class="btn btn-sm btn-primary right" href="../hub/dashboard.html">Follow this invoice into the Hub →</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* Everything on this screen is derived from ERP_INVOICES and the entity
+     record. Nothing is hard-coded that also lives in data.js.              */
+  const ME = tenant('TAC');
+
+  const nSubmitted = ERP_INVOICES.filter(i => i.docStatus === 'Submitted').length;
+  const nAcked     = ERP_INVOICES.filter(i => i.eStatus === 'Acknowledged').length;
+  const nRejected  = ERP_INVOICES.filter(i => /^Rejected/.test(i.eStatus)).length;
+
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Submitted', value: nSubmitted, meta: 'Ready for integration', tone: 'var(--accent)' }),
+    stat({ label: 'Acknowledged', value: nAcked, meta: 'Reference written back to this ERP', tone: 'var(--ok)' }),
+    stat({ label: 'Rejected', value: nRejected, meta: 'Rejected by the service provider', tone: 'var(--fail)' })
+  ].join('');
+
+  /* Volume figures come from the entity record, so they reconcile with every
+     other screen: 412 documents today, 8 940 month to date.                */
+  document.getElementById('recordCount').textContent =
+    num(ME.today) + ' raised today · ' + num(ME.mtd) + ' month to date';
+
+  /* Every row is read from the data — counterparty names, dates and statuses
+     all come from ERP_INVOICES, never from markup. The search box and the
+     status filter genuinely filter.                                        */
+  const rowsEl = document.getElementById('rows');
+  const moreEl = document.getElementById('more');
+  const qEl    = document.getElementById('q');
+  const sEl    = document.getElementById('fStatus');
+
+  function eLabelOf(s) {
+    return s === 'Rejected by ASP' ? 'Rejected by the service provider' : s;
+  }
+
+  function draw() {
+    const q = (qEl.value || '').trim().toLowerCase();
+    const s = sEl.value;
+    const shown = ERP_INVOICES.filter(i =>
+      (!s || i.docStatus === s) &&
+      (!q || (i.no + ' ' + i.cust).toLowerCase().includes(q)));
+
+    rowsEl.innerHTML = shown.length ? shown.map(i => {
+      const eKey = i.eStatus === 'Acknowledged' ? 'acknowledged'
+                 : i.eStatus === 'In Progress' ? 'active'
+                 : /^Rejected/.test(i.eStatus) ? 'rejected' : 'draft';
+      return `<tr>
+        <td class="nowrap"><a class="link id" href="../hub/document.html">${i.no}</a>
+          ${i.credit ? '<span class="tag" style="margin-left:6px">CN</span>' : ''}</td>
+        <td>${i.cust}</td>
+        <td class="nowrap num small dim">${i.date}</td>
+        <td class="r num" style="font-weight:600">${omr(i.total)}
+          <div class="tiny dim num" style="font-weight:400">net ${omr(i.net)} + VAT ${omr(i.vat)}</div></td>
+        <td>${pill(i.docStatus === 'Submitted' ? 'submitted' : 'draft', i.docStatus)}</td>
+        <td>${i.eStatus === 'Not Applicable' ? '<span class="dim small">—</span>' : pill(eKey, eLabelOf(i.eStatus))}
+          ${i.qr ? '<span class="tag" style="margin-left:6px">QR</span>' : ''}</td>
+        <td class="c">${i.ready
+          ? '<span class="pill pill-accent"><i class="dot"></i>Ready</span>'
+          : '<span class="small dim">Not submitted</span>'}</td>
+      </tr>`;
+    }).join('')
+      : `<tr><td colspan="7" class="small dim" style="padding:22px;text-align:center">No invoice matches that search.</td></tr>`;
+
+    moreEl.textContent = shown.length + ' of ' + ERP_INVOICES.length + ' rows shown. '
+      + 'Every submitted invoice here is collected automatically — nobody exports a file, and nothing '
+      + 'about the way this company raises an invoice has changed.';
+  }
+
+  qEl.addEventListener('input', draw);
+  sEl.addEventListener('change', draw);
+  draw();
+</script>
+</body>
+</html>

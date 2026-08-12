@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Processing History — WJ Towell Compliance Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* page-local — Processing History only */
+  .dirchip { display:inline-flex; align-items:center; gap:5px; padding:2px 8px 2px 6px;
+             border:1px solid var(--line); border-radius:999px; font-size: 12px; white-space:nowrap; }
+  .dirchip svg { width:12px; height:12px; }
+  .dirchip.out { color:var(--accent-hi); border-color:var(--accent-line); background:var(--accent-soft); }
+  .dirchip.in  { color:var(--info); border-color:color-mix(in srgb, var(--info) 30%, transparent);
+                 background:color-mix(in srgb, var(--info) 9%, transparent); }
+  .seg { display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .seg button { appearance:none; border:0; background:transparent; cursor:pointer; font:inherit;
+                font-size: 14px; color:var(--text-mid); padding:0 12px; height:30px; }
+  .seg button + button { border-left:1px solid var(--line); }
+  .seg button.on { background:var(--accent-soft); color:var(--accent-hi); font-weight:600; }
+  .arclist { display:grid; grid-template-columns:1fr; }
+  .arcitem { display:grid; grid-template-columns:minmax(200px,1.1fr) minmax(240px,2fr) 74px;
+             gap:14px; align-items:baseline; padding:11px 16px; border-bottom:1px solid var(--line); }
+  .arcitem:last-child { border-bottom:0; }
+  .arcitem .an { font-weight:600; font-size: 14.5px; }
+  .arcitem .aw { font-size: 14px; color:var(--text-mid); }
+  @media (max-width: 860px) { .arcitem { grid-template-columns:1fr; gap:3px; } }
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="history"
+      data-step="hub-history"
+      data-crumbs="Records / Processing History"
+      data-hint="Every document the Hub has handled this month, in both directions, with the archive that sits behind each one.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Processing History</h1>
+          <span class="pill pill-ok"><i class="dot"></i><span id="headRate">—</span> success this month</span>
+        </div>
+        <p class="page-sub">Outbound customer documents and inbound supplier documents, in one searchable record.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm" id="btnExport">Export this view</button>
+      </div>
+    </div>
+
+    <div class="grid g3 mb16" id="tiles"></div>
+
+    <div class="card mb16">
+      <div class="card-body">
+        <div class="row wrap" style="gap:10px">
+          <div class="search grow" style="min-width:240px;max-width:340px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input class="input input-sm" id="fSearch" placeholder="Document number or reference">
+          </div>
+          <div class="seg" id="dirSeg">
+            <button data-dir="" class="on">All directions</button>
+            <button data-dir="out">Outbound</button>
+            <button data-dir="in">Inbound</button>
+          </div>
+          <select class="select select-sm" id="fStatus" style="width:auto;min-width:160px">
+            <option value="">All outcomes</option>
+            <option value="success">Success</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed</option>
+            <option value="rejected">Rejected</option>
+            <option value="reprocessed">Reprocessed</option>
+          </select>
+        </div>
+        <div class="tiny dim mt8" id="exportNote" hidden></div>
+      </div>
+    </div>
+
+    <section style="margin-top:0">
+      <div class="card card-tight mb16">
+        <div class="card-head">
+          <h2 class="grow">Processed documents</h2>
+          <span class="small dim" id="countNote">—</span>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Direction</th>
+                <th>Company</th>
+                <th class="nowrap">Date</th>
+                <th class="r">Amount</th>
+                <th>Outcome</th>
+              </tr>
+            </thead>
+            <tbody id="histRows"></tbody>
+          </table>
+        </div>
+        <div class="card-foot">
+          <span class="small dim" id="moreNote">—</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="card">
+      <div class="card-head">
+        <h2 class="grow">The compliance archive</h2>
+        <span class="tag">Six items per document</span>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div class="arclist" id="archiveList"></div>
+      </div>
+      <div class="card-body" style="border-top:1px solid var(--line)">
+        <div id="archiveNotes"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* ---- month-to-date figures, computed from GROUP -------------------------- */
+  const MTD_TOTAL   = GROUP.mtdTotal;
+  const MTD_FAILED  = GROUP.mtdFailed;
+  const MTD_OK      = MTD_TOTAL - MTD_FAILED;
+  const SUCCESS_PCT = pct((MTD_OK / MTD_TOTAL) * 100);
+
+  document.getElementById('headRate').textContent = SUCCESS_PCT;
+
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Documents month to date', value: num(MTD_TOTAL),
+           meta: 'Outbound and inbound, across the hub entities', tone: 'var(--accent)' }),
+    stat({ label: 'Success rate', value: SUCCESS_PCT,
+           meta: num(MTD_OK) + ' of ' + num(MTD_TOTAL) + ' completed without a failure', tone: 'var(--ok)' }),
+    stat({ label: 'Failed', value: num(MTD_FAILED),
+           meta: 'Each one is visible to the entity that owns it', tone: 'var(--fail)' })
+  ].join('');
+
+  /* ---- rows: both directions, credit notes included ------------------------ */
+  const PICK = ['GPI-INV-2026-11842', 'TAC-CRNT-2026-00218', 'SMS-INV-2026-00733',
+                'TDO-SINV-2026-00611', 'ORB-SINV-2026-00934', 'GPI-CRN-2026-00318',
+                'ENH-SINV-2026-01179', 'TAC-SINV-2026-04469'];
+  const ROWS = PICK.map(no => HISTORY.find(h => h.no === no)).filter(Boolean);
+
+  const FAIL_BG = 'background:color-mix(in srgb, var(--fail) 7%, transparent)';
+
+  function dirChip(dir) {
+    return dir === 'in'
+      ? `<span class="dirchip in">${icon('inbox', '')}Inbound</span>`
+      : `<span class="dirchip out">${icon('send', '')}Outbound</span>`;
+  }
+
+  document.getElementById('histRows').innerHTML = ROWS.map(h => `
+    <tr style="${h.st === 'failed' || h.st === 'rejected' ? FAIL_BG : ''}">
+      <td class="nowrap">
+        <a class="link id" href="document.html">${h.no}</a>
+        <div class="tiny dim">${h.type}</div>
+      </td>
+      <td class="nowrap">${dirChip(h.dir)}</td>
+      <td class="nowrap">${tenantChip(h.tenant)}</td>
+      <td class="nowrap small muted num">${h.date} GST</td>
+      <td class="r num nowrap">${omr(h.total)}</td>
+      <td style="max-width:270px">
+        ${pill(h.st)}
+        <div class="tiny dim">${h.ack
+          ? '<span class="id">' + h.ack + '</span>'
+          : (h.err || 'No acknowledgement yet')}</div>
+      </td>
+    </tr>`).join('');
+
+  /* ---- the compliance archive (proposal §6) -------------------------------- */
+  document.getElementById('archiveList').innerHTML = ARCHIVE_ITEMS.map(a => `
+    <div class="arcitem">
+      <div class="an">${a.item}</div>
+      <div class="aw">${a.why}</div>
+      <div class="r small dim num nowrap">${a.size}</div>
+    </div>`).join('');
+
+  document.getElementById('archiveNotes').innerHTML =
+    notice('info', '<strong>Retention and archive location are not fixed yet.</strong> Both will be agreed during ' +
+      'solution design, taking account of the ASP’s own retention policy, whether the XML is also attached to the ' +
+      'ERP record, applicable Omani requirements and the group’s audit needs.') +
+    '<p class="small mt12" style="margin-bottom:0">The archive is independent of later ERP changes. It preserves the ' +
+    'exact XML and the processing evidence used at the time of submission or receipt, so a document can still be ' +
+    'produced years later even if the source invoice has since been amended, or the ERP behind it replaced.</p>';
+
+  /* ---- filtering: search + status + direction ------------------------------ */
+  const rows    = Array.from(document.querySelectorAll('#histRows tr'));
+  const dirBtns = Array.from(document.querySelectorAll('#dirSeg button'));
+  const elSearch = document.getElementById('fSearch');
+  const elStatus = document.getElementById('fStatus');
+  let dir = '';
+
+  function applyFilters() {
+    const q  = elSearch.value.trim().toLowerCase();
+    const st = elStatus.value;
+    let shown = 0;
+    rows.forEach((tr, i) => {
+      const h = ROWS[i];
+      const hit = (!q  || (h.no + ' ' + (h.ack || '') + ' ' + h.type).toLowerCase().includes(q)) &&
+                  (!st  || h.st === st) &&
+                  (!dir || h.dir === dir);
+      tr.style.display = hit ? '' : 'none';
+      if (hit) shown++;
+    });
+    document.getElementById('countNote').textContent =
+      shown + ' of ' + num(MTD_TOTAL) + ' shown';
+    document.getElementById('moreNote').textContent =
+      '+ ' + num(MTD_TOTAL - ROWS.length) + ' more documents this month';
+    dirBtns.forEach(b => b.classList.toggle('on', b.dataset.dir === dir));
+  }
+
+  dirBtns.forEach(b => b.addEventListener('click', () => { dir = b.dataset.dir; applyFilters(); }));
+  elSearch.addEventListener('input', applyFilters);
+  elStatus.addEventListener('change', applyFilters);
+  applyFilters();
+
+  /* ---- export leaves the prototype: confirm inline -------------------------- */
+  document.getElementById('btnExport').addEventListener('click', () => {
+    const n = rows.filter(r => r.style.display !== 'none').length;
+    const el = document.getElementById('exportNote');
+    el.hidden = false;
+    el.textContent = 'Export prepared for the ' + n + ' document' + (n === 1 ? '' : 's') +
+                     ' currently shown. In the live system the file is emailed to you.';
+  });
+</script>
+</body>
+</html>

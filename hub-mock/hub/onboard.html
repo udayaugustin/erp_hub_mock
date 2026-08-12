@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onboard a Company — WJ Towell Compliance Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* page-local — onboarding wizard */
+  .prow {
+    display: grid; grid-template-columns: 18px minmax(0,1fr) auto; gap: 10px; align-items: baseline;
+    padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px;
+    animation: prowIn .18s var(--ease) both;
+  }
+  .prow:last-child { border-bottom: 0; }
+  .prow .pmark { font-size: 13px; font-weight: 700; line-height: 1.3; }
+  .prow.ok   .pmark { color: var(--ok); }
+  .prow.warn .pmark { color: var(--warn); }
+  .prow .pnote { font-size: 11.5px; color: var(--text-lo); margin-top: 2px; }
+  .prow .pms { font-size: 12px; color: var(--text-lo); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  @keyframes prowIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
+  .probe-empty { font-size: 13px; color: var(--text-lo); padding: 14px 0; line-height: 1.6; }
+  .nextstrip { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+  .nextstrip .ns { display: grid; grid-template-columns: 20px minmax(0,1fr); gap: 9px; }
+  .nextstrip .nsn {
+    width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 11.5px; font-weight: 700; background: var(--bg-alt);
+    border: 1px solid var(--line-hard); color: var(--text-lo);
+  }
+  .nextstrip .nst { font-size: 14px; font-weight: 600; }
+  .nextstrip .nsd { font-size: 12px; color: var(--text-lo); margin-top: 3px; line-height: 1.5; }
+  .is-running { opacity: .72; pointer-events: none; }
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="onboard"
+      data-step="hub-onboard"
+      data-crumbs="Configuration / Onboard a Company"
+      data-hint="Bringing a new company on is connection, mapping and configuration — not a new installation.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1 id="ttl">Onboard a company</h1>
+          <span class="pill pill-warn"><i class="dot"></i>In progress</span>
+        </div>
+        <p class="page-sub" id="sub">Step 3 of 6.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm btn-ghost" id="saveBtn">Save and exit</button>
+      </div>
+    </div>
+
+    <div id="steps"></div>
+
+    <!-- recap of what is already done -->
+    <div class="card">
+      <div class="card-head">
+        <div class="grow">
+          <div class="eyebrow">Steps 1 and 2 — completed</div>
+          <strong style="font-size:13px" id="recapName">Entity</strong>
+        </div>
+        <span class="chip ok">Confirmed</span>
+      </div>
+      <div class="card-body">
+        <div class="grid g2">
+          <div id="recapA"></div>
+          <div id="recapB"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- connection method -->
+    <div class="section-head mt24">
+      <div class="grow">
+        <div class="eyebrow">Step 3 · part one</div>
+        <strong style="font-size:14px">How this company will connect</strong>
+      </div>
+      <span class="small dim">Chosen per entity, after the ERP inventory</span>
+    </div>
+
+    <div class="pickers g3" id="picks"></div>
+    <div class="mt12" id="methodNote"></div>
+
+    <!-- connection details + test -->
+    <div class="split-wide mt24">
+      <div class="card">
+        <div class="card-head">
+          <div class="grow">
+            <div class="eyebrow">Step 3 · part two</div>
+            <strong style="font-size:13px" id="formTitle">Connection details</strong>
+          </div>
+        </div>
+        <div class="card-body" id="form"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="grow">
+            <div class="eyebrow">Step 3 · part three</div>
+            <strong style="font-size:13px">Test the connection</strong>
+          </div>
+          <button class="btn btn-sm btn-primary" id="testBtn">Test connection</button>
+        </div>
+        <div class="card-body">
+          <div id="probe"><div class="probe-empty">Nothing tested yet. Press <b>Test connection</b> and the Hub
+            will reach the entity with the details on the left, one check at a time.</div></div>
+          <div id="probeSummary"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- what happens next -->
+    <div class="card mt24">
+      <div class="card-head">
+        <div class="grow">
+          <div class="eyebrow">After this step</div>
+          <strong style="font-size:13px">What happens next</strong>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="nextstrip" id="next"></div>
+      </div>
+      <div class="card-foot">
+        <span class="small dim grow" id="footNote"></span>
+        <a class="btn btn-sm btn-primary" href="mapping.html">Continue to mapping →</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+/* ---------------------------------------------------------------------------
+   Onboarding wizard for ONBOARD (data.js). Mazoon Printing, wave 3, at step 3.
+   --------------------------------------------------------------------------- */
+const O        = ONBOARD;
+const PEPPOL   = '0248:' + O.vatin;
+const WAVE     = WAVES.find(w => w.n === O.wave) || {};
+const COLS     = parseInt(((O.probe.find(p => /field/i.test(p.t)) || {}).note || '').match(/\d+/) || 0, 10);
+const OUTSTAND = O.probe.filter(p => p.st !== 'ok').length;
+let picked     = 3;                       /* legacy point of sale, nightly export */
+let running    = false;
+
+/* --- header + stepper ------------------------------------------------------ */
+document.getElementById('ttl').textContent  = 'Onboard ' + O.entity;
+document.getElementById('sub').textContent  =
+  'Step ' + (O.at + 1) + ' of ' + O.steps.length + ' — ' + O.steps[O.at] +
+  '. No new installation: this company is brought on through connection, mapping and configuration.';
+document.getElementById('steps').innerHTML  = wsteps(O.steps, O.at);
+document.getElementById('recapName').textContent = O.entity;
+document.getElementById('footNote').textContent  =
+  'Nothing is transmitted for this company until the test document has been through end to end.';
+
+/* --- recap ----------------------------------------------------------------- */
+document.getElementById('recapA').innerHTML = kv([
+  ['Legal entity',   O.entity],
+  ['Group code',     '<span class="num">' + O.code + '</span>'],
+  ['VAT number',     '<span class="num">' + O.vatin + '</span>']
+]);
+
+function drawRecapB() {
+  document.getElementById('recapB').innerHTML = kv([
+    ['Peppol participant', '<span class="num">' + PEPPOL + '</span>'],
+    ['Rollout wave',       WAVE.name + ' · ' + WAVE.window],
+    ['Connection method',  methodChip(picked, true)]
+  ]);
+}
+
+/* --- method pickers -------------------------------------------------------- */
+document.getElementById('picks').innerHTML = [1, 2, 3].map(m => {
+  const i = METHODS[m];
+  return `<label class="picker">
+    <input type="radio" name="cmethod" value="${m}" ${m === picked ? 'checked' : ''}>
+    <span class="dotmark"></span>
+    <div class="pk-t">${i.n}</div>
+    <div class="pk-d">${i.how}</div>
+    <div class="pk-m">Typical use — ${i.use}</div>
+    <div class="pk-m">Installed at the entity — <b>${i.onsite}</b></div>
+  </label>`;
+}).join('');
+
+/* --- the connection form, per method --------------------------------------- */
+const FORMS = {
+  1: () => `
+    <label class="field"><span class="label">Base URL of the ERP service</span>
+      <input class="input num" id="f_url" value="https://erp.barkaretail.om/api/v2">
+      <span class="field-help">The Hub calls this address outward. Supplied by the entity's ERP team.</span></label>
+    <label class="field"><span class="label">Authentication mode</span>
+      <select class="select" id="f_auth">
+        <option>OAuth 2.0 client credentials</option>
+        <option>mTLS client certificate</option>
+        <option>API key</option>
+      </select></label>
+    <label class="field"><span class="label">Integration user</span>
+      <input class="input num" id="f_user" value="svc_nazm_hub">
+      <span class="field-help">Created by the entity. One named service account, not a personal login.</span></label>
+    <div class="field"><span class="label">Fields to read</span>
+      <div class="small muted" style="line-height:1.6">Sales invoices and credit notes, plus the customer,
+        item and tax master data behind them. The read is limited to an agreed list of fields — nothing
+        else is fetched.</div></div>`,
+
+  2: () => `
+    <label class="field"><span class="label">Agent host name</span>
+      <input class="input num" id="f_host" value="BRK-APP-01.barka.local">
+      <span class="field-help">A machine inside the entity's own network that can see the ERP.</span></label>
+    <label class="field"><span class="label">Outbound port</span>
+      <input class="input num" id="f_port" value="443">
+      <span class="field-help">Outbound only. Nothing is opened inward.</span></label>
+    <div class="field"><span class="label">Where the agent runs</span>
+      <div class="small muted" style="line-height:1.6">The agent is installed on the entity's own network and
+        maintained centrally. It carries work in both directions over the connection it opens itself.</div></div>`,
+
+  3: () => `
+    <label class="field"><span class="label">Secure location</span>
+      <input class="input num" id="f_loc" value="sftp://transfer.nazmhub.om/barka-retail/outbound">
+      <span class="field-help">Agreed with the entity. Separate credentials per company.</span></label>
+    <div class="grid g2">
+      <label class="field"><span class="label">File format</span>
+        <select class="select" id="f_fmt">
+          <option selected>CSV</option>
+          <option>XML</option>
+          <option>Fixed-width</option>
+        </select></label>
+      <label class="field"><span class="label">Schedule</span>
+        <select class="select" id="f_sched">
+          <option selected>Nightly at 02:00 GST</option>
+          <option>Every four hours</option>
+          <option>Twice daily — 13:00 and 22:00 GST</option>
+        </select></label>
+    </div>
+    <label class="field" style="margin-bottom:0"><span class="label">File naming pattern</span>
+      <input class="input num" id="f_pat" value="BRK_INV_YYYYMMDD_NNN.csv">
+      <span class="field-help">The Hub picks up any file matching this pattern and acknowledges each one.</span></label>`
+};
+
+function drawForm() {
+  document.getElementById('formTitle').textContent = METHODS[picked].n;
+  document.getElementById('form').innerHTML = FORMS[picked]();
+  document.getElementById('methodNote').innerHTML = picked === 2
+    ? notice('info', `<b>No inbound firewall access is needed.</b> The agent initiates the secure connection
+        outward to the Hub, so the ERP is never exposed to the internet.`)
+    : '';
+}
+
+/* --- test run -------------------------------------------------------------- */
+function resetProbe(msg) {
+  document.getElementById('probe').innerHTML =
+    `<div class="probe-empty">${msg}</div>`;
+  document.getElementById('probeSummary').innerHTML = '';
+  const b = document.getElementById('testBtn');
+  b.textContent = 'Test connection';
+  b.disabled = false;
+}
+
+function runProbe() {
+  if (running) return;
+  running = true;
+  const btn  = document.getElementById('testBtn');
+  const host = document.getElementById('probe');
+  const sum  = document.getElementById('probeSummary');
+  btn.disabled = true;
+  btn.textContent = 'Testing…';
+  sum.innerHTML = '';
+  host.innerHTML = '';
+  host.classList.add('is-running');
+
+  O.probe.forEach((p, i) => {
+    setTimeout(() => {
+      const row = document.createElement('div');
+      row.className = 'prow ' + (p.st === 'ok' ? 'ok' : 'warn');
+      row.innerHTML =
+        `<span class="pmark">${p.st === 'ok' ? '✓' : '!'}</span>
+         <div><div>${p.t}</div>${p.note ? `<div class="pnote">${p.note}</div>` : ''}</div>
+         <span class="pms">${p.ms ? p.ms + ' ms' : '—'}</span>`;
+      host.appendChild(row);
+
+      if (i === O.probe.length - 1) {
+        host.classList.remove('is-running');
+        const ms = O.probe.reduce((a, x) => a + x.ms, 0);
+        sum.innerHTML = notice('warn',
+          `<b>Connection established.</b> ${num(COLS)} columns discovered in ${num(ms)} ms.
+           ${OUTSTAND === 1 ? 'One item is outstanding' : num(OUTSTAND) + ' items are outstanding'}:
+           write-back permission has not been granted yet. The entity must grant it before go-live,
+           so that the reference, status and QR information can be written back onto its own invoice.`);
+        btn.disabled = false;
+        btn.textContent = 'Run the test again';
+        running = false;
+      }
+    }, 400 * (i + 1));
+  });
+}
+
+/* --- next steps ------------------------------------------------------------ */
+document.getElementById('next').innerHTML = [
+  ['Map the discovered columns',
+   num(COLS) + ' columns came back from the test. An analyst points each one at the standard field it belongs to.'],
+  ['Run a test document end to end',
+   'One real invoice, built, validated, archived and transmitted, with the outcome tracked back.'],
+  ['Go live with the ' + WAVE.name.toLowerCase() + ' cutover',
+   WAVE.window + '. ' + WAVE.note]
+].map((n, i) => `
+  <div class="ns"><span class="nsn">${i + 1}</span>
+    <div><div class="nst">${n[0]}</div><div class="nsd">${n[1]}</div></div>
+  </div>`).join('');
+
+/* --- wiring ---------------------------------------------------------------- */
+document.getElementById('picks').addEventListener('change', e => {
+  if (!e.target.matches('input[name="cmethod"]')) return;
+  picked = Number(e.target.value);
+  drawForm();
+  drawRecapB();
+  resetProbe('Connection method changed to <b>' + METHODS[picked].n +
+    '</b>. Press <b>Test connection</b> to check it against the details on the left.');
+});
+
+document.getElementById('testBtn').addEventListener('click', runProbe);
+
+document.getElementById('saveBtn').addEventListener('click', e => {
+  e.target.textContent = 'Saved — you can come back to this';
+  e.target.disabled = true;
+});
+
+drawRecapB();
+drawForm();
+</script>
+</body>
+</html>
