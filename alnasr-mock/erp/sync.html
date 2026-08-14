@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-Invoice Status — Al Nasr Marbles ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* page-local — closing panel for the final screen of the walkthrough */
+  .closing { background: var(--accent-soft); border-color: var(--accent-line); }
+  .closing-list { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 7px;
+                  font-size: 14.5px; line-height: 1.6; color: var(--text-mid); }
+  .closing-list li::marker { color: var(--accent); font-weight: 700; }
+  /* page-local — the eight journey steps, as a compact two-column reading list */
+  .jsteps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; }
+  .jstep { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 9px; align-items: start; }
+  .jstep .jn { width: 22px; height: 22px; border-radius: 999px; display: grid; place-items: center;
+               font-size: 11.5px; font-weight: 700; color: var(--ok);
+               background: color-mix(in srgb, var(--ok) 14%, transparent); }
+  .jstep .jt { font-size: 14px; font-weight: 600; }
+  .jstep .jw { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-lo); }
+  .jstep .jb { font-size: 12.5px; color: var(--text-mid); line-height: 1.55; margin-top: 3px; }
+  @media (max-width: 900px) { .jsteps { grid-template-columns: minmax(0, 1fr); } }
+
+  /* page-local — SCOPE BOUNDARY.
+     This is the one screen in the walkthrough that shows something we are not
+     contracted to build. It sits above the success banner, not below it: a
+     viewer who reads only the first block on the page must still come away
+     knowing the write-back is theirs to build. Red is used nowhere else on
+     this screen, so it cannot be mistaken for ordinary status colour. */
+  .scope {
+    border: 2px solid var(--fail); border-radius: var(--r-md);
+    background: color-mix(in srgb, var(--fail) 6%, var(--surface));
+    padding: 15px 17px; margin-bottom: 16px;
+  }
+  .scope-head { display: flex; gap: 10px; align-items: flex-start; }
+  .scope-head > svg { width: 19px; height: 19px; color: var(--fail); flex: none; margin-top: 1px; }
+  .scope-title { font-size: 16px; font-weight: 700; color: var(--fail); letter-spacing: -.012em; line-height: 1.35; }
+  .scope-lead  { font-size: 14px; color: var(--text-mid); line-height: 1.62; margin-top: 7px; }
+  .scope-list  { list-style: none; margin: 13px 0 0; padding: 0; display: grid; gap: 9px; }
+  .scope-list li {
+    display: grid; grid-template-columns: 15px minmax(0, 1fr); gap: 9px; align-items: start;
+    font-size: 14px; line-height: 1.58; color: var(--text-hi);
+  }
+  .scope-list li::before {
+    content: ""; width: 7px; height: 7px; margin: 6px 0 0 4px; border-radius: 2px;
+    background: var(--fail);
+  }
+  .scope-list b { color: var(--fail); font-weight: 700; }
+  .scope-foot {
+    margin-top: 13px; padding-top: 11px; border-top: 1px solid color-mix(in srgb, var(--fail) 28%, transparent);
+    font-size: 13px; color: var(--text-mid); line-height: 1.6;
+  }
+  .pill-scope {
+    color: #A2351F; background: color-mix(in srgb, var(--fail) 7%, transparent);
+    border-color: color-mix(in srgb, var(--fail) 34%, transparent);
+  }
+</style>
+</head>
+<body class="surface-erp" data-surface="erp" data-nav="sync"
+      data-step="erp-sync"
+      data-crumbs="E-Invoicing / ANM-SINV-2026-01184"
+      data-hint="The last screen, and the one boundary to be clear about: the ERP-side write-back shown here is not in our scope. Read the red note before anything else on this page.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Sales Invoice ANM-SINV-2026-01184</h1>
+          <span class="pill pill-ok"><i class="dot"></i>Acknowledged</span>
+          <span class="tag">Al Nasr Marbles LLC</span>
+          <span class="pill pill-scope"><i class="dot"></i>ERP-side work — not in scope</span>
+        </div>
+        <p class="page-sub">The same ERP record the walkthrough started with, showing the e-invoicing
+          outcome as it would appear. The ERP-side work that puts it there is not ours to build.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm" id="btnPrint">Print with QR</button>
+        <a class="btn btn-sm btn-primary" href="../hub/document.html">View in Hub</a>
+      </div>
+    </div>
+
+    <!-- ===================== SCOPE BOUNDARY — READ FIRST =====================
+         Deliberately placed above the green success banner. Everything below
+         it illustrates an outcome; this states who has to build that outcome. -->
+    <div class="scope">
+      <div class="scope-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 9v4.5M12 17.2h.01"/>
+          <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>
+        </svg>
+        <div class="grow">
+          <div class="scope-title">This screen is an illustration. Writing these values back into the
+            ERP is <u>not</u> included in our scope of work.</div>
+          <div class="scope-lead">
+            The Compliance Hub makes every field shown below available to the ERP. Reading them from
+            the Hub, and creating or updating any record inside the ERP, is work that belongs to
+            Al Nasr's ERP team or their ERP vendor — not to us.
+          </div>
+        </div>
+      </div>
+
+      <ul class="scope-list">
+        <li><span><b>We do not build anything inside the ERP.</b> No app, connector, customisation or
+          print format on the ERP side is part of the current proposal. What we deliver ends at the
+          Hub's interface.</span></li>
+        <li><span><b>The ERP team collects the data and writes the record.</b> They call the Hub, take
+          the reference, the status and the QR information, and perform the insert or update on their
+          own system, in their own release cycle.</span></li>
+        <li><span><b>Inbound supplier invoices must be created as drafts.</b> When the Hub passes a
+          supplier invoice to the ERP, the ERP team must create it as an unposted draft for a person to
+          review. Nothing may be posted automatically.</span></li>
+        <li><span><b>If Al Nasr wants us to build it, it is quoted separately.</b> Scope, effort,
+          timeline and cost for the ERP-side work are estimated as a separate engagement and are not
+          covered by the figures in this proposal.</span></li>
+      </ul>
+
+      <div class="scope-foot">
+        Everything on this screen uses sample data to show what the finished result would look like on
+        the ERP record. It is not a working integration, and no software on this page has been built.
+      </div>
+    </div>
+
+    <div class="small dim mb8" id="actionNote"></div>
+    <div class="mb16" id="banner"></div>
+
+    <!-- The invoice record leads. A finance user opens this screen to see what
+         landed on the invoice — the reference, the status and the QR. How it got
+         there is the replay below. -->
+    <section style="margin-top:0">
+      <div class="split-wide">
+
+        <!-- ============================ MAIN COLUMN ============================ -->
+        <div>
+
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">E-Invoicing fields collected from the Hub</h2>
+              <span class="pill pill-scope"><i class="dot"></i>Illustration</span>
+              <span class="pill pill-accent">
+                <svg style="width:11px;height:11px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+                Read-only</span>
+            </div>
+            <div class="card-body" id="summary"></div>
+            <div class="table-wrap" style="border-top:1px solid var(--line)">
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                    <th class="nowrap">Written at</th>
+                  </tr>
+                </thead>
+                <tbody id="wb"></tbody>
+              </table>
+            </div>
+            <div class="card-foot">
+              <span class="small dim">All of these are fields on this same Sales Invoice. There is no parallel
+                system and no second place to look.</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================= RIGHT RAIL ============================ -->
+        <div>
+
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">QR information</h2>
+              <span class="tag">On the customer copy</span>
+            </div>
+            <div class="card-body">
+              <div style="display:flex;justify-content:center">
+                <div id="qr" style="background:#fff;padding:14px;border:1px solid var(--line);border-radius:var(--r-md)"></div>
+              </div>
+              <div class="small muted mt12">
+                Written back to the invoice and rendered by the ERP's own print format. The buyer can scan it
+                to verify the invoice.
+              </div>
+              <div class="divider"></div>
+              <div id="compliance"></div>
+              <div class="small muted mt12" id="archiveNote"></div>
+            </div>
+            <div class="card-foot">
+              <button class="btn btn-sm btn-block" id="btnPreview">Preview print format</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- How it got here, below the record itself -->
+    <section>
+      <div class="card">
+        <div class="card-head">
+          <h2 class="grow">Journey of this invoice</h2>
+          <span class="tag" id="journeyTag"></span>
+          <span class="small dim" id="journeyElapsed"></span>
+        </div>
+        <div class="card-body" id="journey"></div>
+        <div class="card-body" id="journeyDetail" style="border-top:1px solid var(--line)"></div>
+        <div class="card-foot">
+          <span class="small dim" id="journeyFoot"></span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card closing">
+        <div class="card-body">
+          <div class="eyebrow">The end of the walkthrough</div>
+          <h2 style="margin-top:6px">The loop is closed.</h2>
+          <ol class="closing-list">
+            <li>The invoice left this ERP on its own, as a normal Sales Invoice.</li>
+            <li>It was mapped, built as UBL 2.1, validated against the Oman rules and archived.</li>
+            <li>The Hub transmitted it to the group's accredited service provider, which reported it
+                to the Oman Tax Authority and delivered it to the buyer.</li>
+            <li>Its reference, its status and its QR information are ready to be collected from the
+                Hub, so they can be shown on the original record — the same screen the finance team
+                already uses.</li>
+          </ol>
+          <p class="small muted mt12">Nothing was exported by hand, and nobody had to leave the ERP.</p>
+          <p class="small mt8" style="color:#9A3320;font-weight:650">
+            Step 4 is the ERP team's work, not ours. Our delivery ends where the Hub publishes the
+            data. Building the ERP side is a separately scoped, separately costed piece of work.</p>
+          <div class="row-tight mt16" style="gap:8px">
+            <a class="btn" href="invoices.html">↺ Start again from the ERP</a>
+            <a class="btn btn-primary" href="../index.html">Screen map</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* Every figure, name, time and step on this screen comes from data.js.     */
+  const INV  = ERP_INVOICES[0];
+  const HERO = INVOICES.find(i => i.no === INV.no);
+
+  /* ---- the eight journey steps, straight from SYNC_STEPS ------------------ */
+  const J = SYNC_STEPS;
+  const hhmmss = s => (String(s.t).split(' ').pop() || '');
+  const secs   = s => { const p = hhmmss(s).split(':').map(Number); return p[0] * 3600 + p[1] * 60 + p[2]; };
+  const elapsed = secs(J[J.length - 1]) - secs(J[0]);
+  const human = e => (e >= 60 ? Math.floor(e / 60) + ' min ' : '') + (e % 60) + ' s';
+  const doneCount = J.filter(s => s.st === 'ok').length;
+
+  document.getElementById('journeyTag').textContent = doneCount + ' of ' + J.length + ' complete';
+  document.getElementById('journeyElapsed').textContent = 'End to end ' + human(elapsed);
+
+  document.getElementById('journey').innerHTML = pipeline(J.length, {
+    stages: ['Submitted', 'Collected', 'Validated', 'Recorded', 'Transmitted', 'Outcomes', 'Published', 'QR on the invoice'],
+    times:  J.map(hhmmss)
+  });
+
+  document.getElementById('journeyDetail').innerHTML =
+    '<div class="jsteps">' + J.map((s, i) => `
+      <div class="jstep">
+        <span class="jn">${i + 1}</span>
+        <div>
+          <div class="row-tight" style="gap:8px"><span class="jt">${s.name}</span>
+            <span class="jw">${hhmmss(s)}</span></div>
+          <div class="jb">${s.body}</div>
+        </div>
+      </div>`).join('') + '</div>';
+
+  /* The last step lands inside the ERP, so it is attributed to the ERP team —
+     it is the one step in this list that our scope does not cover. */
+  document.getElementById('journeyFoot').innerHTML =
+    'Step 1 happened in this ERP. Steps 2 to ' + (J.length - 1) + ' are performed by the Compliance Hub '
+    + 'and the group’s service provider, with no user action here. '
+    + '<b style="color:var(--fail)">Step ' + J.length + ' is built and run by the ERP team — it is not '
+    + 'part of our scope.</b>';
+
+  /* ---- banner: who did what -----------------------------------------------
+     The Hub transmits to the ASP. The ASP — corner 2 — reports the Tax Data
+     Document to the OTA. The Hub never talks to the Tax Authority itself.   */
+  const ackLeg = LEGS.find(l => l.id === 'ack');
+  const otaLeg = LEGS.find(l => l.id === 'ota');
+  const delLeg = LEGS.find(l => l.id === 'deliv');
+  const clock  = at => at.replace('28 Jul 2026 ', '').split('.')[0];
+
+  document.getElementById('banner').innerHTML = notice('ok',
+    `<b style="font-size:13px">Transmitted to the service provider, reported to the Tax Authority, delivered to the buyer.</b>
+     <div class="mt4 muted">The Hub sent this invoice to the group's accredited service provider, which accepted it at
+       <span class="num">${clock(ackLeg.at)}</span> under acknowledgement
+       <span class="mono" style="color:var(--text-hi);font-weight:600">${ASP.ackNo}</span>.
+       The service provider — not the Hub — reported the Tax Data Document to the Oman Tax Authority, acknowledged at
+       <span class="num">${clock(otaLeg.at)}</span>. The buyer's provider confirmed delivery at
+       <span class="num">${clock(delLeg.at)}</span>, and the answer was written back here at
+       <span class="num">${hhmmss(J[J.length - 1])}</span> — ${human(elapsed)} after submission.</div>`);
+
+  /* ---- compact invoice summary — counterparty read from the data ---------- */
+  document.getElementById('summary').innerHTML = kv([
+    ['Customer',    INV.cust],
+    ['Invoice date', `<span class="num">${INV.date}</span>`],
+    ['Grand total', `<span class="num" style="font-size:15px;font-weight:700">${omr(INV.total)}</span> <span class="dim tiny">OMR</span>`],
+    ['PO number',   `<span class="mono">${(HERO && HERO.po) || '—'}</span>`]
+  ]);
+
+  /* ---- the fields written back onto this record --------------------------- */
+  const WB_AT = hhmmss(J[J.length - 2]);   /* 09:16:43 — the writeback step */
+  const WRITEBACK = [
+    { label: 'E-Invoice status',    f: 'custom_einvoice_status',  v: pill('acknowledged', 'Acknowledged') },
+    { label: 'Acknowledgement no.', f: 'custom_ack_number',       v: `<span class="mono">${ASP.ackNo}</span>` },
+    { label: 'Peppol reference',    f: 'custom_peppol_reference', v: `<span class="mono">${ASP.ref}</span>` },
+    { label: 'Document UUID',       f: 'custom_einvoice_uuid',    v: `<span class="mono">${HERO.uuid}</span>` },
+    { label: 'QR information',      f: 'custom_einvoice_qr',      v: '<span class="mono">Present</span> <span class="dim tiny">rendered on the customer copy</span>' }
+  ];
+
+  document.getElementById('wb').innerHTML = WRITEBACK.map(w => `
+    <tr>
+      <td class="nowrap" style="font-weight:600">${w.label}
+        <div class="id tiny" style="color:var(--accent);font-weight:400">${w.f}</div></td>
+      <td style="word-break:break-all">${w.v}</td>
+      <td class="nowrap num dim tiny">${DEMO_DATE.replace(' 2026', '')} ${WB_AT}</td>
+    </tr>`).join('');
+
+  /* ---- compliance facts, folded into the QR card -------------------------- */
+  document.getElementById('compliance').innerHTML = kv([
+    ['Delivery state',       pill('delivered', 'Delivered to the buyer')],
+    ['Reported to the OTA',  `<span class="num">${clock(otaLeg.at)}</span> <span class="dim tiny">by the service provider</span>`],
+    ['Archived',             pill('ok', 'Before transmission')]
+  ]);
+
+  document.getElementById('archiveNote').textContent =
+    'The document and its processing evidence are held in the compliance archive. The retention period and '
+    + 'the archive location are agreed during solution design.';
+
+  /* ---- buttons that would leave the prototype ----------------------------- */
+  const noteEl = document.getElementById('actionNote');
+  function confirmInline(id, msg) {
+    const b = document.getElementById(id);
+    if (b) b.addEventListener('click', () => { noteEl.textContent = msg; });
+  }
+  confirmInline('btnPreview',
+    'Print preview is outside this prototype. In the live system the ERP renders its own print format, with the QR on it.');
+  confirmInline('btnPrint',
+    'Printing is outside this prototype. The QR information is already on this record and on the customer copy.');
+
+  /* ---- QR code — deterministic pseudo-pattern, 21×21 (version 1) ---------- */
+  (function () {
+    const N = 21, PX = 8;
+    const finder = (x, y) => {
+      let lx = null, ly = null;
+      if (x <= 7 && y <= 7)        { if (x === 7 || y === 7) return false; lx = x;      ly = y; }
+      else if (x >= 13 && y <= 7)  { if (x === 13 || y === 7) return false; lx = x - 14; ly = y; }
+      else if (x <= 7 && y >= 13)  { if (x === 7 || y === 13) return false; lx = x;      ly = y - 14; }
+      else return null;
+      const ring = (lx === 0 || lx === 6 || ly === 0 || ly === 6);
+      const core = (lx >= 2 && lx <= 4 && ly >= 2 && ly <= 4);
+      return ring || core;
+    };
+    let cells = '';
+    for (let y = 0; y < N; y++) {
+      for (let x = 0; x < N; x++) {
+        const f = finder(x, y);
+        let on;
+        if (f !== null) on = f;
+        else if (y === 6) on = (x % 2 === 0);            /* timing row */
+        else if (x === 6) on = (y % 2 === 0);            /* timing column */
+        else {
+          const h = (x * 37 + y * 61 + ((x * y) % 17) * 13 + (((x + 5) ^ (y + 3)) * 7)) % 100;
+          on = h < 48;
+        }
+        cells += `<i style="display:block;width:${PX}px;height:${PX}px;background:${on ? '#111820' : '#fff'}"></i>`;
+      }
+    }
+    document.getElementById('qr').innerHTML =
+      `<div style="display:grid;grid-template-columns:repeat(${N},${PX}px);line-height:0">${cells}</div>`;
+  })();
+</script>
+</body>
+</html>

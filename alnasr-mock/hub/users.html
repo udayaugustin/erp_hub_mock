@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Users &amp; Access — Al Nasr Compliance Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+/* page-local — Users & Access only */
+.seq-n { width: 26px; height: 26px; flex: none; border-radius: 50%; display: grid; place-items: center;
+  font-size: 13px; font-weight: 700; background: var(--accent-soft); color: var(--accent-hi);
+  border: 1px solid var(--accent-line); }
+/* explanation aligns under the step name, not under its number */
+.seq .exp-text { padding-left: 36px; }
+/* the collapsed paragraph inside the central-team role card */
+.rolecard .exp { border-bottom: 0; margin-top: 6px; border-top: 1px solid var(--accent-line); }
+.rolecard .exp-h { padding: 9px 0 8px; }
+.rolecard .exp-t { font-size: 12.5px; }
+.rolecard .exp-text { font-size: 12.5px; padding-right: 0; }
+.rolecard { padding: 13px 14px; border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--surface); }
+.rolecard.is-central { border-color: var(--accent-line); background: var(--accent-soft); }
+.rolecard .rn { font-size: 14px; font-weight: 600; }
+.rolecard .rdsc { font-size: 12.5px; color: var(--text-mid); line-height: 1.55; margin-top: 4px; }
+.invite-bar { display: grid; grid-template-columns: minmax(0,1fr) 190px auto; gap: 10px; align-items: start; }
+.userrow .uname { font-size: 14px; font-weight: 600; }
+.userrow .umail { font-size: 12px; color: var(--text-lo); margin-top: 1px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.userrow .ulast { font-size: 12.5px; color: var(--text-mid); white-space: nowrap; }
+.userrow.is-new { animation: newrow .5s var(--ease); }
+@keyframes newrow { from { background: var(--accent-soft); } to { background: transparent; } }
+@media (max-width: 900px) { .invite-bar { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="users"
+      data-step="hub-users"
+      data-crumbs="Configuration / Users &amp; Access"
+      data-hint="How each of the four companies is given its own login — and why the central team never sets or sees a password.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Users &amp; Access</h1>
+          <span class="pill pill-ok"><i class="dot"></i>Entity-administered</span>
+        </div>
+        <p class="page-sub" id="page-sub"></p>
+      </div>
+    </div>
+
+    <!-- The access list leads. This is a console screen: the working artefact is
+         who actually has access and how you add someone. How provisioning works
+         and what each role can do are explanation, and sit underneath. -->
+    <section style="margin-top:0">
+      <div class="section-head">
+        <div class="grow">
+          <div class="eyebrow">Access</div>
+          <h2 id="users-title">One company&rsquo;s users</h2>
+        </div>
+        <span class="small dim">Administered by that company, not by us</span>
+      </div>
+
+      <div class="card card-tight">
+        <div class="userrow head">
+          <div></div>
+          <div>Person</div>
+          <div>Role</div>
+          <div>State</div>
+          <div>Last seen</div>
+        </div>
+        <div id="userlist"></div>
+        <div class="card-foot" style="display:block">
+          <div class="label" style="margin-bottom:8px">Invite a colleague</div>
+          <div class="invite-bar">
+            <div>
+              <input class="input input-sm" id="inv-email" type="text" autocomplete="off"
+                     placeholder="name@alnasr.om">
+              <div class="field-help" id="inv-help">They set their own password and second factor on first sign-in.</div>
+              <div class="field-err" id="inv-err" style="display:none"></div>
+            </div>
+            <select class="select select-sm" id="inv-role"></select>
+            <button class="btn btn-sm btn-primary" id="inv-send">Send invitation</button>
+          </div>
+          <div id="inv-ok" class="mt12" style="display:none"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works, below the working content -->
+    <div class="split-wide mt24 mb16">
+
+      <section style="margin-top:0">
+        <div class="section-head">
+          <div class="grow">
+            <div class="eyebrow">Provisioning</div>
+            <h2>How a company gets its login</h2>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="seq" id="seq"></div>
+          </div>
+        </div>
+        <div id="seq-teach" class="mt12"></div>
+      </section>
+
+      <section style="margin-top:0">
+        <div class="section-head">
+          <div class="grow">
+            <div class="eyebrow">Roles</div>
+            <h2>What each role can do</h2>
+          </div>
+        </div>
+        <div class="stack" id="roles"></div>
+        <div id="roles-note" class="mt12"></div>
+      </section>
+
+    </div>
+
+    <div id="closing"></div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+(function () {
+  var ENT = tenant('ANM');
+  var users = ENTITY_USERS.filter(function (u) { return u.who === 'ANM'; }).slice();
+
+  /* ---- page sub ---------------------------------------------------------- */
+  document.getElementById('page-sub').innerHTML =
+    GROUP.entities + ' companies in the group. Each one receives its own login and administers its own people. ' +
+    'A company sees only its own documents, users and exceptions.';
+
+  /* ---- the provisioning sequence -----------------------------------------
+     The five step names and their owner chips carry the argument on their
+     own — a viewer can read "the central team never sets a password" off the
+     titles. The sentence under each is detail, so it collapses. Step 1 is
+     left open so nobody has to guess what the info buttons hide. */
+  document.getElementById('seq').innerHTML = ACCESS_STEPS.map(function (s, i) {
+    var central = s.who === 'Central team';
+    var head =
+      '<span class="seq-n">' + s.n + '</span>' +
+      '<span class="exp-t grow">' + s.name + '</span>' +
+      '<span class="chip ' + (central ? 'info' : 'ok') + '">' + s.who + '</span>';
+    return expRow(head, s.body, i === 0);
+  }).join('');
+
+  var centralSteps = ACCESS_STEPS.filter(function (s) { return s.who === 'Central team'; }).length;
+  var entitySteps  = ACCESS_STEPS.length - centralSteps;
+
+  document.getElementById('seq-teach').innerHTML = notice('info',
+    '<strong>The central team never sets or sees a password.</strong> ' +
+    'It issues one invitation, at step 3. The person named by the company sets their own credentials at step 4. ' +
+    'From step 5 onward the company administers its own users and the central team is not in the loop &mdash; ' +
+    'of the ' + ACCESS_STEPS.length + ' steps, ' + centralSteps + ' are ours and ' + entitySteps + ' belong to the company.');
+
+  /* ---- roles -------------------------------------------------------------- */
+  document.getElementById('roles').innerHTML = ROLES.map(function (r) {
+    var central = r.k === 'group-admin';
+    return '<div class="rolecard ' + (central ? 'is-central' : '') + '">' +
+      '<div class="row" style="gap:8px">' +
+        '<span class="rn grow">' + r.n + '</span>' +
+        '<span class="chip ' + (central ? 'info' : 'req') + '">' + (central ? 'Central team' : 'The company') + '</span>' +
+      '</div>' +
+      '<div class="rdsc">' + r.d + '</div>' +
+      /* only the central role carries a second paragraph — collapse it, since
+         the limit it describes is the point of the whole card */
+      (central
+        ? expRow('<span class="exp-t grow">Where our reach stops</span>',
+            'The central team can configure anything on this platform. It cannot post to any ERP. ' +
+            'Posting stays with the company&rsquo;s own finance users, in their own system.', false)
+        : '') +
+    '</div>';
+  }).join('');
+
+  document.getElementById('roles-note').innerHTML = teach(
+    'Three of these four roles are held by people inside the company. Only the group administrator is ours, ' +
+    'and its reach stops at configuration.');
+
+  /* ---- the live example --------------------------------------------------- */
+  var roleName = {};
+  ROLES.forEach(function (r) { roleName[r.k] = r.n; });
+
+  function initials(name) {
+    return name.split(/[\s]+/).filter(Boolean)
+      .map(function (w) { return w.charAt(0).toUpperCase(); }).slice(0, 2).join('');
+  }
+
+  function rowHtml(u, isNew) {
+    var invited = u.state === 'invited';
+    return '<div class="userrow' + (invited ? ' invited' : '') + (isNew ? ' is-new' : '') + '">' +
+      '<div class="avatar-sm">' + initials(u.name) + '</div>' +
+      '<div style="min-width:0">' +
+        '<div class="uname">' + u.name + '</div>' +
+        '<div class="umail">' + u.email + '</div>' +
+      '</div>' +
+      '<div class="small">' + (roleName[u.role] || u.role) + '</div>' +
+      '<div>' + (invited ? pill('invited') : pill('live', 'Active')) + '</div>' +
+      '<div class="ulast">' +
+        (invited
+          ? '<button class="btn btn-sm btn-ghost" data-resend="' + u.email + '">Resend invitation</button>'
+          : u.last) +
+      '</div>' +
+    '</div>';
+  }
+
+  function paintTitle() {
+    document.getElementById('users-title').textContent = ENT.name + ' — ' + users.length + ' users';
+  }
+
+  function paint(newEmail) {
+    document.getElementById('userlist').innerHTML =
+      users.map(function (u) { return rowHtml(u, u.email === newEmail); }).join('');
+    paintTitle();
+    Array.prototype.forEach.call(document.querySelectorAll('[data-resend]'), function (b) {
+      b.addEventListener('click', function () {
+        b.textContent = 'Invitation resent';
+        b.disabled = true;
+      });
+    });
+  }
+  paint();
+
+  /* ---- role picker -------------------------------------------------------- */
+  var sel = document.getElementById('inv-role');
+  sel.innerHTML = ROLES.filter(function (r) { return r.k !== 'group-admin'; })
+    .map(function (r) { return '<option value="' + r.k + '">' + r.n + '</option>'; }).join('');
+  sel.value = 'finance';
+
+  /* ---- the invite control ------------------------------------------------- */
+  var inp  = document.getElementById('inv-email');
+  var err  = document.getElementById('inv-err');
+  var help = document.getElementById('inv-help');
+  var ok   = document.getElementById('inv-ok');
+  var EMAIL = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
+
+  function clearErr() {
+    inp.classList.remove('is-invalid');
+    err.style.display = 'none';
+    help.style.display = '';
+  }
+  inp.addEventListener('input', clearErr);
+  inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') send(); });
+  document.getElementById('inv-send').addEventListener('click', send);
+
+  function fail(msg) {
+    inp.classList.add('is-invalid');
+    help.style.display = 'none';
+    err.textContent = msg;
+    err.style.display = '';
+    ok.style.display = 'none';
+    inp.focus();
+  }
+
+  function send() {
+    var v = inp.value.trim();
+    if (!v) { fail('Enter an email address.'); return; }
+    if (!EMAIL.test(v)) { fail('That does not look like an email address.'); return; }
+    if (users.some(function (u) { return u.email.toLowerCase() === v.toLowerCase(); })) {
+      fail('That person already has access to this company.'); return;
+    }
+    clearErr();
+
+    var local = v.split('@')[0].replace(/[._-]+/g, ' ').trim();
+    var parts = local.split(' ').filter(Boolean);
+    var name = parts.length > 1
+      ? parts[0].charAt(0).toUpperCase() + '. ' + parts[1].charAt(0).toUpperCase() + parts[1].slice(1)
+      : (local.charAt(0).toUpperCase() + local.slice(1));
+
+    var role = sel.value;
+    users.unshift({ name: name, email: v, role: role, state: 'invited', last: 'Invited just now', who: 'ANM' });
+    paint(v);
+
+    ok.innerHTML = notice('ok',
+      'Invitation sent to <strong>' + v + '</strong> as <strong>' + roleName[role] + '</strong>. ' +
+      'No password was set here. They choose their own on first sign-in, and enrol a second factor.');
+    ok.style.display = '';
+    inp.value = '';
+  }
+
+  /* ---- closing note ------------------------------------------------------- */
+  document.getElementById('closing').innerHTML = teach(
+    'This same screen exists inside every company&rsquo;s own portal, scoped to that company alone. ' +
+    'The entity administrator at ' + ENT.short + ' does exactly this for their own colleagues, and sees no one ' +
+    'from the other ' + (GROUP.entities - 1) + ' companies.');
+})();
+</script>
+</body>
+</html>
