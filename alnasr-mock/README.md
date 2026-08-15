@@ -7,7 +7,7 @@ adapted for **Al Nasr Group of Companies**.
 Built to be **walked through by a client stakeholder**, not studied by an engineer. Each screen
 makes one point and then stops.
 
-This is a clone of the WJ Towell build (`../hub-mock`) with the group, the dataset, the palette
+This is a clone of the WJ Towell build (`../wj-mock`) with the group, the dataset, the palette
 and the mapping profile replaced. The structure, the sixteen steps and the engineering approach
 are unchanged — see that repository's `GAP-REGISTER.md` for the audit history behind the rules
 in *What the prototype must agree with*, below.

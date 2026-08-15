@@ -1,7 +1,7 @@
 /* ==========================================================================
    PINT-OM field set — GENERATED, do not edit by hand.
    Source: core/data/pint_om_invoice_v1.json (version OM-1.1)
-   Regenerate: python3 hub-mock/tools/gen-pint-fields.py
+   Regenerate: python3 wj-mock/tools/gen-pint-fields.py
 
    257 fields in the full ruleset. 124 kept here — the groups a
    domestic standard-rated goods invoice actually populates. The other
