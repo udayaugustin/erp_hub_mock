@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Al Nasr Marbles LLC — Al Nasr Compliance Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* ---- page-local to hub/tenant-detail.html. Do not move to app.css. ---- */
+  .unres{border:1px solid color-mix(in srgb,var(--warn) 35%,var(--line));border-radius:var(--r-sm);
+    padding:9px 11px;background:color-mix(in srgb,var(--warn) 6%,transparent)}
+  .unres + .unres{margin-top:7px}
+  .bmini .bside{padding:14px 16px}
+  .bmini .bside .bl{gap:6px;margin-top:9px}
+  .bmini .bside .bl li{font-size: 13px}
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="tenants"
+      data-step="hub-tenant"
+      data-crumbs="Configuration / Companies / Al Nasr Marbles LLC"
+      data-hint="Everything on this page is configuration. No code is written to bring a new company on board.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1 id="ttl">Al Nasr Marbles LLC</h1>
+          <span id="statusPill"></span>
+          <span id="methodPill"></span>
+        </div>
+        <p class="page-sub" id="sub"></p>
+      </div>
+      <div class="page-actions">
+        <a class="btn btn-sm" href="onboard.html">Edit configuration</a>
+        <a class="btn btn-sm btn-primary" href="mapping.html">Open Mapping Studio</a>
+      </div>
+    </div>
+
+    <div class="grid g3 mb16" id="tiles"></div>
+
+    <div class="split">
+
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">Company information</h2>
+              <span class="tag">Registry record</span>
+            </div>
+            <div class="card-body" id="company"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">How we connect</h2>
+              <span class="pill pill-ok"><i class="dot"></i>Connected</span>
+            </div>
+            <div class="card-body">
+              <div id="conn"></div>
+              <div class="mt16" id="conntest"></div>
+              <div class="code code-lines mt16" id="cfg"></div>
+            </div>
+            <div class="card-foot">
+              <span class="small dim">Credentials live in the platform vault and are never shown in the console.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">Mapping status</h2>
+              <span id="mapPill"></span>
+            </div>
+            <div class="card-body">
+              <div class="row" style="gap:16px">
+                <div class="donut" id="donut"><span id="donutTxt"></span></div>
+                <div class="grow stack" style="gap:3px">
+                  <div style="font-size:19px;font-weight:600" class="num" id="mapCount"></div>
+                  <div class="tiny dim">fields resolved</div>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <div class="tiny dim mb8" id="unresLbl"></div>
+              <div id="unresolved"></div>
+              <div class="divider"></div>
+              <div id="mapkv"></div>
+            </div>
+            <div class="card-foot">
+              <a class="btn btn-sm btn-block" href="mapping.html">Open Mapping Studio →</a>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">Activity</h2>
+              <span class="row-tight"><span class="beacon"><i></i></span><span class="tiny dim">Today</span></span>
+            </div>
+            <div class="card-body" id="health"></div>
+          </div>
+        </section>
+      </div>
+
+    </div>
+
+    <section>
+      <div class="card">
+        <div class="card-head">
+          <h2 class="grow">Where this company's work ends and ours begins</h2>
+          <a class="small" style="color:var(--accent-hi)" href="boundary.html">Full delivery boundary →</a>
+        </div>
+        <div class="card-body">
+          <div class="boundary bmini" id="boundary"></div>
+          <div class="mt12 tiny dim" id="boundaryNote"></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  const T = tenant('ANM');
+
+  /* --- page-local detail not held in the shared dataset -------------------- */
+  const DETAIL = {
+    goLive: '12 Jan 2026',
+    endpoint: 'https://my340118.s4hana.ondemand.com/sap/opu/odata/sap/API_BILLING_DOCUMENT_SRV',
+    auth: 'OAuth 2.0 client credentials',
+    poll: 'Every 60 s · only what changed',
+    allowlist: 31,          /* fields the Hub is permitted to read */
+    exposed: 386,           /* fields discovered in this ERP during the inventory */
+    rtt: 288,
+    profileVer: 'ANM/v6',
+    published: '18 Jun 2026 · by M. Al-Rawahi',
+    certExpiry: '14 Mar 2027',
+    writeFields: ['UUID', 'e-invoice status', 'acknowledgement number', 'Peppol reference', 'QR information']
+  };
+
+  /* --- header -------------------------------------------------------------- */
+  document.getElementById('statusPill').outerHTML = pill(T.status);
+  document.getElementById('methodPill').outerHTML = methodChip(T.method, true);
+  document.getElementById('sub').textContent =
+    `Running on ${T.erp}, live since ${DETAIL.goLive}. Rollout wave ${T.wave}.`;
+
+  /* --- tiles --------------------------------------------------------------- */
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Documents today', value: num(T.today), meta: `${num(T.inToday)} supplier documents inbound`, tone: 'var(--accent)' }),
+    stat({ label: 'Success rate', value: pct(T.success), meta: `${T.failed} failed today`, tone: 'var(--ok)' }),
+    stat({ label: 'Fields mapped', value: `${T.mapped} / ${T.mapTotal}`, meta: `Profile ${DETAIL.profileVer} · published`,
+           tone: T.mapped === T.mapTotal ? 'var(--ok)' : 'var(--warn)' })
+  ].join('');
+
+  /* --- company information ------------------------------------------------- */
+  document.getElementById('company').innerHTML = kv([
+    ['Legal name', T.name],
+    ['Company code', `<span class="id">${T.code}</span>`],
+    ['VAT identification number', `<span class="id">${T.vatin}</span>`],
+    ['Peppol participant ID', `<span class="id">${T.peppol}</span>`],
+    ['City', `${T.city}, Oman`],
+    ['Rollout wave', `Wave ${T.wave}`],
+    ['Live since', DETAIL.goLive]
+  ]);
+
+  /* --- how we connect ------------------------------------------------------ */
+  document.getElementById('conn').innerHTML = kv([
+    ['ERP product', `${T.erp} <span class="id">${T.erpVer}</span>`],
+    ['Connection method', `${methodChip(T.method, true)}
+        <span class="muted" style="font-weight:400">— ${METHODS[T.method].how} Entity-side software: ${METHODS[T.method].onsite.toLowerCase()}.</span>`],
+    ['Interface', `<span class="id">${T.conn}</span>`],
+    ['Endpoint', `<span class="id" style="word-break:break-all">${DETAIL.endpoint}</span>`],
+    ['Authentication', DETAIL.auth],
+    ['How often we read', DETAIL.poll],
+    ['Fields we may read', `${DETAIL.allowlist} of ${DETAIL.exposed} the ERP exposes`],
+    ['Fields we may write', `${DETAIL.writeFields.length} — ${DETAIL.writeFields.join(', ')}`]
+  ]);
+
+  document.getElementById('conntest').innerHTML = notice('ok',
+    `<b>Connection test passed</b> — ${DEMO_CLOCK}. Read probe returned in <span class="num">${DETAIL.rtt} ms</span>.
+     <br><b>Write-back permission granted</b>, scoped to the e-invoicing fields on the sales invoice record only:
+     ${DETAIL.writeFields.join(', ')}. The integration user cannot change amounts, customers, postings or any
+     other record in this ERP.`
+  );
+
+  /* --- connector config (short excerpt) ------------------------------------ */
+  const CFG = [
+    'company:       ' + T.code + '            # ' + T.name,
+    'method:        1 — direct API',
+    'adapter:       sap-s4hana-cloud/odata-v4',
+    'endpoint:      https://my340118.s4hana.ondemand.com',
+    'auth:          oauth2_client_credentials',
+    'secret_ref:    vault://nazm/prod/' + T.code + '/client_secret   # ●●●●●●',
+    'read_every:    60s                # only changed documents',
+    'read_fields:   ' + DETAIL.allowlist + ' of ' + DETAIL.exposed + '     # allowlist',
+    'write_fields:  uuid, status, ack_no, peppol_ref, qr   # sales invoice record only',
+    'mapping:       ' + DETAIL.profileVer
+  ];
+  document.getElementById('cfg').innerHTML =
+    CFG.map(l => `<span class="l">${l.replace(/&/g,'&amp;').replace(/</g,'&lt;') || ' '}</span>`).join('');
+
+  /* --- right rail: mapping ------------------------------------------------- */
+  const mapPct    = T.mapped / T.mapTotal * 100;
+  const outstanding = T.mapTotal - T.mapped;
+  const UNRESOLVED = MAPPING.flatMap(g => g.rows.filter(r => !r.ok).map(r => ({ ...r, grp: g.grp })));
+
+  document.getElementById('mapPill').outerHTML = outstanding === 0
+    ? pill('ok', 'Complete')
+    : pill('warn', `${outstanding} outstanding`);
+  document.getElementById('donut').style.setProperty('--p', Math.round(mapPct));
+  document.getElementById('donutTxt').textContent = Math.round(mapPct) + '%';
+  document.getElementById('mapCount').textContent = `${T.mapped} / ${T.mapTotal}`;
+
+  document.getElementById('unresLbl').textContent = outstanding === 1
+    ? 'The one field this ERP cannot supply'
+    : `The ${outstanding} fields this ERP cannot supply`;
+
+  document.getElementById('unresolved').innerHTML = UNRESOLVED.map(r => `
+    <div class="unres">
+      <div class="row-tight" style="gap:7px">
+        <span class="chip warn">${r.std}</span>
+        <span style="font-weight:600;font-size:12.5px">${r.stdName}</span>
+        <span class="right chip req">${r.req}</span>
+      </div>
+      <div class="tiny muted" style="margin-top:4px">${r.note}</div>
+      <div class="tiny" style="margin-top:3px;color:var(--warn)">Fallback: ${r.fallback}</div>
+    </div>`).join('');
+
+  document.getElementById('mapkv').innerHTML = kv([
+    ['Profile version', `<span class="id">${DETAIL.profileVer}</span>`],
+    ['Published', DETAIL.published],
+    ['Validation profile', VALIDATION.profile]
+  ]);
+
+  /* --- right rail: activity ------------------------------------------------ */
+  const retrying = INVOICES.filter(i => i.tenant === T.id && i.retry > 0).length;
+  document.getElementById('health').innerHTML = kv([
+    ['Documents today', `<span class="num">${num(T.today)}</span>`],
+    ['Documents month to date', `<span class="num">${num(T.mtd)}</span>`],
+    ['Failures today', `<span style="color:var(--fail)">${T.failed}</span> of ${num(T.today)}`],
+    ['In flight now', `<span class="num">${T.pending}</span>`],
+    ['Awaiting retry', `<span class="num">${retrying}</span>`],
+    ['Last document received', T.sync],
+    ['Client certificate expires', DETAIL.certExpiry]
+  ]);
+
+  /* --- delivery boundary, for this one entity (proposal §7) ---------------- */
+  document.getElementById('boundary').innerHTML = `
+    <div class="bside">
+      <div class="bh">${T.short} provides</div>
+      <ul class="bl">
+        <li>${BOUNDARY_ENTITY[0]} — supplied over ${METHODS[T.method].short.toLowerCase()}, ${DETAIL.poll.toLowerCase()}</li>
+        <li>${BOUNDARY_ENTITY[1]} — integration user active since ${DETAIL.goLive}</li>
+        <li>${BOUNDARY_ENTITY[2]} — granted, ${DETAIL.writeFields.length} fields on the sales invoice record</li>
+      </ul>
+    </div>
+    <div class="bline"><div class="bdash"></div><div class="blbl">Agreed interface</div><div class="bdash"></div></div>
+    <div class="bside hub">
+      <div class="bh">The Hub runs everything from there</div>
+      <ul class="bl">
+        <li>${BOUNDARY_HUB[0]} — profile ${DETAIL.profileVer}</li>
+        <li>${BOUNDARY_HUB[1]}</li>
+        <li>${BOUNDARY_HUB[2]}</li>
+      </ul>
+    </div>`;
+
+  document.getElementById('boundaryNote').textContent =
+    `${T.short} makes one complete invoice payload available at the agreed interface. ` +
+    `Everything after that interface is delivered by the central Hub team, identically for all ` +
+    `${GROUP.hubEntities} connected entities.`;
+</script>
+</body>
+</html>

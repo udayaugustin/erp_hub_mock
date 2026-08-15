@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Processing Queue — Al Nasr Compliance Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* ---- page-local to hub/queue.html. Do not move to app.css. ---- */
+  .ownertag{display:inline-block;font-size: 11.5px;letter-spacing:.06em;text-transform:uppercase;
+    font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap}
+  .ownertag.ent{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+  .ownertag.plat{color:var(--info);background:color-mix(in srgb,var(--info) 14%,transparent)}
+  /* two-column band: counters, filters and the stage note beside the lanes */
+  .qtop{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+  /* the per-company lanes are full width now, so run them three across */
+  #channels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 26px}
+  .qleft{display:flex;flex-direction:column;gap:16px}
+  @media (max-width:1100px){#channels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .page-head{margin-bottom:14px}
+  .card-body{padding:14px 16px}
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="queue"
+      data-step="hub-queue"
+      data-crumbs="Operations / Processing Queue"
+      data-hint="Every document currently being processed, and the stage it has reached. Each company has its own lane, so one company's problem never holds up another.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Processing Queue</h1>
+          <span id="flightPill"></span>
+        </div>
+        <p class="page-sub">Where every document is, right now.</p>
+      </div>
+      <div class="page-actions">
+        <select class="select select-sm" id="refresh" style="width:auto">
+          <option value="on">Auto-refresh · 5 s</option>
+          <option value="off">Paused</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="small dim mb12" id="refreshNote"></div>
+
+    <div class="card mb16">
+      <div class="card-head">
+        <h2 class="grow">The nine stages</h2>
+        <span class="tag" id="stageTag"></span>
+        <span class="small dim" id="clock"></span>
+      </div>
+      <div class="card-body">
+        <div id="pipeFull"></div>
+      </div>
+    </div>
+
+    <!-- Counters and filters, then the document list. The per-company lanes are
+         secondary and now sit below the table. -->
+    <div class="qtop mb16">
+      <div class="qleft">
+        <div class="grid g3" id="tiles"></div>
+        <div id="stageNote"></div>
+        <div class="card">
+          <div class="card-body">
+            <div class="row wrap" style="gap:10px">
+              <div class="search grow" style="min-width:230px;max-width:340px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                <input class="input input-sm" id="fSearch" placeholder="Search by document number">
+              </div>
+              <select class="select select-sm" id="fCompany" style="width:auto;min-width:210px"></select>
+              <select class="select select-sm" id="fState" style="width:auto"></select>
+              <span class="right small dim" id="countNote"></span>
+            </div>
+            <div class="tiny dim mt8" id="filterNote"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <section style="margin-top:0">
+      <div class="card card-tight">
+        <div class="card-head">
+          <!-- "Documents today" invited the obvious question: the page says 153 in
+               flight, so why are there 13 rows? The heading now says what the list
+               actually is. -->
+          <h2 class="grow">A sample of what is in flight</h2>
+          <span id="retryPill"></span>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Company</th>
+                <th>Type</th>
+                <th>Stage</th>
+                <th>Progress</th>
+                <th>Status · who resolves it</th>
+              </tr>
+            </thead>
+            <tbody id="queueRows"></tbody>
+          </table>
+        </div>
+        <div class="card-foot">
+          <span class="small dim grow" id="tableFoot"></span>
+          <button class="btn btn-sm btn-ghost" id="moreBtn"></button>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card">
+        <div class="card-head"><h2 class="grow">Per-company channels</h2><span class="tag">Queue depth</span></div>
+        <div class="card-body" id="channels"></div>
+        <div class="card-foot">
+          <span class="tiny dim" id="chanFoot">Each company has its own lane, so a backlog in one never delays another.</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* ---------- the demo clock, and how long something has been waiting ------- */
+  const CLOCK_S = 10 * 3600 + 42 * 60;                       /* 10:42:00 GST */
+  const secsOf  = s => { const m = /(\d{2}):(\d{2}):(\d{2})\s*$/.exec(s);
+                         return m ? (+m[1]) * 3600 + (+m[2]) * 60 + (+m[3]) : 0; };
+  const waited  = d => Math.max(0, CLOCK_S - secsOf(d.created));
+  function fmtDur(sec) {
+    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    if (h) return `${h} h ${m} m`;
+    if (m) return `${m} m ${s} s`;
+    return `${s} s`;
+  }
+
+  const HUB_CO   = TENANTS.filter(t => t.deploy === 'hub');
+  const inQueue  = STAGE_COUNT.reduce((a, b) => a + b, 0);   /* = GROUP.todayPending */
+  const done     = d => d.stage === STAGES.length - 1 && d.state === 'ok';
+  const inFlight = INVOICES.filter(d => !done(d));
+  const oldest   = inFlight.reduce((a, b) => waited(b) > waited(a) ? b : a, inFlight[0]);
+  const oldestTxt = fmtDur(waited(oldest));
+
+  document.getElementById('flightPill').outerHTML = pill('active', `${num(inQueue)} in flight`);
+  document.getElementById('clock').textContent = DEMO_CLOCK;
+
+  /* ---------- stage breakdown ----------------------------------------------
+     STAGE_COUNT covers stages 1–7, the ones a document can be waiting at.
+     Nothing queues at the last two: the result is published the moment an
+     outcome arrives, and archiving follows it.                                */
+  const busiest = STAGE_COUNT.indexOf(Math.max.apply(null, STAGE_COUNT));
+
+  /* The stages are drawn as names only. STAGE_COUNT still drives which one is
+     marked active, and the per-stage totals are narrated in the note below
+     rather than printed under all nine labels. */
+  document.getElementById('stageTag').textContent = `${num(inQueue)} documents in flight`;
+  document.getElementById('pipeFull').innerHTML = pipeline(busiest);
+
+  document.getElementById('stageNote').innerHTML = teach(
+    `The largest group right now is <b>${STAGES[busiest]}</b>, with ${STAGE_COUNT[busiest]} documents. ` +
+    `Note the order, and that two different stages write the document down. ` +
+    `<b>Record</b> is step 5: the XML and audit trail are stored <b>before</b> anything is transmitted, ` +
+    `so there is evidence of what was sent even if the transmission later fails. ` +
+    `<b>Archive</b> is step 9 — the long-term legal record in object storage, which cannot be written ` +
+    `any earlier because it holds the acknowledgements, and those only exist once the round trip is done.`);
+
+  /* ---------- tiles --------------------------------------------------------- */
+  const entOpen  = EXCEPTIONS_ENTITY.reduce((a, e) => a + e.count, 0);
+  const platOpen = EXCEPTIONS_PLATFORM.reduce((a, e) => a + e.count, 0);
+
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'In flight', value: num(inQueue),
+           meta: `Across ${GROUP.live} live companies`, tone: 'var(--accent)' }),
+    stat({ label: 'Oldest still in flight', value: oldestTxt,
+           meta: `${oldest.no} · held at ${STAGES[oldest.stage]}`, tone: 'var(--warn)' }),
+    stat({ label: 'Awaiting action', value: entOpen + platOpen,
+           meta: `${entOpen} entity finance · ${platOpen} central technical`, tone: 'var(--fail)' })
+  ].join('');
+
+  /* ---------- filters ------------------------------------------------------- */
+  document.getElementById('fCompany').innerHTML =
+    `<option value="">All hub companies (${GROUP.hubEntities})</option>` +
+    HUB_CO.map(t => `<option value="${t.id}">${t.short}</option>`).join('');
+
+  document.getElementById('fState').innerHTML =
+    '<option value="">All states</option>' +
+    '<option value="active">In progress</option>' +
+    '<option value="ok">Completed</option>' +
+    '<option value="failed">Failed</option>';
+
+  document.getElementById('filterNote').textContent = GROUP.selfHosted
+    ? `The ${GROUP.selfHosted} self-hosted entities are not listed here. They transmit directly to the ASP `
+      + `and nothing of theirs passes through the Hub queue.`
+    : `All ${GROUP.hubEntities} entities connect through the Hub, so every document in flight appears here. `
+      + `Nothing is self-hosted, and nothing bypasses this queue.`;
+
+  /* ---------- the table ----------------------------------------------------- */
+  const ROWS = INVOICES;
+  const FAIL_BG = 'background:color-mix(in srgb, var(--fail) 7%, transparent)';
+  const OWNER = {
+    entity:   ['ent',  'Entity finance team'],
+    platform: ['plat', 'Central technical team']
+  };
+  const stateKey = s => s === 'ok' ? 'completed' : s === 'active' ? 'active' : s === 'held' ? 'queued' : 'failed';
+
+  document.getElementById('queueRows').innerHTML = ROWS.map(inv => `
+    <tr style="${inv.state === 'failed' ? FAIL_BG : ''}">
+      <td class="nowrap">
+        <a class="link id" href="document.html">${inv.no}</a>
+        <div class="tiny dim num">${inv.created} · waiting ${fmtDur(waited(inv))}</div>
+      </td>
+      <td class="nowrap">${tenantChip(inv.tenant)}</td>
+      <td class="nowrap">
+        <span class="chip ${inv.type === 'Credit Note' ? 'info' : ''}">${inv.type}</span>
+        ${inv.against ? `<div class="tiny dim">against <span class="id">${inv.against}</span></div>` : ''}
+      </td>
+      <td class="nowrap">
+        <div style="font-weight:600">${STAGES[inv.stage]}</div>
+        <div class="tiny dim">Stage ${inv.stage + 1} of ${STAGES.length}</div>
+      </td>
+      <td>${pipeMini(inv.stage, inv.state)}</td>
+      <td class="nowrap">
+        ${pill(stateKey(inv.state))}
+        ${inv.owner ? `<div style="margin-top:4px"><span class="ownertag ${OWNER[inv.owner][0]}">${OWNER[inv.owner][1]}</span></div>` : ''}
+        ${inv.retry ? `<div class="tiny dim" style="margin-top:3px">retry ${inv.retry}</div>` : ''}
+        ${inv.awaiting ? `<div class="tiny dim" style="margin-top:3px">awaiting ${inv.awaiting}</div>` : ''}
+      </td>
+    </tr>`).join('');
+
+  const retrying = ROWS.filter(d => d.retry > 0).length;
+  document.getElementById('retryPill').outerHTML = retrying
+    ? pill('warn', `${retrying} retrying`)
+    : pill('ok', 'None retrying');
+
+  document.getElementById('tableFoot').textContent =
+    `${ROWS.length} of ${num(GROUP.todayTotal)} documents processed today · ` +
+    `oldest still in flight ${oldestTxt} (${oldest.no}, created ${oldest.created})`;
+
+  /* ---------- filtering, with a shortened default view ----------------------
+     The table opens on eight rows so the screen does not run away. The rows it
+     always keeps are the ones that carry a point — every failure, every row
+     with a named owner, and the credit note. The rest sit behind "+ N more".
+     Nothing is removed; the button restores the full list.                     */
+  const PREVIEW = 8;
+  const keep = new Set();
+  ROWS.forEach((d, i) => {
+    if (d.state === 'failed' || d.owner || d.type === 'Credit Note') keep.add(i);
+  });
+  ROWS.forEach((d, i) => { if (keep.size < PREVIEW) keep.add(i); });
+
+  let collapsed = true;
+  const moreBtn = document.getElementById('moreBtn');
+  const trs = Array.from(document.querySelectorAll('#queueRows tr'));
+
+  function applyFilters() {
+    const q  = document.getElementById('fSearch').value.trim().toLowerCase();
+    const co = document.getElementById('fCompany').value;
+    const st = document.getElementById('fState').value;
+    let shown = 0, foldable = 0;
+    trs.forEach((tr, i) => {
+      const d = ROWS[i];
+      const hit = (!q  || (d.no + ' ' + d.type).toLowerCase().includes(q))
+               && (!co || d.tenant === co)
+               && (!st || d.state === st);
+      if (hit && !keep.has(i)) foldable++;
+      const show = hit && (!collapsed || keep.has(i));
+      tr.style.display = show ? '' : 'none';
+      if (show) shown++;
+    });
+    document.getElementById('countNote').textContent =
+      `Showing ${shown} of ${ROWS.length} documents`;
+    moreBtn.style.display = foldable ? '' : 'none';
+    moreBtn.textContent = collapsed ? `+ ${foldable} more` : 'Show fewer';
+    moreBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  }
+  moreBtn.addEventListener('click', () => { collapsed = !collapsed; applyFilters(); });
+  ['fSearch', 'fCompany', 'fState'].forEach(id =>
+    document.getElementById(id).addEventListener(id === 'fSearch' ? 'input' : 'change', applyFilters));
+  applyFilters();
+
+  /* ---------- per-company channels ------------------------------------------ */
+  const CH = HUB_CO.filter(t => t.pending > 0).sort((a, b) => b.pending - a.pending);
+  const maxDepth = Math.max.apply(null, CH.map(t => t.pending));
+
+  /* Only a handful of lanes are drawn, and they hold a fraction of the 153.
+     Said out loud, because otherwise the card reads as the full picture and
+     the numbers visibly do not add up to the in-flight figure above. */
+  const chShown = CH.reduce((a, t) => a + t.pending, 0);
+  document.getElementById('chanFoot').textContent =
+    `The ${CH.length} deepest lanes, holding ${chShown} of the ${num(GROUP.todayPending)} documents in `
+    + `flight. Each company has its own lane, so a backlog in one never delays another.`;
+
+  document.getElementById('channels').innerHTML = CH.map(t => {
+    const tone = t.failed > 5 ? 'var(--fail)' : t.failed ? 'var(--warn)' : 'var(--ok)';
+    return `<div>
+      <div class="row tiny mb8">
+        <span style="font-weight:600;color:var(--text-hi)">${t.short}</span>
+        <span class="right num muted">${t.pending} in flight</span>
+      </div>
+      ${bar(Math.round(t.pending / maxDepth * 100), tone)}
+      <div class="tiny dim mt4">
+        ${t.failed ? `${t.failed} failed today` : 'No failures today'} · last document ${t.sync}
+      </div>
+    </div>`;
+  }).join('') + `
+    <div class="divider" style="margin:2px 0"></div>
+    <div class="row tiny">
+      <span class="muted">${CH[0].short} holds ${pct(CH[0].pending / inQueue * 100)} of everything in flight</span>
+      <span class="right" style="color:var(--ok);font-weight:600">0 other companies blocked</span>
+    </div>`;
+
+  /* ---------- auto-refresh control ------------------------------------------ */
+  const rn = document.getElementById('refreshNote');
+  function drawRefresh() {
+    const on = document.getElementById('refresh').value === 'on';
+    rn.innerHTML = on
+      ? `Refreshing every 5 seconds. Figures shown as at <b>${DEMO_CLOCK}</b>.`
+      : `Paused. Figures frozen at <b>${DEMO_CLOCK}</b> and will not move until refresh is resumed.`;
+  }
+  document.getElementById('refresh').addEventListener('change', drawRefresh);
+  drawRefresh();
+</script>
+</body>
+</html>

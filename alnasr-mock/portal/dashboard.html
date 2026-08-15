@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overview — Al Nasr Marbles · Entity Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* page-local — the entity's own supplier documents, users and reports */
+  .suprow { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1.2fr) 130px minmax(0,1fr) auto;
+            gap: 12px; align-items: center; padding: 11px 16px; border-bottom: 1px solid var(--line); }
+  .suprow:last-child { border-bottom: 0; }
+  .suprow.head { background: var(--bg-alt); font-size: 11.5px; font-weight: 700; letter-spacing: .09em;
+                 text-transform: uppercase; color: var(--text-lo); }
+  .invite { display: grid; grid-template-columns: minmax(0,1fr) 170px auto; gap: 8px; align-items: center; }
+  @media (max-width: 900px) {
+    .suprow, .invite { grid-template-columns: minmax(0,1fr); }
+  }
+  /* counters beside the scope statement */
+  .topband { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,430px); gap: 16px; }
+  .topband #isolation { display: flex; }
+  .topband #isolation > * { flex: 1; margin: 0; }
+  /* the two open causes sit side by side rather than stacked */
+  .excgrid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px;
+             align-items: start; }
+  .excgrid > * { margin: 0; }
+  /* users beside reports; the report cards stack in the narrower column */
+  .botpair { display: grid; grid-template-columns: repeat(2, minmax(0,1fr));
+             gap: 16px; align-items: start; margin-top: 24px; }
+  /* the people rows are narrower here, so the fixed columns give ground first */
+  #users .userrow { grid-template-columns: 28px minmax(0,1fr) 108px 92px 70px; gap: 9px; }
+  @media (max-width: 1180px) {
+    .topband, .botpair, .excgrid { grid-template-columns: 1fr; }
+  }
+  .page-head { margin-bottom: 14px; }
+  .card-body { padding: 14px 16px; }
+</style>
+</head>
+<body class="surface-portal" data-surface="portal" data-nav="dashboard"
+      data-step="portal-home"
+      data-crumbs="Al Nasr Marbles LLC / Overview"
+      data-hint="The same platform, seen by one company. Al Nasr Marbles sees only its own invoices — the other three companies are invisible to this user.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Overview</h1>
+          <span class="pill pill-warn" id="headPill"><i class="dot"></i></span>
+        </div>
+        <p class="page-sub" id="pageSub"></p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm" id="btnExport">Export my documents</button>
+      </div>
+    </div>
+
+    <div class="small dim mb8" id="actionNote"></div>
+
+    <!-- counters and the scope statement share one band -->
+    <div class="topband mb16">
+      <div class="grid g3" id="tiles"></div>
+      <div id="isolation"></div>
+    </div>
+
+    <div class="split">
+      <div>
+
+        <section id="failures" style="margin-top:0">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">Needs my attention</h2>
+              <span class="pill pill-fail" id="fixPill"><i class="dot"></i></span>
+            </div>
+            <div class="card-body excgrid" id="exceptions"></div>
+          </div>
+        </section>
+
+        <section id="invoices">
+          <div class="section-head">
+            <h2 class="grow">My invoices</h2>
+            <span class="small dim">Al Nasr Marbles documents only</span>
+          </div>
+          <div class="card card-tight">
+            <div class="table-wrap">
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th>Invoice</th><th>Customer</th>
+                    <th class="r nowrap">Amount (OMR)</th><th>Status</th><th>Progress</th>
+                  </tr>
+                </thead>
+                <tbody id="invoiceRows"></tbody>
+              </table>
+            </div>
+            <div class="card-foot">
+              <span class="small dim" id="invoiceFoot"></span>
+              <a class="right small" style="color:var(--accent);font-weight:600" href="#" id="viewAll"></a>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <div>
+
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head"><h2 class="grow">My organisation</h2></div>
+            <div class="card-body" id="org"></div>
+          </div>
+        </section>
+
+        <!-- Support stays in the right-hand column. It sits BESIDE the invoice
+             table, not above it, so it was never blocking the working content —
+             moving it to the foot only made the page 244px taller. -->
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Need help?</h2></div>
+            <div class="card-body stack" style="gap:12px" id="help"></div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <section id="supplier">
+      <div class="section-head">
+        <h2 class="grow">Supplier invoices</h2>
+        <span class="small dim" id="supCount"></span>
+      </div>
+      <div class="card card-tight">
+        <div class="card-body" id="supRows"></div>
+        <div class="card-foot">
+          <span class="small dim">Supplier documents arrive as <b>draft</b> purchase invoices in your own ERP.
+            Nothing is posted for you — your team reviews each one and posts it.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- the two smaller panels sit two-up rather than stacked -->
+    <div class="botpair">
+    <section id="users" style="margin-top:0">
+      <div class="section-head">
+        <h2 class="grow">My users</h2>
+        <span class="small dim">Al Nasr Marbles LLC only</span>
+      </div>
+      <div class="card card-tight">
+        <div class="card-body" id="userRows"></div>
+        <div class="card-body" style="border-top:1px solid var(--line)">
+          <div class="invite">
+            <input class="input input-sm" id="inviteEmail" type="email" placeholder="colleague@alnasr.om">
+            <select class="select select-sm" id="inviteRole"></select>
+            <button class="btn btn-sm btn-primary" id="btnInvite">Invite a colleague</button>
+          </div>
+          <div class="small dim mt8" id="inviteNote">You add your own colleagues. The central team is not
+            involved and never sets anyone's password.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reports" style="margin-top:0">
+      <div class="section-head">
+        <h2 class="grow">My reports</h2>
+        <span class="small dim">The same reports the group runs — filtered to this company alone</span>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="repgrid" id="repRows"></div>
+          <div class="small dim mt12" id="repNote">Pick a report to see what it would cover.</div>
+        </div>
+      </div>
+    </section>
+
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* ------------------------------------------------------------------
+     Everything on this page is derived from the single entity ANM.
+     No group roll-up, no other entity, no cross-entity navigation.
+     ------------------------------------------------------------------ */
+  const ME = tenant('ANM');
+
+  /* The one number this screen must agree with: the group dashboard shows
+     Al Nasr Marbles with ME.failed failures. Everything below derives from
+     it, so the two screens can never drift apart.                          */
+  const CAUSES   = EXCEPTIONS_ENTITY;                                  /* 2 causes  */
+  const FAIL_DOCS = CAUSES.reduce((s, c) => s + c.count, 0);           /* 3 documents */
+
+  document.getElementById('pageSub').textContent =
+    ME.name + ' — ' + DEMO_CLOCK + '.';
+
+  document.getElementById('headPill').innerHTML =
+    '<i class="dot"></i>' + FAIL_DOCS + ' documents need your action';
+  document.getElementById('fixPill').innerHTML =
+    '<i class="dot"></i>' + FAIL_DOCS + ' documents · ' + CAUSES.length + ' causes';
+
+  document.getElementById('isolation').innerHTML = notice('info',
+    `<b>You are signed in to one company.</b> This portal shows Al Nasr Marbles LLC and nothing else.
+     The scope is enforced in the data itself, so no screen, filter or export here can return another
+     company's documents.`);
+
+  /* --- stat tiles — Al Nasr Marbles's own numbers only ---------------------
+     The success-rate tile compares against the target rather than
+     asserting a tone: 99.2% beats 99.0%, so it must not read as amber. */
+  const TARGET  = 99.0;
+  const beating = ME.success >= TARGET;
+
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Documents this month', value: num(ME.mtd),
+           meta: '1 – 28 July 2026', tone: 'var(--accent)' }),
+    stat({ label: 'Success rate', value: pct(ME.success),
+           meta: (beating ? 'Above the ' : 'Below the ') + TARGET.toFixed(1) + '% target',
+           tone: beating ? 'var(--ok)' : 'var(--warn)' }),
+    stat({ label: 'Needs attention', value: FAIL_DOCS,
+           meta: FAIL_DOCS + ' documents · ' + CAUSES.length + ' causes you can fix yourself',
+           tone: 'var(--fail)' })
+  ].join('');
+
+  /* --- my invoices --------------------------------------------------
+     Rows from the shared dataset (filtered to this entity) plus this
+     entity's own additional documents held locally on the page.        */
+  const PRIOR = ERP_INVOICES.find(i => i.no === 'ANM-SINV-2026-01183');
+  const MY_EXTRA = [
+    { no: PRIOR.no, cust: PRIOR.cust, date: '27 Jul 14:11', total: PRIOR.total, stage: 6, state: 'ok' }
+  ];
+
+  /* The invoice the walkthrough has followed since the ERP screen is
+     pinned to the top — everything after it is ordered newest first.   */
+  const HERO = 'ANM-SINV-2026-01184';
+
+  const MINE = INVOICES.filter(i => i.tenant === 'ANM').map(i => ({
+    no: i.no,
+    cust: CUSTOMERS[i.cust].name,
+    date: i.created.replace(/:\d\d$/, ''),
+    total: i.total,
+    stage: i.stage, state: i.state
+  })).concat(MY_EXTRA).sort((a, b) => {
+    if (a.no === HERO) return -1;
+    if (b.no === HERO) return 1;
+    return a.date < b.date ? 1 : -1;
+  }).slice(0, 5);
+
+  const STATE_PILL = { ok: 'acknowledged', active: 'active', failed: 'failed' };
+
+  document.getElementById('invoiceRows').innerHTML = MINE.map(r => `
+    <tr>
+      <td><a class="link id nowrap" href="document.html?no=${encodeURIComponent(r.no)}">${r.no}</a></td>
+      <td class="small">${r.cust}</td>
+      <td class="r num nowrap" style="font-weight:600">${omr(r.total)}</td>
+      <td>${r.state === 'ok' && r.stage === 6 ? pill('acknowledged')
+            : r.state === 'failed' ? pill('failed')
+            : pill(STATE_PILL[r.state] || 'pending')}</td>
+      <td>${pipeMini(r.stage, r.state)}</td>
+    </tr>`).join('');
+
+  document.getElementById('invoiceFoot').textContent =
+    'Showing ' + MINE.length + ' of ' + num(ME.today) + ' documents raised today by ' + ME.name + '.';
+
+  const viewAll = document.getElementById('viewAll');
+  viewAll.textContent = 'View all ' + num(ME.today) + ' documents →';
+  viewAll.addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('invoiceFoot').textContent =
+      'The full list is outside this prototype. It would show all ' + num(ME.today) + ' documents raised '
+      + 'today by ' + ME.name + ' — and nothing belonging to any other company.';
+  });
+
+  /* --- exceptions — this entity fixes its own source data -----------
+     Titles, causes, fixes and counts come from EXCEPTIONS_ENTITY. Only
+     this company's document numbers are ever shown.                    */
+  const PLAIN = {
+    'Buyer VAT number missing':
+      'An Omani business invoice must carry the customer\'s VAT registration number. The customer master '
+      + 'record in your ERP has that field blank, so the invoice cannot be reported.',
+    'Invoice total does not add up':
+      'Net plus VAT does not equal the invoice total. A manual rounding line added in the ERP is the usual cause.'
+  };
+
+  document.getElementById('exceptions').innerHTML = CAUSES.map((c, ci) => {
+    const mine = c.docs.filter(d => d.startsWith('ANM-'));
+    const shown = mine[0] || c.docs[0];
+    return notice('fail', `
+    <div class="row wrap" style="gap:8px">
+      <b class="id" style="font-size:12.5px">${shown}</b>
+      <span class="small dim">${c.count === 1 ? '1 document' : c.count + ' documents'}</span>
+    </div>
+    <div class="small mt8"><b>${c.title}.</b> ${PLAIN[c.title] || c.why}</div>
+    <div class="small mt8"><b>What to do.</b> ${c.fix}</div>
+    <div class="row mt12" style="gap:8px">
+      <button class="btn btn-sm btn-primary" data-fix="${ci}">Reprocess</button>
+      <span class="right tiny dim" id="fixNote${ci}">${c.count === 1
+        ? 'One document has this cause' : c.count + ' documents share this cause'}</span>
+    </div>`);
+  }).join('');
+
+  document.getElementById('exceptions').addEventListener('click', e => {
+    const b = e.target.closest('[data-fix]');
+    if (!b) return;
+    const i = b.dataset.fix;
+    document.getElementById('fixNote' + i).textContent =
+      'Queued for reprocessing. Correct the data in your own ERP first, or it will fail the same check again.';
+  });
+
+  /* --- right rail: my organisation ---------------------------------- */
+  document.getElementById('org').innerHTML = kv([
+    ['Legal name', ME.name],
+    ['VAT number', `<span class="mono">${ME.vatin}</span>`],
+    ['ERP', `${ME.erp}`],
+    ['Live since', `January 2026`],
+    ['Last synchronisation', `<span class="row-tight" style="justify-content:flex-end">
+        <span class="beacon" style="--tone:var(--warn)"><i></i></span>${ME.sync}</span>`]
+  ]);
+
+  /* --- right rail: need help ---------------------------------------- */
+  document.getElementById('help').innerHTML = `
+    <div class="small"><b>You fix data problems.</b> A missing VAT number or a total that does not add up lives
+      in your own ERP — correct it there, then press Reprocess.</div>
+    <div class="small"><b>Group IT fixes platform problems.</b> A dead connector, an expired certificate or a
+      service provider outage is not yours to fix.</div>
+    <div class="small dim">The central service desk handles platform issues · einvoicing@alnasr.om</div>
+    <div><button class="btn btn-sm btn-block" id="btnTicket">Raise a ticket with the central team</button></div>
+    <div class="small dim" id="ticketNote"></div>`;
+
+  document.getElementById('btnTicket').addEventListener('click', () => {
+    document.getElementById('ticketNote').textContent =
+      'Ticket drafted for the central technical team. Ticketing itself is outside this prototype.';
+  });
+
+  /* --- supplier invoices — received by this company only ------------
+     Inbound documents addressed to this entity. They land in the ERP as
+     drafts; nobody posts them automatically.                           */
+  const MY_INBOUND = INBOUND.filter(d => d.to === ME.id);
+
+  document.getElementById('supCount').textContent =
+    num(ME.inToday) + ' supplier documents received today · ' + MY_INBOUND.length + ' shown';
+
+  document.getElementById('supRows').innerHTML =
+    `<div class="suprow head"><div>Document</div><div>Supplier</div><div class="r">Amount (OMR)</div>
+       <div>In your ERP</div><div>Status</div></div>` +
+    MY_INBOUND.map(d => `
+      <div class="suprow">
+        <!-- Not a link: inbound documents have a different shape and no detail
+             view. Styled as an identifier so it does not invite a dead click. -->
+        <div><span class="id nowrap" style="font-weight:600">${d.no}</span>
+          ${d.credit ? '<span class="tag" style="margin-left:6px">CN</span>' : ''}
+          <div class="tiny dim num">received ${d.recv}</div></div>
+        <div class="small">${SUPPLIERS[d.supplier].name}</div>
+        <div class="r num" style="font-weight:600">${omr(d.total)}</div>
+        <div class="small"><span class="mono">${d.erpRef || '—'}</span>
+          <div class="tiny dim">${d.erpState}</div></div>
+        <div>${pill('draft', 'Awaiting your review')}</div>
+      </div>`).join('');
+
+  /* --- my users — this company adds its own colleagues --------------- */
+  const roleName = k => (ROLES.find(r => r.k === k) || {}).n || k;
+  const MY_USERS = ENTITY_USERS.filter(u => u.who === ME.id && u.state === 'active').slice(0, 3);
+
+  const userRowsEl = document.getElementById('userRows');
+  function userRow(u) {
+    return `<div class="userrow ${u.state === 'invited' ? 'invited' : ''}">
+      <span class="avatar-sm">${u.name.replace(/[^A-Z]/g, '').slice(0, 2)}</span>
+      <div><div style="font-size:12.5px;font-weight:600">${u.name}</div>
+        <div class="tiny dim">${u.email}</div></div>
+      <div class="small">${roleName(u.role)}</div>
+      <div class="tiny dim">${u.last}</div>
+      <div>${pill(u.state === 'invited' ? 'invited' : 'ok', u.state === 'invited' ? 'Invited' : 'Active')}</div>
+    </div>`;
+  }
+  function drawUsers(extra) {
+    userRowsEl.innerHTML =
+      `<div class="userrow head"><div></div><div>Person</div><div>Role</div><div>Last seen</div><div>State</div></div>`
+      + MY_USERS.concat(extra || []).map(userRow).join('');
+  }
+  drawUsers();
+
+  const roleSel = document.getElementById('inviteRole');
+  roleSel.innerHTML = ROLES.filter(r => r.k !== 'group-admin')
+    .map(r => `<option value="${r.k}">${r.n}</option>`).join('');
+  roleSel.value = 'finance';
+
+  const invited = [];
+  document.getElementById('btnInvite').addEventListener('click', () => {
+    const el = document.getElementById('inviteEmail');
+    const email = (el.value || '').trim() || 't.alfarsi@alnasr.om';
+    const local = email.split('@')[0].replace(/[._]/g, ' ');
+    invited.push({
+      name: local.split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' '),
+      email: email, role: roleSel.value, state: 'invited', last: 'Invited just now'
+    });
+    el.value = '';
+    drawUsers(invited);
+    document.getElementById('inviteNote').textContent =
+      'Invitation sent to ' + email + ' as ' + roleName(roleSel.value) + '. They set their own password on first '
+      + 'sign-in — you never see it, and neither does the central team.';
+  });
+
+  /* --- my reports — the group's reports, scoped to this company ------ */
+  const MY_REPORTS = [REPORT_TYPES[0], REPORT_TYPES[1], REPORT_TYPES[2]];
+  document.getElementById('repRows').innerHTML = MY_REPORTS.map((r, i) => `
+    <div class="repcard" data-rep="${i}">
+      <div class="rt">${r.n}</div>
+      <div class="rd">${r.d}</div>
+      <div class="tag mt8">${r.tag}</div>
+    </div>`).join('');
+
+  document.getElementById('repRows').addEventListener('click', e => {
+    const c = e.target.closest('[data-rep]');
+    if (!c) return;
+    document.querySelectorAll('#repRows .repcard').forEach(x => x.classList.remove('is-active'));
+    c.classList.add('is-active');
+    const r = MY_REPORTS[c.dataset.rep];
+    document.getElementById('repNote').textContent =
+      r.n + ' — prepared for ' + ME.name + ' alone: ' + num(ME.mtd) + ' documents month to date. '
+      + 'The central team runs the same report across the group; you only ever get your own rows.';
+  });
+
+  /* --- export ------------------------------------------------------- */
+  document.getElementById('btnExport').addEventListener('click', () => {
+    document.getElementById('actionNote').textContent =
+      'Export is outside this prototype. It would produce ' + ME.name + '’s own documents only.';
+  });
+</script>
+</body>
+</html>
