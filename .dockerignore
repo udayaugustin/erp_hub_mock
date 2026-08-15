@@ -1,0 +1,10 @@
+.git
+.gitignore
+CLAUDE.md
+Dockerfile
+.dockerignore
+
+# Docs and internal tooling — not needed in the served image
+**/README.md
+**/*.md
+**/tools/
