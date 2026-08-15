@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Al Nasr Compliance Hub — application shell + guided walkthrough
+   Al Nasr Marbles E-Invoicing — application shell + guided walkthrough
    Injects sidebar, topbar (with step navigation), hint strip and footer.
    Configured by data-* attributes on <body>:
      data-surface  hub | erp | portal
@@ -14,12 +14,12 @@
 /* THE canonical screen order. Everything else derives from this list.
    Six acts. Reorder here and the whole walkthrough reorders. */
 const ACTS = [
-  { n: 'I',   t: 'It starts in their system',          d: 'Nothing about how they work changes' },
-  { n: 'II',  t: 'The group, and the companies in it',  d: 'Four legal entities, one console' },
-  { n: 'III', t: 'Bringing a company on',               d: 'Configuration, not a new installation' },
+  { n: 'I',   t: 'It starts in your system',            d: 'Nothing about how you work changes' },
+  { n: 'II',  t: 'Your compliance dashboard',           d: 'Your invoices, failures and what needs attention' },
+  { n: 'III', t: 'Setup, not installation',             d: 'Connect the ERP and map the fields — configuration only' },
   { n: 'IV',  t: 'One invoice, end to end',             d: 'Where it is, and proven correct before it is sent' },
   { n: 'V',   t: 'The other direction, and the record', d: 'Supplier invoices, history and reports' },
-  { n: 'VI',  t: 'What each company gets',              d: 'Its own login, its own data, its own invoice' }
+  { n: 'VI',  t: 'Logins and the finance view',         d: 'Company logins, and the lighter view for finance users' }
 ];
 
 const WALKTHROUGH = [
@@ -29,19 +29,15 @@ const WALKTHROUGH = [
   /* hub/boundary.html is deliberately NOT in the walkthrough. The screen still
      exists and can be opened directly, but it is not part of the click-through. */
   { id: 'hub-login',     act: 0, sfc: 'hub',    href: '../hub/login.html',
-    name: 'Signing in to the Hub',          blurb: 'The group platform team logs in.' },
+    name: 'Signing in',                     blurb: 'The company compliance team logs in.' },
 
   /* Act II */
   { id: 'hub-dashboard', act: 1, sfc: 'hub',    href: '../hub/dashboard.html',
-    name: 'The whole group on one screen',  blurb: 'Volumes, failures, and the companies that have gone quiet.' },
-  { id: 'hub-tenants',   act: 1, sfc: 'hub',    href: '../hub/tenants.html',
-    name: 'Every company in the group',     blurb: 'How each one connects, which wave it belongs to.' },
-  { id: 'hub-tenant',    act: 1, sfc: 'hub',    href: '../hub/tenant-detail.html',
-    name: 'One company in detail',          blurb: 'Its ERP, its connection, what it supplied and what we run.' },
+    name: 'Your compliance status on one screen', blurb: 'Volumes, failures, and anything that has gone quiet.' },
 
   /* Act III */
   { id: 'hub-onboard',   act: 2, sfc: 'hub',    href: '../hub/onboard.html',
-    name: 'Connecting a new company',       blurb: 'Choose how to connect, enter the details, test it live.' },
+    name: 'Connecting the ERP',             blurb: 'Choose how to connect, enter the details, test it live.' },
   { id: 'hub-mapping',   act: 2, sfc: 'hub',    href: '../hub/mapping.html',
     name: 'Pointing their fields at the standard ones', blurb: 'Typed and chosen by an analyst. No code is written.' },
 
@@ -66,11 +62,11 @@ const WALKTHROUGH = [
      rather than with the onboarding screens so the login it issues is the
      very next thing the audience sees being used. */
   { id: 'hub-users',     act: 5, sfc: 'hub',    href: '../hub/users.html',
-    name: 'Giving the company its own login', blurb: 'How each of the four gets access, and who administers it.' },
+    name: 'Giving each user their login',   blurb: 'How users get access, and who administers it.' },
   { id: 'portal-login',  act: 5, sfc: 'portal', href: '../portal/login.html',
-    name: 'A company signs in',             blurb: 'Its own credentials, issued to its own administrator.' },
+    name: 'A finance user signs in',        blurb: 'Their own credentials, issued by the administrator.' },
   { id: 'portal-home',   act: 5, sfc: 'portal', href: '../portal/dashboard.html',
-    name: 'What that company sees',         blurb: 'Only its own data. The other three are invisible.' },
+    name: 'The finance view',               blurb: 'A lighter view for finance users — invoices, failures and reports.' },
   { id: 'erp-sync',      act: 5, sfc: 'erp',    href: '../erp/sync.html',
     name: 'The answer, back on the invoice', blurb: 'Reference, status and QR on the original ERP record.' }
 ];
@@ -78,7 +74,7 @@ const WALKTHROUGH = [
 const NAV = {
   hub: [
     { label: 'Operations', items: [
-      { key: 'dashboard', name: 'Group Dashboard',    href: 'dashboard.html', ico: 'grid' },
+      { key: 'dashboard', name: 'Dashboard',          href: 'dashboard.html', ico: 'grid' },
       { key: 'queue',     name: 'Processing Queue',   href: 'queue.html',     ico: 'queue' },
       { key: 'inbound',   name: 'Inbound Documents',  href: 'inbound.html',   ico: 'inbox' },
       { key: 'asp',       name: 'ASP Exchange',       href: 'asp.html',       ico: 'send' }
@@ -88,8 +84,7 @@ const NAV = {
       { key: 'reports',   name: 'Reports',            href: 'reports.html',   ico: 'chart' }
     ]},
     { label: 'Configuration', items: [
-      { key: 'tenants',   name: 'Companies',          href: 'tenants.html',   ico: 'tenants', tag: '4' },
-      { key: 'onboard',   name: 'Onboard a Company',  href: 'onboard.html',   ico: 'plus' },
+      { key: 'onboard',   name: 'ERP Connection',     href: 'onboard.html',   ico: 'plus' },
       { key: 'mapping',   name: 'Mapping Studio',     href: 'mapping.html',   ico: 'map' },
       { key: 'users',     name: 'Users & Access',     href: 'users.html',     ico: 'users' },
       { key: 'document',  name: 'Document Inspector', href: 'document.html',  ico: 'doc' }
@@ -121,12 +116,12 @@ const NAV = {
 };
 
 const BRAND = {
-  hub:    { mark: 'N', name: 'Al Nasr',          sub: 'Compliance Hub',       who: 'AN', whoName: 'Group IT',      whoRole: 'Platform administrator' },
+  hub:    { mark: 'N', name: 'Al Nasr Marbles',  sub: 'E-Invoicing',          who: 'AN', whoName: 'A. Al-Nabhani', whoRole: 'Compliance administrator' },
   erp:    { mark: 'N', name: 'Al Nasr Marbles',  sub: 'ERPNext v15',          who: 'SR', whoName: 'S. Al-Rashdi',  whoRole: 'Accounts Receivable' },
-  portal: { mark: 'N', name: 'Al Nasr Marbles',  sub: 'Entity Portal',        who: 'HH', whoName: 'H. Al-Hinai',   whoRole: 'Finance — one company' }
+  portal: { mark: 'N', name: 'Al Nasr Marbles',  sub: 'Finance view',         who: 'HH', whoName: 'H. Al-Hinai',   whoRole: 'Finance' }
 };
 
-const ENV = { hub: 'Compliance Hub', erp: 'Their ERP', portal: 'One company' };
+const ENV = { hub: 'Compliance system', erp: 'Your ERP', portal: 'Finance view' };
 
 /* --- sidebar collapse ------------------------------------------------------
    Each of the 18 screens is a separate page load, so the collapsed state has
