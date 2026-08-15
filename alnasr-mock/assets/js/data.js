@@ -2,8 +2,8 @@
    Al Nasr Marbles E-Invoicing — demonstration dataset
 
    ONE company: Al Nasr Marbles — manufacturing, retail and quarrying of
-   marble. The system is deployed on this company's own ERP server; there is
-   no central hub, no group roll-up and no other companies in the system.
+   marble. The system is deployed on this company's own ERP server; it runs
+   standalone, with no shared roll-up and no other companies in the system.
 
    INVENTED: every VAT and CR number, every volume, failure count, document
    reference and timestamp.
@@ -516,8 +516,8 @@ const HISTORY = [
 const REPORT_ROWS = [
   { id: 'INV',  label: 'Standard invoices',    docs: 980, net: 1480000.000, vat: 74000.000, zero: 0.000,       failed: 22, ack: 958 },
   { id: 'EXP',  label: 'Exports (zero-rated)', docs: 60,  net: 214000.000,  vat: 0.000,     zero: 214000.000,  failed: 3,  ack: 57 },
-  { id: 'SIMP', label: 'Simplified (B2C)',     docs: 470, net: 96600.000,   vat: 4830.000,  zero: 0.000,       failed: 6,  ack: 462 },
-  { id: 'CRN',  label: 'Credit notes',         docs: 70,  net: 52000.000,   vat: 2600.000,  zero: 0.000,       failed: 3,  ack: 69 }
+  { id: 'SIMP', label: 'Simplified (B2C)',     docs: 470, net: 96600.000,   vat: 4830.000,  zero: 0.000,       failed: 6,  ack: 464 },
+  { id: 'CRN',  label: 'Credit notes',         docs: 70,  net: 52000.000,   vat: 2600.000,  zero: 0.000,       failed: 3,  ack: 67 }
 ];
 
 const REPORT_TYPES = [

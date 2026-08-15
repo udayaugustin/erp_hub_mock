@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Processing History — Al Nasr Compliance Hub</title>
+<title>Processing History — Al Nasr E-Invoicing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@
 <body class="surface-hub" data-surface="hub" data-nav="history"
       data-step="hub-history"
       data-crumbs="Records / Processing History"
-      data-hint="Every document the Hub has handled this month, in both directions, with the archive that sits behind each one.">
+      data-hint="Every document the system has handled this month, in both directions, with the archive that sits behind each one.">
 
 <main class="main">
   <div class="page">
@@ -90,7 +90,6 @@
               <tr>
                 <th>Document</th>
                 <th>Direction</th>
-                <th>Company</th>
                 <th class="nowrap">Date</th>
                 <th class="r">Amount</th>
                 <th>Outcome</th>
@@ -135,17 +134,17 @@
 
   document.getElementById('tiles').innerHTML = [
     stat({ label: 'Documents month to date', value: num(MTD_TOTAL),
-           meta: 'Outbound and inbound, across the hub entities', tone: 'var(--accent)' }),
+           meta: 'Outbound and inbound documents this month', tone: 'var(--accent)' }),
     stat({ label: 'Success rate', value: SUCCESS_PCT,
            meta: num(MTD_OK) + ' of ' + num(MTD_TOTAL) + ' completed without a failure', tone: 'var(--ok)' }),
     stat({ label: 'Failed', value: num(MTD_FAILED),
-           meta: 'Each one is visible to the entity that owns it', tone: 'var(--fail)' })
+           meta: 'Each one is shown here for review and correction', tone: 'var(--fail)' })
   ].join('');
 
   /* ---- rows: both directions, credit notes included ------------------------ */
   const PICK = ['RAT-INV-2026-04412', 'ANM-CRNT-2026-00061', 'SDW-INV-2026-00733',
-                'ANT-SINV-2026-00744', 'ATC-SINV-2026-00518', 'RAT-CRN-2026-00118',
-                'ANT-SINV-2026-00738', 'ANM-SINV-2026-01182'];
+                'ANM-SINV-2026-01170', 'ANM-SINV-2026-01168', 'RAT-CRN-2026-00118',
+                'ANM-SINV-2026-01186', 'ANM-SINV-2026-01182'];
   const ROWS = PICK.map(no => HISTORY.find(h => h.no === no)).filter(Boolean);
 
   const FAIL_BG = 'background:color-mix(in srgb, var(--fail) 7%, transparent)';
@@ -163,7 +162,6 @@
         <div class="tiny dim">${h.type}</div>
       </td>
       <td class="nowrap">${dirChip(h.dir)}</td>
-      <td class="nowrap">${tenantChip(h.tenant)}</td>
       <td class="nowrap small muted num">${h.date} GST</td>
       <td class="r num nowrap">${omr(h.total)}</td>
       <td style="max-width:270px">
@@ -185,7 +183,7 @@
   document.getElementById('archiveNotes').innerHTML =
     notice('info', '<strong>Retention and archive location are not fixed yet.</strong> Both will be agreed during ' +
       'solution design, taking account of the ASP’s own retention policy, whether the XML is also attached to the ' +
-      'ERP record, applicable Omani requirements and the group’s audit needs.') +
+      'ERP record, applicable Omani requirements and the company’s audit needs.') +
     '<p class="small mt12" style="margin-bottom:0">The archive is independent of later ERP changes. It preserves the ' +
     'exact XML and the processing evidence used at the time of submission or receipt, so a document can still be ' +
     'produced years later even if the source invoice has since been amended, or the ERP behind it replaced.</p>';

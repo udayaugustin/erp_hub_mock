@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Group Dashboard — Al Nasr Compliance Hub</title>
+<title>Dashboard — Al Nasr Marbles E-Invoicing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -36,8 +36,8 @@
 </head>
 <body class="surface-hub" data-surface="hub" data-nav="dashboard"
       data-step="hub-dashboard"
-      data-crumbs="Operations / Group Dashboard"
-      data-hint="Every company in the group on one screen. Volumes, failures, and the companies that have stopped reporting.">
+      data-crumbs="Operations / Dashboard"
+      data-hint="This company's e-invoicing at a glance. Document volumes, failures, and any reporting gaps today.">
 
 <main class="main">
   <div class="page">
@@ -45,7 +45,7 @@
     <div class="page-head">
       <div class="grow">
         <div class="page-title">
-          <h1>Group Dashboard</h1>
+          <h1>Dashboard</h1>
           <span id="statePill"></span>
           <span id="platPill"></span>
         </div>
@@ -76,25 +76,11 @@
       <div>
         <section style="margin-top:0">
           <div class="section-head">
-            <h2 class="grow">Companies connected to the Hub</h2>
-            <a class="small" style="color:var(--accent-hi)" href="tenants.html">View all →</a>
+            <h2 class="grow">ERP connection</h2>
+            <span class="tag" id="connTag">Live</span>
           </div>
-          <div class="card card-tight">
-            <div class="table-wrap">
-              <table class="tbl">
-                <thead>
-                  <tr>
-                    <th>Company</th><th>ERP</th><th class="nowrap">How we connect</th>
-                    <th class="r">Today</th><th class="r">Failed</th><th class="nowrap">Reporting state</th>
-                  </tr>
-                </thead>
-                <tbody id="coRows"></tbody>
-              </table>
-            </div>
-            <div class="card-foot">
-              <span class="small dim" id="coFoot"></span>
-              <span class="right"><a class="small" style="color:var(--accent-hi)" href="tenants.html">View all →</a></span>
-            </div>
+          <div class="card">
+            <div class="card-body" id="connBody"></div>
           </div>
         </section>
       </div>
@@ -103,16 +89,6 @@
         <section style="margin-top:0">
           <div class="section-head"><h2 class="grow">Recent activity</h2><span class="tag">Live</span></div>
           <div class="card"><div class="card-body" id="activity"></div></div>
-        </section>
-
-        <section>
-          <div class="card">
-            <div class="card-head">
-              <h2 class="grow">Entities reporting for themselves</h2>
-              <span class="tag" id="selfTag"></span>
-            </div>
-            <div class="card-body" id="selfHosted"></div>
-          </div>
         </section>
       </div>
     </div>
@@ -125,24 +101,24 @@
       <div class="grid g2">
         <div class="card">
           <div class="card-head">
-            <span class="ownertag ent">Entity finance team</span>
+            <span class="ownertag ent">Finance team</span>
             <span class="grow small dim">Business data in the company's own ERP</span>
             <span class="pill pill-warn" id="entCount"></span>
           </div>
           <div class="card-body stack" style="gap:0" id="excEntity"></div>
           <div class="card-foot">
-            <span class="tiny dim">The entity corrects the record in its own ERP and reprocesses. The Hub cannot invent missing business data.</span>
+            <span class="tiny dim">The finance team corrects the record in the ERP and reprocesses. The system cannot invent missing business data.</span>
           </div>
         </div>
         <div class="card">
           <div class="card-head">
-            <span class="ownertag plat">Central technical team</span>
-            <span class="grow small dim">Platform, connector, certificate and infrastructure</span>
+            <span class="ownertag plat">Technical support</span>
+            <span class="grow small dim">Connector, certificate and infrastructure</span>
             <span class="pill pill-info" id="platCount"></span>
           </div>
           <div class="card-body stack" style="gap:0" id="excPlatform"></div>
           <div class="card-foot">
-            <span class="tiny dim">No entity action. Handled centrally, once, for every company at the same time.</span>
+            <span class="tiny dim">No finance-team action. Handled once by technical support.</span>
           </div>
         </div>
       </div>
@@ -156,9 +132,7 @@
 <script src="../assets/js/shell.js"></script>
 <script>
   /* ---------- derived figures — nothing below is typed twice ---------------- */
-  const HUB_CO   = TENANTS.filter(t => t.deploy === 'hub');
-  const SELF_CO  = TENANTS.filter(t => t.deploy === 'self-hosted');
-  const SILENT   = TENANTS.filter(t => t.silent);
+  const CO = TENANTS[0];
 
   const successPct = GROUP.todaySuccess / GROUP.todayTotal * 100;
   const failedPct  = GROUP.todayFailed  / GROUP.todayTotal * 100;
@@ -172,25 +146,18 @@
   const platOpen = EXCEPTIONS_PLATFORM.reduce((a, e) => a + e.count, 0);
 
   document.getElementById('sub').textContent =
-    `${GROUP.name} — ${DEMO_DAY} ${DEMO_CLOCK}. Figures cover the ${GROUP.hubEntities} entities connected to the Hub.`;
+    `${GROUP.name} — ${DEMO_DAY} ${DEMO_CLOCK}. This company's e-invoicing, today and month to date.`;
 
   /* ---------- header pill: derived, never asserted -------------------------- */
   const statePill = document.getElementById('statePill');
-  if (GROUP.silentEntities > 0) {
-    statePill.outerHTML = pill('failed',
-      `${GROUP.silentEntities} ${GROUP.silentEntities === 1 ? 'company has' : 'companies have'} stopped reporting`);
-  } else if (platOpen > 0) {
-    statePill.outerHTML = pill('warn', `${platOpen} platform exceptions open`);
-  } else {
-    statePill.outerHTML = pill('ok', 'All companies reporting');
-  }
+  statePill.outerHTML = pill('ok', 'Reporting normally');
   document.getElementById('platPill').outerHTML =
-    platOpen > 0 ? pill('warn', `${platOpen} platform exceptions`) : '';
+    platOpen > 0 ? pill('warn', `${platOpen} technical exceptions`) : '';
 
   /* ---------- tiles --------------------------------------------------------- */
   const PERIODS = {
     today: { label: 'Documents today', value: GROUP.todayTotal, meta: deltaHtml,
-             note: `Today, ${DEMO_DAY} ${DEMO_DATE}. ${num(GROUP.todayTotal)} documents from Hub entities, plus ${num(GROUP.selfHostedToday)} reported separately by the ${GROUP.selfHosted} self-hosted entities.` },
+             note: `Today, ${DEMO_DAY} ${DEMO_DATE}. ${num(GROUP.todayTotal)} documents processed from the ERP, ${num(GROUP.inboundToday)} of them inbound supplier documents.` },
     week:  { label: 'Documents, last 7 days', value: weekTotal,
              meta: `${GROUP.weekDays[0]} 22 – ${GROUP.weekDays[6]} 28 Jul`,
              note: `${GROUP.weekDays[0]} 22 to ${GROUP.weekDays[6]} 28 Jul. ${num(weekTotal)} documents. The two low bars are Friday and Saturday — the Omani weekend.` },
@@ -209,8 +176,8 @@
              meta: `${pct(failedPct)} of today’s documents`, tone: 'var(--fail)' }),
       stat({ label: 'In flight now', value: num(GROUP.todayPending),
              meta: 'Moving through the nine stages', tone: 'var(--warn)' }),
-      stat({ label: 'Companies live', value: `${GROUP.live}<span style="font-size:15px;color:var(--text-lo)"> / ${GROUP.entities}</span>`,
-             meta: `${GROUP.onboarding} onboarding · ${GROUP.notStarted} not started`, tone: 'var(--accent)' })
+      stat({ label: 'Reporting status', value: 'Live',
+             meta: 'Outbound live since Mar 2026', tone: 'var(--accent)' })
     ].join('');
     document.getElementById('periodNote').innerHTML = p.note;
   }
@@ -224,97 +191,52 @@
     const el  = document.getElementById('exportNote');
     el.style.display = '';
     el.innerHTML = notice('ok',
-      `<b>Export prepared</b> — group summary, ${sel.options[sel.selectedIndex].text.toLowerCase()}, ` +
-      `${num(GROUP.entities)} legal entities. In the live platform this downloads as a spreadsheet. ` +
+      `<b>Export prepared</b> — ${GROUP.name} summary, ${sel.options[sel.selectedIndex].text.toLowerCase()}. ` +
+      `In the live system this downloads as a spreadsheet. ` +
       `<span class="dim">Downloads are disabled in this demonstration.</span>`);
   });
 
-  /* ---------- stopped reporting: silence is not the same as failure --------- */
+  /* ---------- reporting gaps: silence is not the same as failure ------------ */
   document.getElementById('silentBar').innerHTML = `
-    <span class="snum">${GROUP.silentEntities}</span>
+    <span class="snum">0</span>
     <div class="grow">
-      <div style="font-weight:700;font-size:13.5px;color:var(--fail)">Stopped reporting</div>
+      <div style="font-weight:700;font-size:13.5px;color:var(--fail)">No reporting gaps today</div>
       <div class="small muted" style="margin-top:2px">
-        Companies that have sent the Hub nothing at all today. Nothing has failed — nothing has arrived,
-        which the group would otherwise not see. ${GROUP.todayFailed} failures today are counted separately.
+        The system watches for any period where the ERP raised documents but nothing reached the compliance
+        service. Nothing has failed silently — every document the ERP produced has been accounted for.
+        ${GROUP.todayFailed} failures today are counted separately.
       </div>
     </div>
     <div class="row-tight" style="gap:8px;flex-wrap:wrap">
-      ${SILENT.map(t => `<span class="silent-chip">${t.short} · nothing for ${t.silentFor}</span>`).join('')}
-      ${GROUP.silentEntities > SILENT.length
-        ? `<span class="silent-chip">+ ${GROUP.silentEntities - SILENT.length} more</span>` : ''}
+      <span class="small dim">Last poll ${CO.sync}</span>
     </div>`;
 
-  /* ---------- company table ------------------------------------------------- */
-  document.getElementById('coRows').innerHTML = HUB_CO.map(t => `
-    <tr class="${t.silent ? 'is-silent' : ''}">
-      <td>
-        <a class="link nowrap" href="tenant-detail.html">${t.short}</a>
-        <div class="tiny dim">${t.city} · Wave ${t.wave}</div>
-      </td>
-      <td style="max-width:165px"><div class="small">${t.erp}</div></td>
-      <td class="nowrap">${methodChip(t.method)}</td>
-      <td class="r num">${t.today ? num(t.today) : '—'}</td>
-      <td class="r num" style="${t.failed ? 'color:var(--fail);font-weight:600' : ''}">${t.failed || '—'}</td>
-      <td class="nowrap">
-        ${t.silent ? pill('silent') : pill(t.status)}
-        <div class="tiny row-tight" style="margin-top:3px;${t.silent ? 'color:var(--fail);font-weight:600' : 'color:var(--text-lo)'}">
-          <span class="beacon" style="--tone:${t.silent ? 'var(--fail)' : t.health === 'ok' ? 'var(--ok)' : 'var(--warn)'}"><i></i></span>
-          ${t.silent ? `Silent ${t.silentFor} — investigating` : t.sync}
-        </div>
-      </td>
-    </tr>`).join('');
-
-  document.getElementById('coFoot').textContent =
-    `${HUB_CO.length} of ${GROUP.hubEntities} Hub entities shown · ` +
-    `${GROUP.hubEntities - HUB_CO.length} more · ${GROUP.silentEntities} silent today`;
+  /* ---------- ERP connection ------------------------------------------------ */
+  document.getElementById('connTag').textContent = CO.status === 'live' ? 'Live' : CO.status;
+  document.getElementById('connBody').innerHTML = `
+    <div class="row" style="gap:10px;align-items:flex-start">
+      <div class="grow">
+        <div style="font-weight:700;font-size:14px">${CO.erp}</div>
+        <div class="tiny dim" style="margin-top:2px">${CO.sector} · ${CO.city}</div>
+      </div>
+      ${pill(CO.status)}
+    </div>
+    <div class="divider"></div>
+    <div class="stack" style="gap:10px">
+      <div class="row-tight" style="gap:8px"><span class="grow small dim">How the system connects</span>${methodChip(CO.method)}</div>
+      <div class="row-tight" style="gap:8px"><span class="grow small dim">Interface</span><span class="small">${CO.conn}</span></div>
+      <div class="row-tight" style="gap:8px"><span class="grow small dim">Field mapping</span><span class="small">${CO.mapped} of ${CO.mapTotal} resolved</span></div>
+      <div class="row-tight" style="gap:8px"><span class="grow small dim">Last sync</span>
+        <span class="small row-tight" style="gap:6px"><span class="beacon" style="--tone:${CO.health === 'ok' ? 'var(--ok)' : 'var(--warn)'}"><i></i></span>${CO.sync}</span></div>
+      <div class="row-tight" style="gap:8px"><span class="grow small dim">Documents today</span>
+        <span class="small num">${num(CO.today)}${CO.failed ? ` · <span style="color:var(--fail);font-weight:600">${CO.failed} failed</span>` : ''}</span></div>
+    </div>
+    <div class="mt12">${teach("The system runs on this company's own ERP server and transmits directly to the accredited service provider. Your data stays in your own system.")}</div>`;
 
   /* ---------- activity ------------------------------------------------------ */
   document.getElementById('activity').innerHTML = timeline(ACTIVITY.slice(0, 4).map(a => ({
-    name: a.title, t: a.t + ' · ' + a.tag, body: a.body, st: a.st
+    name: a.title, t: a.t, body: a.body, st: a.st
   })));
-
-  /* ---------- self-hosted entities: outside the Hub, reported by the entity -- */
-  document.getElementById('selfTag').textContent =
-    SELF_CO.length ? 'Not counted above' : 'None assigned';
-  document.getElementById('selfHosted').innerHTML = `
-    <div class="row" style="gap:20px;align-items:flex-start">
-      <div class="stack" style="gap:2px;flex:none">
-        <div class="num" style="font-size:26px;font-weight:600">${GROUP.selfHosted}</div>
-        <div class="tiny dim">entities</div>
-      </div>
-      <div class="stack" style="gap:2px;flex:none">
-        <div class="num" style="font-size:26px;font-weight:600">${num(GROUP.selfHostedToday)}</div>
-        <div class="tiny dim">documents today</div>
-      </div>
-      <div class="grow small muted">${SELF_CO.length
-        ? `These entities run the same software inside their own environment and transmit directly to the ASP.
-           They have no connection to the Hub, so the Hub cannot observe them.
-           <b>These figures are reported by the entity</b> and are deliberately kept out of the group totals above.`
-        : `The self-hosted path is available but <b>no entity is assigned to it</b>. Every one of the
-           ${GROUP.entities} entities connects through the Hub today, so every figure above is
-           <b>observed</b> rather than self-reported. If an entity later qualifies for the exception,
-           its documents stop passing through the Hub and its numbers move out of the totals above.`}
-      </div>
-    </div>
-    ${SELF_CO.length ? '<div class="divider"></div>' : ''}
-    ${SELF_CO.map(t => `
-      <div class="row" style="gap:10px;align-items:flex-start">
-        <div class="grow">
-          <div class="row-tight" style="gap:8px">
-            <a class="link" href="tenant-detail.html">${t.short}</a>
-            ${methodChip('self')}
-          </div>
-          <div class="tiny dim" style="margin-top:2px">${t.reason}</div>
-        </div>
-        <div class="r nowrap">
-          <div class="num" style="font-weight:600">${num(t.today)}</div>
-          <div class="tiny dim">${t.sync}</div>
-        </div>
-      </div>`).join('')}
-    <div class="mt12">${teach(`The ${GROUP.hubEntities} / ${GROUP.selfHosted} split is indicative. It is confirmed by the
-      entity governance classification, not assumed here — which is why no entity is shown in the
-      exception until that classification is done.`)}</div>`;
 
   /* ---------- exceptions, split by owner (proposal §7) ---------------------- */
   document.getElementById('entCount').innerHTML = `<i class="dot"></i>${entOpen} open`;

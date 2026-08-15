@@ -1,4 +1,4 @@
-# Presenter script — Al Nasr Compliance Hub walkthrough
+# Presenter script — Al Nasr Marbles E-Invoicing walkthrough
 
 A word-for-word script for demonstrating the prototype to the client.
 
@@ -43,29 +43,29 @@ Three habits that matter more than the words:
 > **“This is a prototype. It is not a working system. Every screen you will see is a
 > picture, built in a browser. There is no server behind it, and no data is stored.”**
 
-> **“The company names are real, so that you recognise your own group. Every number is
+> **“The company name is real, so you recognise your own operations. Every number is
 > invented. Please do not read the figures as real figures.”**
 
 > **“The purpose is simple. Instead of reading the design in a document, you can see it.”**
 
 *(do — click **I understand**)*
 
-> **“The walkthrough has sixteen screens, in six short parts. I will follow one
-> invoice. It leaves a company’s ERP, becomes a compliant e-invoice, is sent and
+> **“The walkthrough has fourteen screens, in six short parts. I will follow one
+> invoice. It leaves the ERP, becomes a compliant e-invoice, is sent and
 > reported, and comes back with its answer. Please stop me at any point.”**
 
 *(do — click **Start the walkthrough**)*
 
 ---
 
-# Act I — It starts in their system
+# Act I — It starts in your system
 
-## Screen 1 · Sales Invoices *(their ERP)*
+## Screen 1 · Sales Invoices *(the ERP)*
 
-**The one point:** their people keep working exactly as they do today.
+**The one point:** your people keep working exactly as they do today.
 
-> **“This is a company’s own ERP. This is Al Nasr Marbles, and this is their sales
-> invoice list. Nothing on this screen changes.”**
+> **“This is Al Nasr Marbles’ own ERP, and this is their sales invoice list. Nothing on
+> this screen changes.”**
 
 > **“The user creates the invoice as normal. They submit it as normal. They do not log
 > in anywhere else, and they do not learn a new system.”**
@@ -79,102 +79,73 @@ Three habits that matter more than the words:
 
 ---
 
-## Screen 2 · Signing in to the Hub
+## Screen 2 · Signing in to the compliance system
 
-**The one point:** two different audiences, two different doors.
+**The one point:** two views of the same system — the compliance console and a lighter
+finance portal.
 
-> **“This is the central platform. The group team signs in here.”**
+> **“This is the compliance console. Your compliance team signs in here.”**
 
-> **“Notice the line under the title. The group team signs in here. A single company’s
-> finance user signs in somewhere else, in their own portal. I will show you that at
-> the end.”**
+> **“Notice the line under the title. The compliance team signs in here. Finance users
+> sign in to a lighter portal, which I will show you at the end.”**
 
-> **“Nobody shares a login. Every company gets its own.”**
+> **“Nobody shares a login. Every user gets their own.”**
 
 *(do — click **Sign in**)*
 
 ---
 
-# Act II — The group, and the companies in it
+# Act II — Your compliance dashboard
 
-## Screen 3 · Group Dashboard
+## Screen 3 · Dashboard
 
-**The one point:** one screen answers “is the whole group compliant today?”
+**The one point:** one screen answers “is the company compliant today?”
 
-> **“This is the group view. All four companies, on one screen.”**
+> **“This is your compliance view — every invoice for the company on one screen.”**
 
 *(pause — let them look)*
 
 > **“Today’s volume. Today’s failures. What is still in progress.”**
 
-*(point at the alert about companies that have gone quiet)*
+*(point at the alert about reporting that has gone quiet)*
 
-> **“This line is the important one. Two companies have sent nothing today. They have
-> not failed — they have gone silent. A company that stops reporting is a compliance
-> risk, and silence is easy to miss. The system watches for it and tells you.”**
+> **“This line is the important one. There are stretches today when the system expected
+> documents from the ERP and received none. Nothing has failed — nothing arrived, and
+> silence is easy to miss. The system watches for it and tells you.”**
 
-> **“Without this, somebody has to remember to check every company every morning. Nobody
+> **“Without this, somebody has to remember to check the connection every morning. Nobody
 > does that every day.”**
 
 *(do — click **Next**)*
 
 ---
 
-## Screen 4 · Companies
+# Act III — Setup, not installation
 
-**The one point:** every company is different, and that is handled.
+## Screen 4 · Connecting the ERP
 
-> **“Every company in the group is listed here. This is where you see how mixed the
-> estate is.”**
+**The one point:** three ways to connect, so the ERP is never blocked.
 
-> **“Different systems. ERPNext, SAP Business One, an on-premise project accounting suite, and a job-costing export.
-> Different connection methods. Different rollout waves.”**
-
-> **“The platform does not require anybody to change their ERP. It connects to what is
-> already there.”**
-
-*(do — click **Next**)*
-
----
-
-## Screen 5 · One company in detail
-
-**The one point:** onboarding a company is configuration, not a project.
-
-> **“This is one company in detail. Its ERP, how it connects, and what it provided.”**
-
-> **“Everything on this page is settings. No code was written for this company.”**
-
-*(do — click **Next**)*
-
----
-
-# Act III — Bringing a company on
-
-## Screen 6 · Connecting a new company
-
-**The one point:** three ways to connect, so no company is blocked.
-
-> **“This is how a new company is added. The first choice is how to connect it.”**
+> **“This is how the ERP is connected. The first choice is how to connect it.”**
 
 Say the three methods slowly. One line each:
 
 > **“Method one. Direct connection, for a modern ERP with an interface.”**
-> **“Method two. A small agent installed on their side, for an older on-premise system
+> **“Method two. A small agent installed on your side, for an older on-premise system
 > behind a firewall.”**
 > **“Method three. Secure file transfer, for a system with no interface at all.”**
 
-> **“The method is chosen for each company after we look at its ERP. We do not assume.”**
+> **“The method is chosen after we look at the ERP. We do not assume.”**
 
 *(do — run the connection test on screen)*
 
-> **“And the connection is tested before the company goes live.”**
+> **“And the connection is tested before go-live.”**
 
 *(do — click **Next**)*
 
 ---
 
-## Screen 7 · Mapping Studio
+## Screen 5 · Mapping Studio
 
 **The one point:** the hardest technical work is done by an analyst, not a developer.
 
@@ -188,12 +159,12 @@ Say the three methods slowly. One line each:
 
 *(do — click the **Derived** tab)*
 
-> **“And these are the values we produce ourselves. The company does not have to supply
-> them. That reduces the work on their side.”**
+> **“And these are the values we produce ourselves. You do not have to supply
+> them. That reduces the work on your side.”**
 
 *(do — scroll to the live preview)*
 
-> **“And here you can see the result immediately. Their data on the left. The official
+> **“And here you can see the result immediately. Your data on the left. The official
 > document on the right.”**
 
 *(do — click **Next**)*
@@ -202,7 +173,7 @@ Say the three methods slowly. One line each:
 
 # Act IV — One invoice, end to end
 
-## Screen 8 · Processing Queue
+## Screen 6 · Processing Queue
 
 **The one point:** you always know where every document is.
 
@@ -220,15 +191,16 @@ Say the three methods slowly. One line each:
 > **“Stage nine is Archive. That is the long-term legal record. It comes last, because
 > it contains the confirmations, and those arrive at the end.”**
 
-*(point at the per-company lanes)*
+*(point at the lanes)*
 
-> **“And each company has its own lane. One company’s problem never delays another.”**
+> **“And the queue is split into lanes by document type. A hold-up in one lane never
+> delays the others.”**
 
 *(do — click **Next**)*
 
 ---
 
-## Screen 9 · Document Inspector
+## Screen 7 · Document Inspector
 
 **The one point:** the document is proven correct before it leaves.
 
@@ -241,16 +213,18 @@ Say the three methods slowly. One line each:
 
 ---
 
-## Screen 10 · Inbound Documents
+# Act V — The other direction, and the record
 
-**The one point:** nothing is ever posted into their accounts automatically.
+## Screen 8 · Inbound Documents
+
+**The one point:** nothing is ever posted into your accounts automatically.
 
 > **“So far we followed an invoice going out. Supplier invoices also arrive.”**
 
-> **“The document arrives, we identify which of the four companies it belongs to,
+> **“The document arrives, we confirm it is addressed to Al Nasr Marbles,
 > we validate it, and we archive the original.”**
 
-> **“Then it is delivered into that company’s ERP as a **draft**.”**
+> **“Then it is delivered into the ERP as a **draft**.”**
 
 *(pause)*
 
@@ -261,7 +235,7 @@ Say the three methods slowly. One line each:
 
 ---
 
-## Screen 11 · Processing History
+## Screen 9 · Processing History
 
 **The one point:** every document can be found and proven, later.
 
@@ -276,63 +250,63 @@ Say the three methods slowly. One line each:
 
 ---
 
-## Screen 12 · Reports
+## Screen 10 · Reports
 
 **The one point:** the data supports the VAT return and the exceptions review.
 
 > **“VAT summaries. Reporting completeness. How long exceptions have been open.”**
 
-> **“The point of this screen is that the compliance data is in one place, for all
-> all four companies, and it can be exported.”**
+> **“The point of this screen is that the compliance data is in one place for the
+> company, and it can be exported.”**
 
 *(do — click **Next**)*
 
 ---
 
-# Act VI — What each company gets
+# Act VI — Logins and the finance view
 
-## Screen 13 · Users & Access
+## Screen 11 · Users & Access
 
-**The one point:** the central team never holds a company’s password.
+**The one point:** the administrator issues logins but never holds a user’s password.
 
-> **“Each company administers its own users.”**
+> **“Your administrator manages your own users.”**
 
-> **“The central team sends one invitation. The person sets their own password and their
-> own second factor. After that, the company adds and removes its own people.”**
+> **“The administrator sends one invitation. The person sets their own password and their
+> own second factor. After that, the administrator adds and removes people as needed.”**
 
-> **“The central team can configure the platform. It cannot post anything into any ERP.”**
+> **“The administrator can configure the system. It cannot post anything into the ERP.”**
 
 *(do — click **Next**)*
 
 ---
 
-## Screen 14 · A company signs in
+## Screen 12 · A finance user signs in
 
-> **“Now I will stop being the group team. I will sign in as one company.”**
+> **“Now I will sign in as a finance user, in the finance portal.”**
 
 *(do — click **Sign in**)*
 
 ---
 
-## Screen 15 · What that company sees
+## Screen 13 · The finance view
 
-**The one point:** strict separation. This is usually the moment that convinces people.
+**The one point:** a lighter view of the same system for finance users.
 
-> **“This is Al Nasr Marbles’ own portal.”**
+> **“This is the finance portal for Al Nasr Marbles.”**
 
 *(pause)*
 
-> **“They see their own invoices. Their own supplier invoices. Their own exceptions.
-> Their own users.”**
+> **“Finance users see the invoices, the supplier invoices, the exceptions and the
+> reports — a lighter view than the compliance console.”**
 
-> **“They cannot see the other eighty-eight companies. Not the volumes, not the names,
-> not the failures. Each company sees only itself.”**
+> **“This portal holds only Al Nasr Marbles’ data. It runs on the company’s own system,
+> and there is no other company’s data in it.”**
 
 *(do — click **Next**)*
 
 ---
 
-## Screen 16 · Back on the invoice — **the scope boundary**
+## Screen 14 · Back on the invoice — **the scope boundary**
 
 **This is the most important screen commercially. Do not rush it. Read the red box
 before you say anything else.**
@@ -360,21 +334,21 @@ Say these four lines slowly. This is the part you must not soften:
 *(pause — let them react. Do not fill the silence.)*
 
 > **“Everything else you have seen — the mapping, the document, the validation, the
-> transmission, the reporting, the archive, the dashboards — is delivered by us.”**
+> transmission, the reporting, the archive, the dashboard — is delivered by us.”**
 
 ---
 
 ## Closing
 
-> **“That is the walkthrough. One invoice, from their ERP, to the tax authority, and
+> **“That is the walkthrough. One invoice, from the ERP, to the tax authority, and
 > back again.”**
 
 > **“Three things I would like you to remember.”**
 
 > **“One. Your people keep working in their own system.”**
-> **“Two. The compliance work is solved once, centrally, for all four companies —
-> not four times.”**
-> **“Three. Each company sees only its own data.”**
+> **“Two. The compliance work is solved once, inside the company’s own system — no
+> bolt-on, and no separate platform.”**
+> **“Three. Your data stays in your own system — nothing is pooled anywhere else.”**
 
 > **“Please remember this was a prototype with invented numbers. What is real is the
 > design. Thank you. What questions do you have?”**
@@ -389,33 +363,34 @@ Keep the answers short. A short answer sounds certain.
 > **“No. This is a prototype of the design. It shows what we are proposing to build.”**
 
 **“Is the data real?”**
-> **“The company names are real. Every number is invented for the demonstration.”**
+> **“The company name is real. Every number is invented for the demonstration.”**
 
-**“Do our companies have to change their ERP?”**
+**“Do we have to change our ERP?”**
 > **“No. We connect to what is already there. That is why there are three connection
 > methods.”**
 
-**“What if a company’s ERP has no interface?”**
+**“What if our ERP has no interface?”**
 > **“That is method three — secure file transfer. It is designed for exactly that case.”**
 
 **“What happens if the network or the provider is down?”**
 > **“The document is already stored before we send it. It is retried automatically. And
 > nothing is lost, because we archive before transmission, not after.”**
 
-**“Can the central team see or change our accounting data?”**
-> **“The central team can configure the platform. It cannot post anything into any ERP.
-> Posting stays with your own finance users.”**
+**“Can the system change our accounting data?”**
+> **“It runs on your own ERP and configures compliance. It does not post into your
+> ledgers. Posting stays with your finance users.”**
 
-**“Can one company see another company’s data?”**
-> **“No. I showed you that on the portal screen. Each company sees only itself.”**
+**“Where does our data live?”**
+> **“On your own system. It runs on your own ERP server, and nothing is pooled anywhere
+> else.”**
 
 **“Who builds the ERP side?”**
 > **“Your ERP team or your ERP vendor. If you want us to do it, we will quote it as a
 > separate piece of work.”**
 
-**“How long does it take to add one company?”**
+**“How long does it take to set up?”**
 > **“That depends on the ERP and on the data. What I can say is what you saw — it is
-> configuration, not a new installation for each company.”**
+> configuration, not a new installation.”**
 
 **A question you cannot answer.** Do not guess. Say:
 > **“That is a good question. I do not want to give you a wrong answer. Let me confirm
@@ -450,11 +425,11 @@ Silence usually means they are reading. Let it run. If it lasts more than a few 
 
 If your time is cut short, show four screens only:
 
-1. **Group Dashboard** — “Four companies, one screen. And it tells you when a
-   company goes silent.”
+1. **Dashboard** — “The company’s compliance status on one screen. And it tells you
+   when reporting goes silent.”
 2. **Mapping Studio** — “Every ERP is different. This is where they are joined to the
    standard, by an analyst, without code.”
-3. **Company portal** — “Each company sees only its own data.”
+3. **Finance view** — “A lighter portal for finance users, on the company’s own system.”
 4. **The last ERP screen** — read the red scope box.
 
 That is the whole argument.

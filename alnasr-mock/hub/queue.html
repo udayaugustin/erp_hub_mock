@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Processing Queue — Al Nasr Compliance Hub</title>
+<title>Processing Queue — Al Nasr E-Invoicing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
   .ownertag.plat{color:var(--info);background:color-mix(in srgb,var(--info) 14%,transparent)}
   /* two-column band: counters, filters and the stage note beside the lanes */
   .qtop{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
-  /* the per-company lanes are full width now, so run them three across */
+  /* the queue-depth lanes are full width now, so run them three across */
   #channels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 26px}
   .qleft{display:flex;flex-direction:column;gap:16px}
   @media (max-width:1100px){#channels{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -27,7 +27,7 @@
 <body class="surface-hub" data-surface="hub" data-nav="queue"
       data-step="hub-queue"
       data-crumbs="Operations / Processing Queue"
-      data-hint="Every document currently being processed, and the stage it has reached. Each company has its own lane, so one company's problem never holds up another.">
+      data-hint="Every document currently being processed, and the stage it has reached.">
 
 <main class="main">
   <div class="page">
@@ -61,7 +61,7 @@
       </div>
     </div>
 
-    <!-- Counters and filters, then the document list. The per-company lanes are
+    <!-- Counters and filters, then the document list. The queue-depth lanes are
          secondary and now sit below the table. -->
     <div class="qtop mb16">
       <div class="qleft">
@@ -99,7 +99,6 @@
             <thead>
               <tr>
                 <th>Document</th>
-                <th>Company</th>
                 <th>Type</th>
                 <th>Stage</th>
                 <th>Progress</th>
@@ -118,10 +117,10 @@
 
     <section>
       <div class="card">
-        <div class="card-head"><h2 class="grow">Per-company channels</h2><span class="tag">Queue depth</span></div>
+        <div class="card-head"><h2 class="grow">Queue depth by stage</h2><span class="tag">Queue depth</span></div>
         <div class="card-body" id="channels"></div>
         <div class="card-foot">
-          <span class="tiny dim" id="chanFoot">Each company has its own lane, so a backlog in one never delays another.</span>
+          <span class="tiny dim" id="chanFoot">Where the documents in flight are sitting, stage by stage.</span>
         </div>
       </div>
     </section>
@@ -145,7 +144,6 @@
     return `${s} s`;
   }
 
-  const HUB_CO   = TENANTS.filter(t => t.deploy === 'hub');
   const inQueue  = STAGE_COUNT.reduce((a, b) => a + b, 0);   /* = GROUP.todayPending */
   const done     = d => d.stage === STAGES.length - 1 && d.state === 'ok';
   const inFlight = INVOICES.filter(d => !done(d));
@@ -181,17 +179,19 @@
 
   document.getElementById('tiles').innerHTML = [
     stat({ label: 'In flight', value: num(inQueue),
-           meta: `Across ${GROUP.live} live companies`, tone: 'var(--accent)' }),
+           meta: `All outbound documents in flight`, tone: 'var(--accent)' }),
     stat({ label: 'Oldest still in flight', value: oldestTxt,
            meta: `${oldest.no} · held at ${STAGES[oldest.stage]}`, tone: 'var(--warn)' }),
     stat({ label: 'Awaiting action', value: entOpen + platOpen,
-           meta: `${entOpen} entity finance · ${platOpen} central technical`, tone: 'var(--fail)' })
+           meta: `${entOpen} finance · ${platOpen} technical support`, tone: 'var(--fail)' })
   ].join('');
 
   /* ---------- filters ------------------------------------------------------- */
   document.getElementById('fCompany').innerHTML =
-    `<option value="">All hub companies (${GROUP.hubEntities})</option>` +
-    HUB_CO.map(t => `<option value="${t.id}">${t.short}</option>`).join('');
+    `<option value="">All documents</option>` +
+    `<option value="Invoice">Standard invoices</option>` +
+    `<option value="Simplified">Simplified (B2C)</option>` +
+    `<option value="Credit Note">Credit notes</option>`;
 
   document.getElementById('fState').innerHTML =
     '<option value="">All states</option>' +
@@ -199,18 +199,16 @@
     '<option value="ok">Completed</option>' +
     '<option value="failed">Failed</option>';
 
-  document.getElementById('filterNote').textContent = GROUP.selfHosted
-    ? `The ${GROUP.selfHosted} self-hosted entities are not listed here. They transmit directly to the ASP `
-      + `and nothing of theirs passes through the Hub queue.`
-    : `All ${GROUP.hubEntities} entities connect through the Hub, so every document in flight appears here. `
-      + `Nothing is self-hosted, and nothing bypasses this queue.`;
+  document.getElementById('filterNote').textContent =
+    `Every document in flight appears here — the system handles all of Al Nasr Marbles' outbound `
+    + `documents from the company's own ERP. Nothing bypasses this queue.`;
 
   /* ---------- the table ----------------------------------------------------- */
   const ROWS = INVOICES;
   const FAIL_BG = 'background:color-mix(in srgb, var(--fail) 7%, transparent)';
   const OWNER = {
-    entity:   ['ent',  'Entity finance team'],
-    platform: ['plat', 'Central technical team']
+    company: ['ent',  'Finance team'],
+    support: ['plat', 'Technical support']
   };
   const stateKey = s => s === 'ok' ? 'completed' : s === 'active' ? 'active' : s === 'held' ? 'queued' : 'failed';
 
@@ -220,7 +218,6 @@
         <a class="link id" href="document.html">${inv.no}</a>
         <div class="tiny dim num">${inv.created} · waiting ${fmtDur(waited(inv))}</div>
       </td>
-      <td class="nowrap">${tenantChip(inv.tenant)}</td>
       <td class="nowrap">
         <span class="chip ${inv.type === 'Credit Note' ? 'info' : ''}">${inv.type}</span>
         ${inv.against ? `<div class="tiny dim">against <span class="id">${inv.against}</span></div>` : ''}
@@ -271,7 +268,7 @@
     trs.forEach((tr, i) => {
       const d = ROWS[i];
       const hit = (!q  || (d.no + ' ' + d.type).toLowerCase().includes(q))
-               && (!co || d.tenant === co)
+               && (!co || d.type === co)
                && (!st || d.state === st);
       if (hit && !keep.has(i)) foldable++;
       const show = hit && (!collapsed || keep.has(i));
@@ -289,35 +286,34 @@
     document.getElementById(id).addEventListener(id === 'fSearch' ? 'input' : 'change', applyFilters));
   applyFilters();
 
-  /* ---------- per-company channels ------------------------------------------ */
-  const CH = HUB_CO.filter(t => t.pending > 0).sort((a, b) => b.pending - a.pending);
-  const maxDepth = Math.max.apply(null, CH.map(t => t.pending));
+  /* ---------- queue depth, stage by stage -----------------------------------
+     STAGE_COUNT holds the in-flight documents at each stage (summing to the
+     in-flight figure above). Each stage with documents waiting gets its own
+     lane, so it is clear where the queue is actually sitting. */
+  const CH = STAGES
+    .map((name, i) => ({ name, count: STAGE_COUNT[i] || 0 }))
+    .filter(s => s.count > 0)
+    .sort((a, b) => b.count - a.count);
+  const maxDepth = Math.max.apply(null, CH.map(s => s.count));
 
-  /* Only a handful of lanes are drawn, and they hold a fraction of the 153.
-     Said out loud, because otherwise the card reads as the full picture and
-     the numbers visibly do not add up to the in-flight figure above. */
-  const chShown = CH.reduce((a, t) => a + t.pending, 0);
+  const chShown = CH.reduce((a, s) => a + s.count, 0);
   document.getElementById('chanFoot').textContent =
-    `The ${CH.length} deepest lanes, holding ${chShown} of the ${num(GROUP.todayPending)} documents in `
-    + `flight. Each company has its own lane, so a backlog in one never delays another.`;
+    `${chShown} documents in flight, spread across ${CH.length} stages of the pipeline.`;
 
   document.getElementById('channels').innerHTML = CH.map(t => {
-    const tone = t.failed > 5 ? 'var(--fail)' : t.failed ? 'var(--warn)' : 'var(--ok)';
     return `<div>
       <div class="row tiny mb8">
-        <span style="font-weight:600;color:var(--text-hi)">${t.short}</span>
-        <span class="right num muted">${t.pending} in flight</span>
+        <span style="font-weight:600;color:var(--text-hi)">${t.name}</span>
+        <span class="right num muted">${t.count} in flight</span>
       </div>
-      ${bar(Math.round(t.pending / maxDepth * 100), tone)}
-      <div class="tiny dim mt4">
-        ${t.failed ? `${t.failed} failed today` : 'No failures today'} · last document ${t.sync}
-      </div>
+      ${bar(Math.round(t.count / maxDepth * 100), 'var(--accent)')}
+      <div class="tiny dim mt4">Waiting at this stage</div>
     </div>`;
   }).join('') + `
     <div class="divider" style="margin:2px 0"></div>
     <div class="row tiny">
-      <span class="muted">${CH[0].short} holds ${pct(CH[0].pending / inQueue * 100)} of everything in flight</span>
-      <span class="right" style="color:var(--ok);font-weight:600">0 other companies blocked</span>
+      <span class="muted">${chShown} documents spread across ${CH.length} stages</span>
+      <span class="right" style="color:var(--ok);font-weight:600">No stages blocked</span>
     </div>`;
 
   /* ---------- auto-refresh control ------------------------------------------ */

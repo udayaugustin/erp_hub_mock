@@ -1,7 +1,7 @@
 /* ==========================================================================
-   Nazm — Centralized Integration Hub
+   Al Nasr Marbles — E-Invoicing
    Design system. Three surfaces: hub (dark console), erp (light, foreign),
-   portal (light, calm, tenant-scoped).
+   portal (light, calm, the company's workspace).
    ========================================================================== */
 
 /* --- reset ---------------------------------------------------------------- */
@@ -33,7 +33,7 @@ ul, ol { list-style: none; }
   --font-ui: "Inter", "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  /* the group gold — used for fills, rules and marks on every surface.
+  /* the brand gold — used for fills, rules and marks on every surface.
      --gold itself is too light for text; use --gold-ink when it must be read. */
   --gold:      #DCA84E;
   --gold-deep: #C4913D;
@@ -63,7 +63,7 @@ ul, ol { list-style: none; }
 }
 
 /* --- surface: HUB (basalt green + sand gold — the platform we build) ------ */
-/* This is the only surface that carries the full group brand. It should read
+/* This is the only surface that carries the full brand. It should read
    as "the new thing, and it is ours". */
 .surface-hub {
   --bg:        #F5F8F7;
@@ -224,7 +224,7 @@ h4 { letter-spacing: -.008em; }
   color: #fff; box-shadow: 0 2px 10px -3px var(--accent-line);
   position: relative;
 }
-/* a thin gold underscore on the mark, echoing the group's accent */
+/* a thin gold underscore on the mark, echoing the brand accent */
 .brand-mark::after {
   content: ""; position: absolute; left: 6px; right: 6px; bottom: 4px;
   height: 1.5px; border-radius: 1px; background: var(--gold); opacity: .85;

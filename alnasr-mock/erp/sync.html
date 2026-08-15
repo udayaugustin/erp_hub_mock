@@ -81,7 +81,7 @@
       </div>
       <div class="page-actions">
         <button class="btn btn-sm" id="btnPrint">Print with QR</button>
-        <a class="btn btn-sm btn-primary" href="../hub/document.html">View in Hub</a>
+        <a class="btn btn-sm btn-primary" href="../hub/document.html">View in e-invoicing system</a>
       </div>
     </div>
 
@@ -99,8 +99,8 @@
           <div class="scope-title">This screen is an illustration. Writing these values back into the
             ERP is <u>not</u> included in our scope of work.</div>
           <div class="scope-lead">
-            The Compliance Hub makes every field shown below available to the ERP. Reading them from
-            the Hub, and creating or updating any record inside the ERP, is work that belongs to
+            The e-invoicing system makes every field shown below available to the ERP. Reading them from
+            the e-invoicing system, and creating or updating any record inside the ERP, is work that belongs to
             Al Nasr's ERP team or their ERP vendor — not to us.
           </div>
         </div>
@@ -109,11 +109,11 @@
       <ul class="scope-list">
         <li><span><b>We do not build anything inside the ERP.</b> No app, connector, customisation or
           print format on the ERP side is part of the current proposal. What we deliver ends at the
-          Hub's interface.</span></li>
-        <li><span><b>The ERP team collects the data and writes the record.</b> They call the Hub, take
+          e-invoicing system's interface.</span></li>
+        <li><span><b>The ERP team collects the data and writes the record.</b> They call the e-invoicing system, take
           the reference, the status and the QR information, and perform the insert or update on their
           own system, in their own release cycle.</span></li>
-        <li><span><b>Inbound supplier invoices must be created as drafts.</b> When the Hub passes a
+        <li><span><b>Inbound supplier invoices must be created as drafts.</b> When the e-invoicing system passes a
           supplier invoice to the ERP, the ERP team must create it as an unposted draft for a person to
           review. Nothing may be posted automatically.</span></li>
         <li><span><b>If Al Nasr wants us to build it, it is quoted separately.</b> Scope, effort,
@@ -141,7 +141,7 @@
 
           <div class="card">
             <div class="card-head">
-              <h2 class="grow">E-Invoicing fields collected from the Hub</h2>
+              <h2 class="grow">E-Invoicing fields collected from the e-invoicing system</h2>
               <span class="pill pill-scope"><i class="dot"></i>Illustration</span>
               <span class="pill pill-accent">
                 <svg style="width:11px;height:11px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
@@ -221,15 +221,15 @@
           <ol class="closing-list">
             <li>The invoice left this ERP on its own, as a normal Sales Invoice.</li>
             <li>It was mapped, built as UBL 2.1, validated against the Oman rules and archived.</li>
-            <li>The Hub transmitted it to the group's accredited service provider, which reported it
+            <li>The e-invoicing system transmitted it to the accredited service provider, which reported it
                 to the Oman Tax Authority and delivered it to the buyer.</li>
             <li>Its reference, its status and its QR information are ready to be collected from the
-                Hub, so they can be shown on the original record — the same screen the finance team
+                e-invoicing system, so they can be shown on the original record — the same screen the finance team
                 already uses.</li>
           </ol>
           <p class="small muted mt12">Nothing was exported by hand, and nobody had to leave the ERP.</p>
           <p class="small mt8" style="color:#9A3320;font-weight:650">
-            Step 4 is the ERP team's work, not ours. Our delivery ends where the Hub publishes the
+            Step 4 is the ERP team's work, not ours. Our delivery ends where the e-invoicing system publishes the
             data. Building the ERP side is a separately scoped, separately costed piece of work.</p>
           <div class="row-tight mt16" style="gap:8px">
             <a class="btn" href="invoices.html">↺ Start again from the ERP</a>
@@ -280,14 +280,14 @@
   /* The last step lands inside the ERP, so it is attributed to the ERP team —
      it is the one step in this list that our scope does not cover. */
   document.getElementById('journeyFoot').innerHTML =
-    'Step 1 happened in this ERP. Steps 2 to ' + (J.length - 1) + ' are performed by the Compliance Hub '
-    + 'and the group’s service provider, with no user action here. '
+    'Step 1 happened in this ERP. Steps 2 to ' + (J.length - 1) + ' are performed by the e-invoicing system '
+    + 'and the accredited service provider, with no user action here. '
     + '<b style="color:var(--fail)">Step ' + J.length + ' is built and run by the ERP team — it is not '
     + 'part of our scope.</b>';
 
   /* ---- banner: who did what -----------------------------------------------
-     The Hub transmits to the ASP. The ASP — corner 2 — reports the Tax Data
-     Document to the OTA. The Hub never talks to the Tax Authority itself.   */
+     The e-invoicing system transmits to the ASP. The ASP — corner 2 — reports the Tax Data
+     Document to the OTA. The e-invoicing system never talks to the Tax Authority itself.   */
   const ackLeg = LEGS.find(l => l.id === 'ack');
   const otaLeg = LEGS.find(l => l.id === 'ota');
   const delLeg = LEGS.find(l => l.id === 'deliv');
@@ -295,10 +295,10 @@
 
   document.getElementById('banner').innerHTML = notice('ok',
     `<b style="font-size:13px">Transmitted to the service provider, reported to the Tax Authority, delivered to the buyer.</b>
-     <div class="mt4 muted">The Hub sent this invoice to the group's accredited service provider, which accepted it at
+     <div class="mt4 muted">The e-invoicing system sent this invoice to the accredited service provider, which accepted it at
        <span class="num">${clock(ackLeg.at)}</span> under acknowledgement
        <span class="mono" style="color:var(--text-hi);font-weight:600">${ASP.ackNo}</span>.
-       The service provider — not the Hub — reported the Tax Data Document to the Oman Tax Authority, acknowledged at
+       The service provider — not the e-invoicing system — reported the Tax Data Document to the Oman Tax Authority, acknowledged at
        <span class="num">${clock(otaLeg.at)}</span>. The buyer's provider confirmed delivery at
        <span class="num">${clock(delLeg.at)}</span>, and the answer was written back here at
        <span class="num">${hhmmss(J[J.length - 1])}</span> — ${human(elapsed)} after submission.</div>`);

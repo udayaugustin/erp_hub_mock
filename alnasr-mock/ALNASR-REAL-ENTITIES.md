@@ -1,97 +1,68 @@
-# Al Nasr Group — the entity set, and where it came from
+# Al Nasr Marbles — what the prototype claims, and where it came from
 
-Last revised 14 Aug 2026. This records **what the prototype claims and why**, so anyone
+Last revised 15 Aug 2026. This records **what the prototype claims and why**, so anyone
 presenting it can answer "where did you get that?" without guessing.
 
-## The four entities
+## One company, deployed on its own ERP
 
-These are the four the client identified, and the prototype models **exactly these four** —
-nothing inferred, nothing invented to pad the console.
+This prototype is a **standalone single-company** e-invoicing / tax-compliance system for
+**Al Nasr Marbles**, deployed on that company's own ERP server. It is **not** a central hub and
+**not** a group console. Al Nasr is a small group (~3–4 companies), so rather than route every
+company's data into one shared platform, the same application is installed separately for each
+company. This build features **Al Nasr Marbles**; a sibling build would feature another company by
+swapping the dataset.
 
-| Entity | Business | Location |
-|---|---|---|
-| **Al Nasr Marbles** | Manufacturing, retail and quarrying. Quarries incl. Al Hoor | Darsait, Muscat |
-| **Al Nasr Terrazzo** | Artificial stone, marble chips and powder | Rusayl Industrial Estate |
-| **Al Nasr Trading & Contracting LLC** | Construction, civil engineering, infrastructure | Muscat |
-| **Al Nasr Energy Services** | Oil & gas support, blasting and painting | Ghala Heights, Muscat |
+> **History.** This mock was cloned from a central-hub build for the WJ Towell group, and an
+> earlier Al Nasr draft modelled the whole group as a four-entity console (Marbles, Terrazzo,
+> Trading & Contracting, Energy Services). That framing was dropped: Al Nasr does not want a
+> centralised group system, so the console was collapsed to one company. The other Al Nasr
+> companies are real, but each would get its own deployment, not a row in a shared dashboard.
 
-Marbles, Terrazzo and Trading & Contracting are described as the group's core operational
-divisions under Al Nasr Group of Companies LLC. Energy Services is listed as a **related company**
-rather than a division.
+## The featured company
 
-## Corrections made to an earlier draft
+| Field | Value |
+|---|---|
+| **Name** | Al Nasr Marbles |
+| **Business** | Manufacturing, retail and quarrying of marble. Quarries incl. Al Hoor | 
+| **Location** | Darsait, Muscat |
+| **ERP** | ERPNext v15, connected over the direct API (Method 1) |
 
-An earlier version of this prototype modelled **eleven** entities, built by treating each
-production site and quarry as its own company. That was wrong in three ways:
-
-- **Al Nasr Trading & Contracting was excluded.** It was researched, found listed standalone in a
-  business directory, and judged a different company. It is part of the group.
-- **Terrazzo and marble chips & powder were split.** They are one division.
-- **Sites were promoted to entities.** Darsait, Rusayl, Suwaiq and the individual quarries are
-  facilities, not companies. Four of the eleven were invented outright to make the wave and
-  method distributions look like a portfolio.
-
-The group is a singular industrial group with divisions, not a portfolio of legal entities.
-
-## Two things still to confirm
-
-**1. VAT registration — this is the important one.**
-
-Marbles and Terrazzo are divisions of Al Nasr Group of Companies LLC. In Oman, VAT registration
-is per legal entity, and a Peppol participant ID is derived from the VAT identifier. So:
-
-- If each division holds its own registration → four participants, four entities, and the
-  multi-entity console is exactly the right pitch.
-- If the divisions invoice under one group registration → Marbles and Terrazzo are **one**
-  participant. The console has three entities, and part of the story becomes multi-*site*
-  consolidation within one taxpayer rather than multi-entity.
-
-The prototype models them as separate and **says so on the Companies screen**, because splitting
-one participant into two later is easier than merging two into one. `vatUnconfirmed: true` on the
-tenant records drives that notice.
-
-**2. Whether Energy Services is in scope**, given it is described as related rather than a
-division. It carries `scopeUnconfirmed: true`. Removing it is a contained change — one entity out
-of `TENANTS`, and the group totals recomputed as described below.
+Al Nasr Marbles is described as a division of Al Nasr Group of Companies LLC.
 
 ## What is invented
 
-Everything not in the table above: all VAT and CR numbers, every ERP and version, every connection
-method and wave assignment, all volumes, failure counts, success rates and onboarding states, all
-customers, suppliers, people and email addresses.
+Everything except the company name, its sector and location: all VAT and CR numbers, the ERP
+version, connection method, all volumes, failure counts, success rates, customers, suppliers,
+people and email addresses.
 
 Product names (**AM Royal Beige**, **Al Suwaiq**, **Desert Sand**) and the **Al Hoor** quarry are
 real; the orders quoting them are not.
 
-## No self-hosted entity
+## One thing still to confirm
 
-Nothing in the client's material identifies a joint venture or a separately governed arm, so no
-entity is assigned to the proposal's self-hosted exception. `GROUP.selfHosted` is `0`, and the
-dashboard, Companies and Queue screens state that the path exists but is unassigned — which is
-what the proposal itself says, since the split is confirmed by the governance classification.
+**VAT registration.** In Oman, VAT registration is per legal entity and a Peppol participant ID is
+derived from the VAT identifier. Al Nasr Marbles is modelled with its own registration
+(`OM1100381742`). If it invoices under a shared group registration instead, the participant ID
+would change — but the single-company system is unaffected either way, because it only ever handles
+this one company's documents.
 
-This has a presentational benefit: because nothing is self-hosted, **every figure on the dashboard
-is observed rather than self-reported**, and the four entity rows sum exactly to the group totals
-with no unexplained remainder.
+## The dataset, and how it reconciles
 
-## If the entity count changes
+`assets/js/data.js` holds one company (`TENANTS` has a single record) and `GROUP` is that
+company's own roll-up — today's and month-to-date figures for Al Nasr Marbles alone. The numbers
+are load-bearing and `tools/verify.py` reconciles them by evaluating `data.js` in node:
 
-It is load-bearing. Changing it means re-deriving, and the reconciliation is checked:
+- `GROUP`: `entities === 1`; `live + onboarding + notStarted === entities`;
+  `m1 + m2 + m3 + pendingAssessment === entities`;
+  `todaySuccess + todayFailed + todayPending === todayTotal`.
+- The single `TENANTS` record's `today` / `failed` / `pending` equal `GROUP.todayTotal`,
+  `todayFailed`, `todayPending`.
+- `REPORT_ROWS` is **by document type** (Standard invoices / Exports / Simplified / Credit notes),
+  each with a `label`. `docs` sums to `GROUP.mtdTotal`, `failed` to `GROUP.mtdFailed`,
+  `ack + failed === docs` on every row, and VAT equals `(net − zero) × 5%`.
+- `STAGE_COUNT` sums to `todayPending`; `GROUP.week`'s last value is `todayTotal`.
+- `WAVES` are the company's own go-live phases (outbound, inbound, reporting), not per-entity waves.
 
-- `data.js` → `GROUP`: `entities`, `hubEntities`, `selfHosted`, `live`, `onboarding`,
-  `notStarted`, `m1`, `m2`, `m3`, `pendingAssessment`. Invariants: `live + onboarding +
-  notStarted == entities`, `m* == hubEntities`, `hubEntities + selfHosted == entities`.
-- `data.js` → `WAVES`: `entities` and `live` per wave, summing to the group figures.
-- `data.js` → per-entity `today` / `failed` / `pending` / `mtd`, which now sum **exactly** to
-  `GROUP.todayTotal`, `todayFailed`, `todayPending` and `mtdTotal`.
-- `data.js` → `REPORT_ROWS`: one row per entity; `docs` sums to `mtdTotal`, `failed` to
-  `mtdFailed`, and VAT must equal `(net − zero) × 5%` on every row.
-- `data.js` → `STAGE_COUNT`, which sums to `todayPending`; and `GROUP.week`, whose last value is
-  `todayTotal`.
-- `shell.js`: act II description, two walkthrough blurbs, the sidebar `tag`.
-- Prose counts in `index.html`, `hub/login.html`, `hub/tenants.html`, `hub/users.html`,
-  `hub/inbound.html`, `portal/dashboard.html`.
-
-`tools/verify.py` checks all of this. It catches dangling entity and document references, and
-evaluates `data.js` in node to reconcile every invariant above — so a half-finished entity change
-fails the tool rather than reaching a screen. Run it after any edit to the dataset.
+`tools/verify.py` also catches dangling document references, banned vocabulary (including any
+leftover "central hub", "Compliance Hub", "Group Dashboard" or "tenant" wording), dead links, and
+runs a live browser walk over all 14 walkthrough steps. Run it after any edit to the dataset.

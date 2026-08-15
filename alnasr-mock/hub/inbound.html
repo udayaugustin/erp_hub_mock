@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Inbound Documents — Al Nasr Compliance Hub</title>
+<title>Inbound Documents — Al Nasr E-Invoicing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -73,7 +73,7 @@
 <body class="surface-hub" data-surface="hub" data-nav="inbound"
       data-step="hub-inbound"
       data-crumbs="Operations / Inbound Documents"
-      data-hint="Supplier invoices coming the other way: routed to the right company, archived, and landed as a draft that nobody posted for you.">
+      data-hint="Supplier invoices coming the other way: archived, and landed as a draft in the ERP that nobody posted for you.">
 
 <main class="main">
   <div class="page">
@@ -84,7 +84,7 @@
           <h1>Inbound Documents</h1>
           <span class="pill pill-ok"><i class="dot"></i>Receiving</span>
         </div>
-        <p class="page-sub">Supplier invoices arriving from the Peppol network, routed to the right company.</p>
+        <p class="page-sub">Supplier invoices arriving from the Peppol network, landed as drafts in the ERP.</p>
       </div>
       <div class="page-actions">
         <span class="small dim" id="dayNote"></span>
@@ -121,7 +121,7 @@
         </table>
       </div>
       <div class="card-foot">
-        <span class="tiny dim">Not one of these was posted. Every draft is waiting for a person in the receiving company.</span>
+        <span class="tiny dim">Not one of these was posted. Every draft is waiting for a person in accounts payable.</span>
       </div>
     </div>
 
@@ -196,15 +196,15 @@
 
   document.getElementById('tiles').innerHTML = [
     stat({ label: 'Received today',   value: num(GROUP.inboundToday),
-           meta: 'Across the companies connected to the Hub', tone: 'var(--accent)' }),
-    /* Stated as what the Hub DOES, not as a zero against what it does not.
+           meta: 'Received into the Al Nasr Marbles ERP today', tone: 'var(--accent)' }),
+    /* Stated as what the system DOES, not as a zero against what it does not.
        A tile headed "Posted automatically" reads as the claim, and the 0
        underneath has to undo it. */
     stat({ label: 'Created as drafts', value: num(GROUP.inboundToday - heldRows.length),
-           meta: 'Waiting for a person in the receiving company. None posted automatically.',
+           meta: 'Waiting for a person in accounts payable. None posted automatically.',
            tone: 'var(--ok)' }),
     stat({ label: 'Held — cannot route', value: num(heldRows.length),
-           meta: 'In the arrivals below · central technical team', tone: 'var(--fail)' })
+           meta: 'In the arrivals below · technical support', tone: 'var(--fail)' })
   ].join('');
 
   /* ---- the six stages ---- */
@@ -218,8 +218,8 @@
       legal record. Stage 5 then creates the ERP draft. If the ERP record is later edited, renumbered
       or deleted, the archived original does not change.`),
     notice('info', `<strong>A supplier invoice always arrives as a draft.</strong>
-      The Hub creates a draft purchase invoice in the receiving company's ERP and stops there.
-      Nothing is ever posted automatically. A person in that company reviews it against the
+      The system creates a draft purchase invoice in the ERP and stops there.
+      Nothing is ever posted automatically. A person reviews it against the
       purchase order and the goods received, and posts it themselves.`)
   ].join('');
 
@@ -251,7 +251,7 @@
               : `<div style="color:var(--fail);font-size:12.5px">Unrecognised sender</div>
                  <div class="tiny dim num">0248:OM1100777001</div>`}</td>
       <td>${r.to ? tenantChip(r.to)
-                 : `<span class="chip fail">No matching entity</span>`}</td>
+                 : `<span class="chip fail">Not addressed to this company</span>`}</td>
       <td class="num" style="font-size:11.5px">${r.recv}</td>
       <td class="r num">${omr(r.total)}</td>
       <td>${stageCell(r)}</td>
@@ -260,8 +260,7 @@
   }
 
   const sel = document.getElementById('fTo');
-  sel.innerHTML = '<option value="">All receiving companies</option>' +
-    [...inEntities].map(id => `<option value="${id}">${tenant(id).short}</option>`).join('') +
+  sel.innerHTML = '<option value="">All arrivals</option>' +
     '<option value="__none">Could not be routed</option>';
 
   function draw() {
@@ -284,22 +283,22 @@
         <div class="small dim mt4">Arrived ${held.recv} · ${omr(held.total)} OMR ·
           stopped at stage ${held.stage + 1}, ${IN_STAGES[held.stage]}</div>
         <p class="small mt12" style="line-height:1.65;max-width:96ch">
-          <strong>What happened.</strong> A supplier's provider transmitted this document to the group.
-          Routing works by matching the receiving participant identifier on the document to one of the
-          group's registered entities. ${held.err}
-          The document was accepted and stored, but it has not been delivered into any ERP, because the
-          Hub cannot tell which company it belongs to.
+          <strong>What happened.</strong> A supplier's provider transmitted this document addressed to a
+          participant identifier. Routing works by matching the receiving participant identifier on the
+          document to Al Nasr Marbles' registered identifier. ${held.err}
+          The document was accepted and stored, but no draft was created, because the identifier does
+          not match Al Nasr Marbles'.
         </p>
         <p class="small mt8" style="line-height:1.65;max-width:96ch">
-          <strong>Why.</strong> Either the identifier was never registered for that entity, or the
-          supplier addressed it to an identifier the group does not use. Both are questions about
+          <strong>Why.</strong> Either the identifier was never registered for Al Nasr Marbles, or the
+          supplier addressed it to an identifier Al Nasr Marbles does not use. Both are questions about
           participant registration, not about the invoice's contents.
         </p>
       </div>
       <div style="min-width:230px">
         ${kv([
           ['Sent to participant', '<span class="mono-hl">0248:OM1100777001</span>'],
-          ['Matched entity', '<span style="color:var(--fail)">none of 4</span>'],
+          ['Matches Al Nasr Marbles', '<span style="color:var(--fail)">No</span>'],
           ['Original XML', 'Archived'],
           ['ERP draft created', 'No'],
           ['State', held.erpState]
@@ -310,20 +309,19 @@
   document.getElementById('ownership').innerHTML = `
     <div class="ownside is-this">
       <div class="oh">Who owns this one</div>
-      <div class="ow">The central technical team</div>
-      <div class="ob">This is a platform and participant-registration problem. Nobody in any of the
-        All four companies can fix their own data from their own finance system, and no company is even shown this one as
-        their exception. The central team checks the participant registration with the group's
-        service provider and, once the identifier is registered to the right entity, the document
+      <div class="ow">Technical support</div>
+      <div class="ob">This is a platform and participant-registration problem, not business data, so the
+        finance team does not resolve it. Technical support checks the participant registration with
+        the accredited service provider and, once the identifier is registered correctly, the document
         is routed and the draft is created.</div>
     </div>
     <div class="ownside">
       <div class="oh">Contrast — a data problem</div>
-      <div class="ow">The receiving company's finance team</div>
+      <div class="ow">The finance team</div>
       <div class="ob">Had the document routed correctly and then failed on, say, a supplier with no
-        VAT information or an unrecognised account, that exception would appear in that company's
-        own portal and only theirs. It is business data, so the people who own the business data
-        resolve it. The central team never edits an entity's master data on its behalf.</div>
+        VAT information or an unrecognised account, that exception would appear here for the
+        finance team. It is business data, so the people who own the business data resolve it.
+        Technical support never edits finance master data on its behalf.</div>
     </div>`;
 
   /* ---- drill-down: one document ---- */
@@ -338,12 +336,12 @@
       <div class="h">How it was routed</div>
       <div class="b">The document was addressed to participant
         <span class="mono-hl">${dt.peppol}</span>. That identifier is registered to
-        <strong>${dt.name}</strong>, so the document was routed to that company and to no other.
+        <strong>${dt.name}</strong>, so the document was accepted for Al Nasr Marbles.
         Received from ${ds.name} at ${d.recv}.</div>
       <div class="mt12">${kv([
         ['Sender', '<span class="mono-hl">' + ds.peppol + '</span>'],
         ['Receiver', '<span class="mono-hl">' + dt.peppol + '</span>'],
-        ['Matched entity', dt.name]
+        ['Matched identifier', dt.name]
       ], true)}</div>
     </div>
     <div class="ddc">
@@ -351,7 +349,7 @@
       <div class="h">The original was archived first</div>
       <div class="b">Before anything was written to ${dt.erp}, the supplier's UBL 2.1 XML was stored
         exactly as received, together with the arrival timestamp and the validation result. That
-        stored copy is the record the group would produce in an audit. Nothing that happens in the
+        stored copy is the record Al Nasr Marbles would produce in an audit. Nothing that happens in the
         ERP afterwards alters it.</div>
       <div class="mt12">${kv([
         ['Stored', 'Original inbound XML'],
@@ -375,7 +373,7 @@
     </div>`;
 
   document.getElementById('ddFoot').textContent =
-    'Stage 6 of 6 — with ' + dt.short + '. The Hub has done everything it does; the posting decision is theirs.';
+    'Stage 6 of 6 — with ' + dt.short + '. The system has done everything it does; the posting decision is theirs.';
 
   document.getElementById('btnXml').addEventListener('click', () => {
     const n = document.getElementById('xmlNote');

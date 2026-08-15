@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Al Nasr Compliance Hub · guided walkthrough</title>
+<title>Al Nasr E-Invoicing · guided walkthrough</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -87,7 +87,7 @@
       <span class="brand-mark" style="width:30px;height:30px;font-size:18px">T</span>
       <span class="stack">
         <span class="brand-name" style="font-size:15px">Al Nasr</span>
-        <span class="brand-sub">Compliance Hub</span>
+        <span class="brand-sub">E-Invoicing</span>
       </span>
     </div>
 
@@ -99,12 +99,12 @@
     </div>
   </div>
 
-  <h1>Four companies.<br>One way to <em>comply</em>.</h1>
+  <h1>One company.<br>One way to <em>comply</em>.</h1>
 
-  <p class="lede">A sixteen-step walkthrough in six short acts. An invoice leaves a company's ERP,
+  <p class="lede">A sixteen-step walkthrough in six short acts. An invoice leaves the ERP,
     becomes a compliant e-invoice, is transmitted and reported, and comes back with its
     acknowledgement. Supplier invoices arrive the other way and land as drafts nobody posted for you.
-    Every company sees only itself.</p>
+    Your data stays inside your own system.</p>
 
   <div class="row wrap mt24" style="gap:9px;padding:0">
     <a class="btn btn-primary btn-lg" href="erp/invoices.html">Start the walkthrough →</a>
@@ -113,8 +113,8 @@
 
   <div class="flow">
     <div class="flow-item" style="--tone:#4C5A6B"><div class="n">Starts in</div><div class="v">The company's ERP</div></div>
-    <div class="flow-item" style="--tone:#1F4585"><div class="n">Handled by</div><div class="v">The Compliance Hub</div></div>
-    <div class="flow-item" style="--tone:#EDAF4A"><div class="n">Reported via</div><div class="v">The group's provider</div></div>
+    <div class="flow-item" style="--tone:#1F4585"><div class="n">Handled by</div><div class="v">The compliance engine</div></div>
+    <div class="flow-item" style="--tone:#EDAF4A"><div class="n">Reported via</div><div class="v">The accredited provider (ASP)</div></div>
     <div class="flow-item" style="--tone:#4C5A6B"><div class="n">Ends in</div><div class="v">The same ERP invoice</div></div>
   </div>
 </header>
@@ -135,7 +135,7 @@
 /* The step list is derived from WALKTHROUGH and ACTS in shell.js, so this
    page can never drift out of order with the walkthrough itself.
    Page hrefs there are written for pages one folder deep; strip the ../ here. */
-const LABEL = { erp: 'Their ERP', hub: 'Compliance Hub', portal: 'One company' };
+const LABEL = { erp: 'The ERP', hub: 'E-Invoicing', portal: 'Finance view' };
 const NEW_IN_V3 = ['hub-onboard', 'hub-users', 'hub-inbound', 'hub-reports'];
 
 document.getElementById('acts').innerHTML = ACTS.map((act, ai) => {

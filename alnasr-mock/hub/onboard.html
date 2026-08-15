@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Onboard a Company — Al Nasr Compliance Hub</title>
+<title>Connection Setup — Al Nasr E-Invoicing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -37,8 +37,8 @@
 </head>
 <body class="surface-hub" data-surface="hub" data-nav="onboard"
       data-step="hub-onboard"
-      data-crumbs="Configuration / Onboard a Company"
-      data-hint="Bringing a new company on is connection, mapping and configuration — not a new installation.">
+      data-crumbs="Configuration / Connection Setup"
+      data-hint="Connecting this company's ERP is connection, mapping and configuration — not a new installation.">
 
 <main class="main">
   <div class="page">
@@ -46,7 +46,7 @@
     <div class="page-head">
       <div class="grow">
         <div class="page-title">
-          <h1 id="ttl">Onboard a company</h1>
+          <h1 id="ttl">Connection setup</h1>
           <span class="pill pill-warn"><i class="dot"></i>In progress</span>
         </div>
         <p class="page-sub" id="sub">Step 3 of 6.</p>
@@ -63,7 +63,7 @@
       <div class="card-head">
         <div class="grow">
           <div class="eyebrow">Steps 1 and 2 — completed</div>
-          <strong style="font-size:13px" id="recapName">Entity</strong>
+          <strong style="font-size:13px" id="recapName">Company</strong>
         </div>
         <span class="chip ok">Confirmed</span>
       </div>
@@ -81,7 +81,7 @@
         <div class="eyebrow">Step 3 · part one</div>
         <strong style="font-size:14px">How this company will connect</strong>
       </div>
-      <span class="small dim">Chosen per entity, after the ERP inventory</span>
+      <span class="small dim">Chosen after the ERP inventory</span>
     </div>
 
     <div class="pickers g3" id="picks"></div>
@@ -108,8 +108,8 @@
           <button class="btn btn-sm btn-primary" id="testBtn">Test connection</button>
         </div>
         <div class="card-body">
-          <div id="probe"><div class="probe-empty">Nothing tested yet. Press <b>Test connection</b> and the Hub
-            will reach the entity with the details on the left, one check at a time.</div></div>
+          <div id="probe"><div class="probe-empty">Nothing tested yet. Press <b>Test connection</b> and the system
+            will reach the ERP with the details on the left, one check at a time.</div></div>
           <div id="probeSummary"></div>
         </div>
       </div>
@@ -140,37 +140,37 @@
 <script src="../assets/js/shell.js"></script>
 <script>
 /* ---------------------------------------------------------------------------
-   Onboarding wizard for ONBOARD (data.js). Energy Services, wave 3, at step 3.
+   Connection-setup wizard for ONBOARD (data.js). Al Nasr Marbles, at step 3.
    --------------------------------------------------------------------------- */
 const O        = ONBOARD;
 const PEPPOL   = '0248:' + O.vatin;
-const WAVE     = WAVES.find(w => w.n === O.wave) || {};
+const WAVE     = WAVES.find(w => w.n === 1) || {};
 const COLS     = parseInt(((O.probe.find(p => /field/i.test(p.t)) || {}).note || '').match(/\d+/) || 0, 10);
 const OUTSTAND = O.probe.filter(p => p.st !== 'ok').length;
 let picked     = 3;                       /* legacy point of sale, nightly export */
 let running    = false;
 
 /* --- header + stepper ------------------------------------------------------ */
-document.getElementById('ttl').textContent  = 'Onboard ' + O.entity;
+document.getElementById('ttl').textContent  = 'Connect the ' + O.entity + ' ERP';
 document.getElementById('sub').textContent  =
   'Step ' + (O.at + 1) + ' of ' + O.steps.length + ' — ' + O.steps[O.at] +
-  '. No new installation: this company is brought on through connection, mapping and configuration.';
+  '. Setup is connection, mapping and configuration against this company\'s ERP.';
 document.getElementById('steps').innerHTML  = wsteps(O.steps, O.at);
 document.getElementById('recapName').textContent = O.entity;
 document.getElementById('footNote').textContent  =
-  'Nothing is transmitted for this company until the test document has been through end to end.';
+  'Nothing is transmitted until the test document has been through end to end.';
 
 /* --- recap ----------------------------------------------------------------- */
 document.getElementById('recapA').innerHTML = kv([
   ['Legal entity',   O.entity],
-  ['Group code',     '<span class="num">' + O.code + '</span>'],
+  ['Company code',   '<span class="num">' + O.code + '</span>'],
   ['VAT number',     '<span class="num">' + O.vatin + '</span>']
 ]);
 
 function drawRecapB() {
   document.getElementById('recapB').innerHTML = kv([
     ['Peppol participant', '<span class="num">' + PEPPOL + '</span>'],
-    ['Rollout wave',       WAVE.name + ' · ' + WAVE.window],
+    ['Go-live phase',      WAVE.name],
     ['Connection method',  methodChip(picked, true)]
   ]);
 }
@@ -184,7 +184,7 @@ document.getElementById('picks').innerHTML = [1, 2, 3].map(m => {
     <div class="pk-t">${i.n}</div>
     <div class="pk-d">${i.how}</div>
     <div class="pk-m">Typical use — ${i.use}</div>
-    <div class="pk-m">Installed at the entity — <b>${i.onsite}</b></div>
+    <div class="pk-m">Installed on site — <b>${i.onsite}</b></div>
   </label>`;
 }).join('');
 
@@ -193,7 +193,7 @@ const FORMS = {
   1: () => `
     <label class="field"><span class="label">Base URL of the ERP service</span>
       <input class="input num" id="f_url" value="https://erp.barkaretail.om/api/v2">
-      <span class="field-help">The Hub calls this address outward. Supplied by the entity's ERP team.</span></label>
+      <span class="field-help">The system calls this address outward. Supplied by the company's ERP team.</span></label>
     <label class="field"><span class="label">Authentication mode</span>
       <select class="select" id="f_auth">
         <option>OAuth 2.0 client credentials</option>
@@ -202,7 +202,7 @@ const FORMS = {
       </select></label>
     <label class="field"><span class="label">Integration user</span>
       <input class="input num" id="f_user" value="svc_nazm_hub">
-      <span class="field-help">Created by the entity. One named service account, not a personal login.</span></label>
+      <span class="field-help">Created by the company's ERP team. One named service account, not a personal login.</span></label>
     <div class="field"><span class="label">Fields to read</span>
       <div class="small muted" style="line-height:1.6">Sales invoices and credit notes, plus the customer,
         item and tax master data behind them. The read is limited to an agreed list of fields — nothing
@@ -211,18 +211,18 @@ const FORMS = {
   2: () => `
     <label class="field"><span class="label">Agent host name</span>
       <input class="input num" id="f_host" value="BRK-APP-01.barka.local">
-      <span class="field-help">A machine inside the entity's own network that can see the ERP.</span></label>
+      <span class="field-help">A machine inside the company's own network that can see the ERP.</span></label>
     <label class="field"><span class="label">Outbound port</span>
       <input class="input num" id="f_port" value="443">
       <span class="field-help">Outbound only. Nothing is opened inward.</span></label>
     <div class="field"><span class="label">Where the agent runs</span>
-      <div class="small muted" style="line-height:1.6">The agent is installed on the entity's own network and
-        maintained centrally. It carries work in both directions over the connection it opens itself.</div></div>`,
+      <div class="small muted" style="line-height:1.6">The agent is installed on the company's own network and
+        maintained by technical support. It carries work in both directions over the connection it opens itself.</div></div>`,
 
   3: () => `
     <label class="field"><span class="label">Secure location</span>
       <input class="input num" id="f_loc" value="sftp://transfer.nazmhub.om/barka-retail/outbound">
-      <span class="field-help">Agreed with the entity. Separate credentials per company.</span></label>
+      <span class="field-help">Agreed with the company's ERP team. Dedicated credentials for this transfer.</span></label>
     <div class="grid g2">
       <label class="field"><span class="label">File format</span>
         <select class="select" id="f_fmt">
@@ -239,7 +239,7 @@ const FORMS = {
     </div>
     <label class="field" style="margin-bottom:0"><span class="label">File naming pattern</span>
       <input class="input num" id="f_pat" value="BRK_INV_YYYYMMDD_NNN.csv">
-      <span class="field-help">The Hub picks up any file matching this pattern and acknowledges each one.</span></label>`
+      <span class="field-help">The system picks up any file matching this pattern and acknowledges each one.</span></label>`
 };
 
 function drawForm() {
@@ -247,7 +247,7 @@ function drawForm() {
   document.getElementById('form').innerHTML = FORMS[picked]();
   document.getElementById('methodNote').innerHTML = picked === 2
     ? notice('info', `<b>No inbound firewall access is needed.</b> The agent initiates the secure connection
-        outward to the Hub, so the ERP is never exposed to the internet.`)
+        outward to the compliance system, so the ERP is never exposed to the internet.`)
     : '';
 }
 
@@ -289,8 +289,8 @@ function runProbe() {
         sum.innerHTML = notice('warn',
           `<b>Connection established.</b> ${num(COLS)} columns discovered in ${num(ms)} ms.
            ${OUTSTAND === 1 ? 'One item is outstanding' : num(OUTSTAND) + ' items are outstanding'}:
-           write-back permission has not been granted yet. The entity must grant it before go-live,
-           so that the reference, status and QR information can be written back onto its own invoice.`);
+           write-back permission has not been granted yet. This must be granted before go-live,
+           so that the reference, status and QR information can be written back onto the company's own invoice.`);
         btn.disabled = false;
         btn.textContent = 'Run the test again';
         running = false;
@@ -305,8 +305,8 @@ document.getElementById('next').innerHTML = [
    num(COLS) + ' columns came back from the test. An analyst points each one at the standard field it belongs to.'],
   ['Run a test document end to end',
    'One real invoice, built, validated, archived and transmitted, with the outcome tracked back.'],
-  ['Go live with the ' + WAVE.name.toLowerCase() + ' cutover',
-   WAVE.window + '. ' + WAVE.note]
+  ['Go live with e-invoicing',
+   'Once the test document passes, this company begins transmitting real invoices to the accredited provider.']
 ].map((n, i) => `
   <div class="ns"><span class="nsn">${i + 1}</span>
     <div><div class="nst">${n[0]}</div><div class="nsd">${n[1]}</div></div>

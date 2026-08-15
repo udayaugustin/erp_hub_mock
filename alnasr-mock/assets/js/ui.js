@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Al Nasr Compliance Hub — shared UI component helpers
+   Al Nasr Marbles E-Invoicing — shared UI component helpers
    Every function returns an HTML string. Pages compose them.
    ========================================================================== */
 

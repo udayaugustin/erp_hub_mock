@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Overview — Al Nasr Marbles · Entity Portal</title>
+<title>Overview — Al Nasr Marbles · Finance view</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -42,7 +42,7 @@
 <body class="surface-portal" data-surface="portal" data-nav="dashboard"
       data-step="portal-home"
       data-crumbs="Al Nasr Marbles LLC / Overview"
-      data-hint="The same platform, seen by one company. Al Nasr Marbles sees only its own invoices — the other three companies are invisible to this user.">
+      data-hint="A lighter finance view of the compliance system — the invoices, supplier documents and reports the finance team works with day to day.">
 
 <main class="main">
   <div class="page">
@@ -158,8 +158,8 @@
             <select class="select select-sm" id="inviteRole"></select>
             <button class="btn btn-sm btn-primary" id="btnInvite">Invite a colleague</button>
           </div>
-          <div class="small dim mt8" id="inviteNote">You add your own colleagues. The central team is not
-            involved and never sets anyone's password.</div>
+          <div class="small dim mt8" id="inviteNote">You add your own colleagues. Each person sets their
+            own password on first sign-in.</div>
         </div>
       </div>
     </section>
@@ -167,7 +167,7 @@
     <section id="reports" style="margin-top:0">
       <div class="section-head">
         <h2 class="grow">My reports</h2>
-        <span class="small dim">The same reports the group runs — filtered to this company alone</span>
+        <span class="small dim">The reports the finance team works with</span>
       </div>
       <div class="card">
         <div class="card-body">
@@ -207,9 +207,9 @@
     '<i class="dot"></i>' + FAIL_DOCS + ' documents · ' + CAUSES.length + ' causes';
 
   document.getElementById('isolation').innerHTML = notice('info',
-    `<b>You are signed in to one company.</b> This portal shows Al Nasr Marbles LLC and nothing else.
-     The scope is enforced in the data itself, so no screen, filter or export here can return another
-     company's documents.`);
+    `<b>This is the finance view.</b> A lighter view of the compliance system for the finance team —
+     the invoices, supplier documents and reports they work with day to day. Your data stays in your
+     own system.`);
 
   /* --- stat tiles — Al Nasr Marbles's own numbers only ---------------------
      The success-rate tile compares against the target rather than
@@ -274,7 +274,7 @@
     e.preventDefault();
     document.getElementById('invoiceFoot').textContent =
       'The full list is outside this prototype. It would show all ' + num(ME.today) + ' documents raised '
-      + 'today by ' + ME.name + ' — and nothing belonging to any other company.';
+      + 'today by ' + ME.name + '.';
   });
 
   /* --- exceptions — this entity fixes its own source data -----------
@@ -327,15 +327,15 @@
   document.getElementById('help').innerHTML = `
     <div class="small"><b>You fix data problems.</b> A missing VAT number or a total that does not add up lives
       in your own ERP — correct it there, then press Reprocess.</div>
-    <div class="small"><b>Group IT fixes platform problems.</b> A dead connector, an expired certificate or a
+    <div class="small"><b>Technical support fixes platform problems.</b> A dead connector, an expired certificate or a
       service provider outage is not yours to fix.</div>
-    <div class="small dim">The central service desk handles platform issues · einvoicing@alnasr.om</div>
-    <div><button class="btn btn-sm btn-block" id="btnTicket">Raise a ticket with the central team</button></div>
+    <div class="small dim">Technical support handles platform issues · einvoicing@alnasr.om</div>
+    <div><button class="btn btn-sm btn-block" id="btnTicket">Raise a ticket with technical support</button></div>
     <div class="small dim" id="ticketNote"></div>`;
 
   document.getElementById('btnTicket').addEventListener('click', () => {
     document.getElementById('ticketNote').textContent =
-      'Ticket drafted for the central technical team. Ticketing itself is outside this prototype.';
+      'Ticket drafted for technical support. Ticketing itself is outside this prototype.';
   });
 
   /* --- supplier invoices — received by this company only ------------
@@ -403,7 +403,7 @@
     drawUsers(invited);
     document.getElementById('inviteNote').textContent =
       'Invitation sent to ' + email + ' as ' + roleName(roleSel.value) + '. They set their own password on first '
-      + 'sign-in — you never see it, and neither does the central team.';
+      + 'sign-in — you never see it.';
   });
 
   /* --- my reports — the group's reports, scoped to this company ------ */
@@ -422,8 +422,8 @@
     c.classList.add('is-active');
     const r = MY_REPORTS[c.dataset.rep];
     document.getElementById('repNote').textContent =
-      r.n + ' — prepared for ' + ME.name + ' alone: ' + num(ME.mtd) + ' documents month to date. '
-      + 'The central team runs the same report across the group; you only ever get your own rows.';
+      r.n + ' — for ' + ME.name + ': ' + num(ME.mtd) + ' documents month to date. '
+      + 'This is the report your finance team works with.';
   });
 
   /* --- export ------------------------------------------------------- */

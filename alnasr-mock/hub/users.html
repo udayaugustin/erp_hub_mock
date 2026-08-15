@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Users &amp; Access — Al Nasr Compliance Hub</title>
+<title>Users &amp; Access — Al Nasr E-Invoicing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -38,7 +38,7 @@
 <body class="surface-hub" data-surface="hub" data-nav="users"
       data-step="hub-users"
       data-crumbs="Configuration / Users &amp; Access"
-      data-hint="How each of the four companies is given its own login — and why the central team never sets or sees a password.">
+      data-hint="How each user is given a login — and why the administrator never sets or sees a password.">
 
 <main class="main">
   <div class="page">
@@ -47,7 +47,7 @@
       <div class="grow">
         <div class="page-title">
           <h1>Users &amp; Access</h1>
-          <span class="pill pill-ok"><i class="dot"></i>Entity-administered</span>
+          <span class="pill pill-ok"><i class="dot"></i>Self-administered</span>
         </div>
         <p class="page-sub" id="page-sub"></p>
       </div>
@@ -60,9 +60,9 @@
       <div class="section-head">
         <div class="grow">
           <div class="eyebrow">Access</div>
-          <h2 id="users-title">One company&rsquo;s users</h2>
+          <h2 id="users-title">Users</h2>
         </div>
-        <span class="small dim">Administered by that company, not by us</span>
+        <span class="small dim">Administered by your finance team</span>
       </div>
 
       <div class="card card-tight">
@@ -98,7 +98,7 @@
         <div class="section-head">
           <div class="grow">
             <div class="eyebrow">Provisioning</div>
-            <h2>How a company gets its login</h2>
+            <h2>How a user gets a login</h2>
           </div>
         </div>
         <div class="card">
@@ -137,8 +137,7 @@
 
   /* ---- page sub ---------------------------------------------------------- */
   document.getElementById('page-sub').innerHTML =
-    GROUP.entities + ' companies in the group. Each one receives its own login and administers its own people. ' +
-    'A company sees only its own documents, users and exceptions.';
+    'Your team administers its own people. Each user sees only the documents and exceptions their role allows.';
 
   /* ---- the provisioning sequence -----------------------------------------
      The five step names and their owner chips carry the argument on their
@@ -154,14 +153,10 @@
     return expRow(head, s.body, i === 0);
   }).join('');
 
-  var centralSteps = ACCESS_STEPS.filter(function (s) { return s.who === 'Central team'; }).length;
-  var entitySteps  = ACCESS_STEPS.length - centralSteps;
-
   document.getElementById('seq-teach').innerHTML = notice('info',
-    '<strong>The central team never sets or sees a password.</strong> ' +
-    'It issues one invitation, at step 3. The person named by the company sets their own credentials at step 4. ' +
-    'From step 5 onward the company administers its own users and the central team is not in the loop &mdash; ' +
-    'of the ' + ACCESS_STEPS.length + ' steps, ' + centralSteps + ' are ours and ' + entitySteps + ' belong to the company.');
+    '<strong>The administrator never sets or sees a password.</strong> ' +
+    'A single invitation is issued at step 3. The person named sets their own credentials at step 4. ' +
+    'From step 5 onward the administrator manages users directly, inside your own system.');
 
   /* ---- roles -------------------------------------------------------------- */
   document.getElementById('roles').innerHTML = ROLES.map(function (r) {
@@ -169,21 +164,21 @@
     return '<div class="rolecard ' + (central ? 'is-central' : '') + '">' +
       '<div class="row" style="gap:8px">' +
         '<span class="rn grow">' + r.n + '</span>' +
-        '<span class="chip ' + (central ? 'info' : 'req') + '">' + (central ? 'Central team' : 'The company') + '</span>' +
+        '<span class="chip req">Your team</span>' +
       '</div>' +
       '<div class="rdsc">' + r.d + '</div>' +
-      /* only the central role carries a second paragraph — collapse it, since
+      /* only the elevated role carries a second paragraph — collapse it, since
          the limit it describes is the point of the whole card */
       (central
-        ? expRow('<span class="exp-t grow">Where our reach stops</span>',
-            'The central team can configure anything on this platform. It cannot post to any ERP. ' +
-            'Posting stays with the company&rsquo;s own finance users, in their own system.', false)
+        ? expRow('<span class="exp-t grow">Where the admin reach stops</span>',
+            'The administrator can configure anything in this system. It cannot post to the ERP. ' +
+            'Posting stays with your finance users, in the ERP itself.', false)
         : '') +
     '</div>';
   }).join('');
 
   document.getElementById('roles-note').innerHTML = teach(
-    'Three of these four roles are held by people inside the company. Only the group administrator is ours, ' +
+    'All three roles are held by people inside your organisation. The administrator role is the most powerful, ' +
     'and its reach stops at configuration.');
 
   /* ---- the live example --------------------------------------------------- */
@@ -266,7 +261,7 @@
     if (!v) { fail('Enter an email address.'); return; }
     if (!EMAIL.test(v)) { fail('That does not look like an email address.'); return; }
     if (users.some(function (u) { return u.email.toLowerCase() === v.toLowerCase(); })) {
-      fail('That person already has access to this company.'); return;
+      fail('That person already has access.'); return;
     }
     clearErr();
 
@@ -289,9 +284,7 @@
 
   /* ---- closing note ------------------------------------------------------- */
   document.getElementById('closing').innerHTML = teach(
-    'This same screen exists inside every company&rsquo;s own portal, scoped to that company alone. ' +
-    'The entity administrator at ' + ENT.short + ' does exactly this for their own colleagues, and sees no one ' +
-    'from the other ' + (GROUP.entities - 1) + ' companies.');
+    'Your administrator adds and removes colleagues here. Each user sees only what their role permits.');
 })();
 </script>
 </body>

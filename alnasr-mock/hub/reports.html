@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reports — Al Nasr Compliance Hub</title>
+<title>Reports — Al Nasr E-Invoicing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -41,7 +41,7 @@
 <body class="surface-hub" data-surface="hub" data-nav="reports"
       data-step="hub-reports"
       data-crumbs="Records / Reports"
-      data-hint="The reports a group tax function actually asks for: what was invoiced, and whether every document reached the Authority.">
+      data-hint="The reports your tax function actually asks for: what was invoiced, and whether every document reached the Authority.">
 
 <main class="main">
   <div class="page">
@@ -50,7 +50,7 @@
       <div class="grow">
         <div class="page-title">
           <h1>Reports</h1>
-          <span class="pill pill-accent"><i class="dot"></i>Group-wide</span>
+          <span class="pill pill-accent"><i class="dot"></i>Al Nasr Marbles</span>
         </div>
         <p class="page-sub" id="page-sub"></p>
       </div>
@@ -131,14 +131,14 @@
 
   function sortedRows() {
     return REPORT_ROWS.slice().sort(function (a, b) {
-      if (sortKey === 'id') return entShort(a.id).localeCompare(entShort(b.id)) * sortDir * -1;
+      if (sortKey === 'id') return a.label.localeCompare(b.label) * sortDir * -1;
       return (a[sortKey] - b[sortKey]) * sortDir;
     });
   }
 
   /* ---- report definitions -------------------------------------------------- */
   var VAT_COLS = [
-    { k: 'id',     t: 'Entity',            r: false },
+    { k: 'id',     t: 'Document type',     r: false },
     { k: 'docs',   t: 'Documents',         r: true },
     { k: 'net',    t: 'Net (OMR)',         r: true },
     { k: 'vat',    t: 'VAT (OMR)',         r: true },
@@ -157,7 +157,7 @@
 
     var body = '<tbody>' + sortedRows().map(function (r) {
       return '<tr>' +
-        '<td>' + tenantChip(r.id) + '</td>' +
+        '<td>' + r.label + '</td>' +
         '<td class="r">' + num(r.docs) + '</td>' +
         '<td class="r">' + omr(r.net) + '</td>' +
         '<td class="r">' + omr(r.vat) + '</td>' +
@@ -168,7 +168,7 @@
     }).join('') + '</tbody>';
 
     var foot = '<tfoot><tr>' +
-      '<td>Total — ' + REPORT_ROWS.length + ' entities</td>' +
+      '<td>Total</td>' +
       '<td class="r">' + num(t.docs) + '</td>' +
       '<td class="r">' + omr(t.net) + '</td>' +
       '<td class="r">' + omr(t.vat) + '</td>' +
@@ -197,7 +197,7 @@
       return (a.ack / a.docs) - (b.ack / b.docs);
     });
     var head = '<div class="comprow head">' +
-      '<div>Entity</div><div class="cnum">Raised</div><div class="cnum">Acknowledged</div>' +
+      '<div>Document type</div><div class="cnum">Raised</div><div class="cnum">Acknowledged</div>' +
       '<div class="cnum">Gap</div><div>Completeness</div><div class="cpct">%</div></div>';
 
     var body = rows.map(function (r) {
@@ -205,7 +205,7 @@
       var p = (r.ack / r.docs) * 100;
       var tone = p >= 99 ? 'var(--ok)' : p >= 97 ? 'var(--warn)' : 'var(--fail)';
       return '<div class="comprow">' +
-        '<div class="cname">' + tenantChip(r.id) + '</div>' +
+        '<div class="cname">' + r.label + '</div>' +
         '<div class="cnum">' + num(r.docs) + '</div>' +
         '<div class="cnum">' + num(r.ack) + '</div>' +
         '<div class="cnum">' + (gap ? '<span class="chip fail">' + num(gap) + '</span>' : '0') + '</div>' +
@@ -216,7 +216,7 @@
 
     var gapTotal = t.docs - t.ack;
     var foot = '<div class="comprow" style="background:var(--bg-alt);border-top:2px solid var(--line-hard);font-weight:700">' +
-      '<div class="cname">Total — ' + REPORT_ROWS.length + ' entities</div>' +
+      '<div class="cname">Total</div>' +
       '<div class="cnum">' + num(t.docs) + '</div>' +
       '<div class="cnum">' + num(t.ack) + '</div>' +
       '<div class="cnum">' + num(gapTotal) + '</div>' +
@@ -244,14 +244,13 @@
     var t = totals();
     var rows = REPORT_ROWS.slice().sort(function (a, b) { return b.failed - a.failed; })
       .map(function (r) {
-        var share = (r.failed / t.failed) * 100;
-        return [tenantChip(r.id), num(r.failed), pct(share), num(r.docs), pct((r.failed / r.docs) * 100)];
+        return [r.label, num(r.failed), num(r.docs), pct((r.failed / r.docs) * 100)];
       });
-    rows.push(['<strong>Total — ' + REPORT_ROWS.length + ' entities</strong>',
-      '<strong>' + num(t.failed) + '</strong>', '<strong>' + pct(100) + '</strong>',
+    rows.push(['<strong>Total</strong>',
+      '<strong>' + num(t.failed) + '</strong>',
       '<strong>' + num(t.docs) + '</strong>', '<strong>' + pct((t.failed / t.docs) * 100) + '</strong>']);
     return simpleTable([
-      { t: 'Entity' }, { t: 'Open failures', r: true }, { t: 'Share of group failures', r: true },
+      { t: 'Document type' }, { t: 'Open failures', r: true },
       { t: 'Documents in period', r: true }, { t: 'Failure rate', r: true }
     ], rows);
   }
@@ -260,60 +259,50 @@
     var t = totals();
     var rows = REPORT_ROWS.slice().sort(function (a, b) { return b.docs - a.docs; })
       .map(function (r) {
-        return [tenantChip(r.id), num(r.docs), omr(r.net), omr(r.zero),
+        return [r.label, num(r.docs), omr(r.net), omr(r.zero),
                 pct(r.zero === 0 ? 0 : (r.zero / (r.net || 1)) * 100)];
       });
-    rows.push(['<strong>Total — ' + REPORT_ROWS.length + ' entities</strong>',
+    rows.push(['<strong>Total</strong>',
       '<strong>' + num(t.docs) + '</strong>', '<strong>' + omr(t.net) + '</strong>',
       '<strong>' + omr(t.zero) + '</strong>', '<strong>' + pct((t.zero / t.net) * 100) + '</strong>']);
     return simpleTable([
-      { t: 'Entity' }, { t: 'Documents', r: true }, { t: 'Net (OMR)', r: true },
+      { t: 'Document type' }, { t: 'Documents', r: true }, { t: 'Net (OMR)', r: true },
       { t: 'Zero-rated (OMR)', r: true }, { t: 'Zero-rated share', r: true }
     ], rows);
   }
 
   function inboundReport() {
-    var ids = REPORT_ROWS.map(function (r) { return r.id; });
-    var list = TENANTS.filter(function (t) { return ids.indexOf(t.id) > -1; })
-      .sort(function (a, b) { return b.inToday - a.inToday; });
-    var tot = list.reduce(function (s, t) { return s + t.inToday; }, 0);
+    var list = TENANTS.slice();
     var rows = list.map(function (t) {
       return [tenantChip(t.id), num(t.inToday),
         t.inbound ? pill('live', 'Routing on') : pill('draft', 'Not enabled'),
         methodChip(t.deploy === 'self-hosted' ? 'self' : t.method)];
     });
-    rows.push(['<strong>Total — ' + list.length + ' entities</strong>',
-      '<strong>' + num(tot) + '</strong>', '', '']);
     return simpleTable([
-      { t: 'Entity' }, { t: 'Received today', r: true },
+      { t: 'Company' }, { t: 'Received today', r: true },
       { t: 'Inbound routing' }, { t: 'Connection' }
     ], rows);
   }
 
   function waveReadiness() {
-    var list = TENANTS.slice().sort(function (a, b) { return a.wave - b.wave || a.id.localeCompare(b.id); });
-    var rows = list.map(function (t) {
-      var p = (t.mapped / t.mapTotal) * 100;
-      return ['<strong>Wave ' + t.wave + '</strong>', tenantChip(t.id),
-        num(t.mapped) + ' / ' + num(t.mapTotal),
-        '<div style="min-width:110px">' + bar(p, p >= 100 ? 'var(--ok)' : p >= 85 ? 'var(--warn)' : 'var(--fail)') + '</div>',
-        pct(p), pill(t.status)];
+    var rows = WAVES.map(function (w) {
+      return ['<strong>Phase ' + w.n + '</strong>', w.name, w.window, w.note,
+        pill(w.state === 'complete' ? 'completed' : w.state)];
     });
     return simpleTable([
-      { t: 'Wave' }, { t: 'Entity' }, { t: 'Fields mapped', r: true },
-      { t: 'Progress' }, { t: 'Complete', r: true }, { t: 'State' }
+      { t: 'Phase' }, { t: 'Capability' }, { t: 'Window' }, { t: 'Scope' }, { t: 'State' }
     ], rows);
   }
 
   /* ---- catalogue wiring ---------------------------------------------------- */
   var VIEWS = {
-    'VAT summary by entity': {
+    'VAT summary': {
       slug: 'vat-summary',
       eyebrow: 'Finance',
       lead: function () {
         var t = totals();
-        return teach('Net, VAT and zero-rated totals per legal entity, taken from the archived documents rather than ' +
-          'from any one ERP. The total row is the sum of the rows above it: ' + num(t.docs) + ' documents, ' +
+        return teach('Net, VAT and zero-rated totals for this company by document type, taken from the archived ' +
+          'documents rather than the live ERP. The total row is the sum of the rows above it: ' + num(t.docs) + ' documents, ' +
           'OMR ' + omr(t.vat) + ' of VAT. Click any column heading to sort.');
       },
       render: vatSummary,
@@ -328,7 +317,7 @@
       slug: 'reporting-completeness',
       eyebrow: 'Compliance',
       lead: function () {
-        return teach('This is the report a tax function actually needs. For each entity: documents raised in the ERP ' +
+        return teach('This is the report a tax function actually needs. For each document type: documents raised in the ERP ' +
           'against documents acknowledged along the reporting leg. The gap is what has <em>not</em> yet been ' +
           'acknowledged as reported to the Authority. Worst first.');
       },
@@ -336,17 +325,17 @@
       foot: function () {
         var t = totals();
         var worst = REPORT_ROWS.slice().sort(function (a, b) { return (a.ack / a.docs) - (b.ack / b.docs); })[0];
-        return notice('warn', '<strong>' + num(t.docs - t.ack) + ' documents across ' + REPORT_ROWS.length +
-          ' entities have not been acknowledged.</strong> ' + ent(worst.id) + ' accounts for ' +
+        return notice('warn', '<strong>' + num(t.docs - t.ack) +
+          ' documents have not been acknowledged.</strong> ' + worst.label + ' account for ' +
           num(worst.docs - worst.ack) + ' of them. Each one is a live exception with a named owner &mdash; ' +
-          'business-data problems sit with the entity finance team, platform and connector problems with the central team.');
+          'business-data problems sit with your finance team, platform and connector problems with your IT/administrator.');
       }
     },
     'Exception ageing': {
       slug: 'exception-ageing',
       eyebrow: 'Operations',
       lead: function () {
-        return notice('info', 'Open failures by entity, and each entity&rsquo;s share of the group total. ' +
+        return notice('info', 'Open failures for this company by document type. ' +
           'The full report bands every failure by age and names who owns the fix.');
       },
       render: exceptionAgeing
@@ -355,7 +344,7 @@
       slug: 'document-type-breakdown',
       eyebrow: 'Finance',
       lead: function () {
-        return notice('info', 'Value composition per entity, showing how much of each entity&rsquo;s net turnover is ' +
+        return notice('info', 'Value composition for this company by document type, showing how much of net turnover is ' +
           'zero-rated. The full report separates invoices, credit notes and simplified documents &mdash; credit notes ' +
           'are in scope alongside invoices.');
       },
@@ -365,17 +354,17 @@
       slug: 'inbound-supplier-documents',
       eyebrow: 'Operations',
       lead: function () {
-        return notice('info', 'Supplier documents received today, per entity, with the routing state and how that ' +
-          'entity is connected. Drafts are created in the receiving ERP and posted by that entity&rsquo;s finance team.');
+        return notice('info', 'Supplier documents received today, with the routing state and how this company is ' +
+          'connected. Drafts are created in the receiving ERP and posted by the finance team.');
       },
       render: inboundReport
     },
-    'Wave readiness': {
-      slug: 'wave-readiness',
+    'Go-live readiness': {
+      slug: 'go-live-readiness',
       eyebrow: 'Programme',
       lead: function () {
-        return notice('info', 'Mapping progress per entity, grouped by rollout wave. A wave is only ready when every ' +
-          'entity in it has passed connection and mapping tests.');
+        return notice('info', 'This company&rsquo;s go-live phases, each with its window and current state. A phase is ' +
+          'ready when its connection and mapping tests have passed.');
       },
       render: waveReadiness
     }
@@ -446,8 +435,8 @@
   document.getElementById('export').addEventListener('click', function () {
     var n = document.getElementById('export-note');
     n.innerHTML = notice('ok', '<span class="chip-mono">' + fileName() + '</span> &mdash; prepared for ' +
-      PERIODS[periodKey].label + ', ' + REPORT_ROWS.length + ' entities. ' +
-      'In the live platform this downloads, or is delivered on a schedule to a named group of recipients.');
+      PERIODS[periodKey].label + '. ' +
+      'In the live system this downloads, or is emailed on a schedule to named recipients.');
     n.style.display = '';
   });
 
@@ -460,10 +449,9 @@
   })();
 
   document.getElementById('closing').innerHTML = teach(
-    'These figures are group-wide because the viewer is signed in as the central team. The same reports exist in ' +
-    'each company&rsquo;s own portal, filtered to that company alone &mdash; an entity administrator sees their own ' +
-    'VAT summary and their own completeness figure, and none of the other ' + (GROUP.entities - 1) + ' companies. ' +
-    'Five entities are detailed in this prototype; the live report lists every reporting entity.');
+    'These reports cover Al Nasr Marbles&rsquo; own documents, broken down by document type. Every figure drills ' +
+    'down to the underlying invoices in the compliance archive, and each unacknowledged document is a live exception ' +
+    'with a named owner. Nothing leaves this company&rsquo;s own system.');
 
   paintCatalogue();
   paintReport();

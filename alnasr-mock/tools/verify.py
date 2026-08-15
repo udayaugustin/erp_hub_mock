@@ -11,7 +11,7 @@ try:
 except ImportError:
     HAVE_BROWSER = False
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]   # hub-mock/
+ROOT = pathlib.Path(__file__).resolve().parents[1]   # alnasr-mock/
 fails, warns = [], []
 
 def fail(m): fails.append(m)
@@ -33,6 +33,9 @@ BANNED_VISIBLE = [
     (r'\bT[123]\b(?!\w)', 'superseded: T1/T2/T3 chip'),
     (r'\bsatellite\b', 'superseded: satellite'),
     (r'\bTenant Portal\b', 'superseded: Tenant Portal'),
+    (r'\bCompliance Hub\b', 'superseded: single-company, not a central Compliance Hub'),
+    (r'\bGroup Dashboard\b', 'superseded: single-company, just "Dashboard"'),
+    (r'\bcentral hub\b', 'superseded: single-company, not a central hub'),
     (r'\bFile drop\b', 'superseded: File drop'),
     (r'\b\d+\s*years?\b', 'retention period stated'),
     (r'\bWORM\b', 'retention claim'),
@@ -82,7 +85,8 @@ DOC_NOS = set(re.findall(r"no:\s*'([A-Z]{3}-[A-Z]{3,4}-\d{4}-\d+)'", data))
 # UN/ECE units, currency and scheme codes that legitimately look like entity ids.
 NON_ENTITY_CODES = {'ERP', 'ASP', 'OTA', 'VAT', 'OMR', 'AED', 'USD',
                     'MTK', 'FTK', 'TNE', 'KGM', 'LTR', 'MTR', 'DAY', 'HUR',
-                    'B2B', 'B2C', 'B2G', 'UBL', 'XML', 'CSV', 'PDF', 'URL'}
+                    'B2B', 'B2C', 'B2G', 'UBL', 'XML', 'CSV', 'PDF', 'URL',
+                    'INV', 'EXP', 'CRN'}   # document-type ids in REPORT_ROWS
 DOC_SHAPE = re.compile(r"'([A-Z]{3}-(?:SINV|CRNT|INV|CRN)-\d{4}-\d+)'")
 
 for p in HTML:
@@ -117,43 +121,37 @@ if shutil.which('node'):
     ASSERTS = r"""
 const f=[]; const ck=(o,m)=>{ if(!o) f.push(m); };
 const sum=(a,k)=>a.reduce((n,x)=>n+x[k],0);
+// Single company: TENANTS holds exactly one record (Al Nasr Marbles) and GROUP
+// is that company's own roll-up \u2014 no group, no hub/self-hosted split, no waves-per-entity.
+ck(TENANTS.length===1, `TENANTS should hold exactly one company, has ${TENANTS.length}`);
 ck(TENANTS.length===GROUP.entities, `TENANTS has ${TENANTS.length}, GROUP.entities is ${GROUP.entities}`);
 ck(GROUP.live+GROUP.onboarding+GROUP.notStarted===GROUP.entities, 'live+onboarding+notStarted != entities');
-ck(GROUP.hubEntities+GROUP.selfHosted===GROUP.entities, 'hubEntities+selfHosted != entities');
-ck(GROUP.m1+GROUP.m2+GROUP.m3+GROUP.pendingAssessment===GROUP.hubEntities, 'method counts != hubEntities');
+ck(GROUP.m1+GROUP.m2+GROUP.m3+GROUP.pendingAssessment===GROUP.entities, 'method counts != entities');
 ck(GROUP.todaySuccess+GROUP.todayFailed+GROUP.todayPending===GROUP.todayTotal, 'today buckets != todayTotal');
 ck(STAGE_COUNT.reduce((a,b)=>a+b,0)===GROUP.todayPending, 'STAGE_COUNT != todayPending');
 ck(GROUP.week[GROUP.week.length-1]===GROUP.todayTotal, 'last week value != todayTotal');
 ck(GROUP.week.length===GROUP.weekDays.length, 'week and weekDays differ in length');
-ck(WAVES.reduce((a,w)=>a+w.entities,0)===GROUP.entities, 'wave entities != GROUP.entities');
-ck(WAVES.reduce((a,w)=>a+w.live,0)===GROUP.live, 'wave live != GROUP.live');
-const hub=TENANTS.filter(t=>t.deploy==='hub'), slf=TENANTS.filter(t=>t.deploy==='self-hosted');
-ck(hub.length===GROUP.hubEntities, 'hub-deployed tenants != GROUP.hubEntities');
-ck(slf.length===GROUP.selfHosted, 'self-hosted tenants != GROUP.selfHosted');
-ck(sum(slf,'today')===GROUP.selfHostedToday, 'self-hosted today != GROUP.selfHostedToday');
-ck(sum(hub,'today')===GROUP.todayTotal, `hub tenant today sums to ${sum(hub,'today')}, todayTotal is ${GROUP.todayTotal}`);
-ck(sum(hub,'failed')===GROUP.todayFailed, 'hub tenant failed != todayFailed');
-ck(sum(hub,'pending')===GROUP.todayPending, 'hub tenant pending != todayPending');
+ck(sum(TENANTS,'today')===GROUP.todayTotal, `company today ${sum(TENANTS,'today')} != todayTotal ${GROUP.todayTotal}`);
+ck(sum(TENANTS,'failed')===GROUP.todayFailed, 'company failed != todayFailed');
+ck(sum(TENANTS,'pending')===GROUP.todayPending, 'company pending != todayPending');
+// REPORT_ROWS is now BY DOCUMENT TYPE (label + id), not per entity.
 ck(REPORT_ROWS.reduce((a,r)=>a+r.docs,0)===GROUP.mtdTotal, 'REPORT_ROWS docs != mtdTotal');
 ck(REPORT_ROWS.reduce((a,r)=>a+r.failed,0)===GROUP.mtdFailed, 'REPORT_ROWS failed != mtdFailed');
-REPORT_ROWS.forEach(r=>{ const t=tenant(r.id);
-  ck(!!t, `REPORT_ROWS row ${r.id} is not an entity`);
-  if(t) ck(t.mtd===r.docs, `${r.id}: tenant.mtd ${t&&t.mtd} != report docs ${r.docs}`);
+REPORT_ROWS.forEach(r=>{ ck(!!r.label, `REPORT_ROWS row ${r.id} has no label`);
   ck(r.ack+r.failed===r.docs, `${r.id}: ack+failed != docs`);
   ck(Math.abs((r.net-r.zero)*0.05-r.vat)<0.5,
      `${r.id}: VAT ${r.vat} != (net-zero)*5% = ${((r.net-r.zero)*0.05).toFixed(3)}`); });
-INVOICES.forEach(i=>{ ck(!!tenant(i.tenant), `${i.no}: unknown entity ${i.tenant}`);
+INVOICES.forEach(i=>{ ck(!!tenant(i.tenant), `${i.no}: unknown company ${i.tenant}`);
   ck(i.cust>=0 && i.cust<CUSTOMERS.length, `${i.no}: customer index out of range`);
   if(i.state!=='failed') ck(Math.abs(i.net+i.vat-i.total)<0.001, `${i.no}: net+vat != total`); });
 INBOUND.forEach(r=>{ if(r.to) ck(!!tenant(r.to), `${r.no}: unknown target ${r.to}`);
   ck(r.supplier===null||r.supplier<SUPPLIERS.length, `${r.no}: supplier index out of range`); });
-HISTORY.forEach(h=>ck(!!tenant(h.tenant), `${h.no}: unknown entity ${h.tenant}`));
-ACTIVITY.forEach(a=>ck(TENANTS.some(t=>t.short===a.tag), `activity tag "${a.tag}" is not an entity`));
-ENTITY_USERS.forEach(u=>ck(!!tenant(u.who), `user ${u.email}: unknown entity ${u.who}`));
+HISTORY.forEach(h=>ck(!!tenant(h.tenant), `${h.no}: unknown company ${h.tenant}`));
+ENTITY_USERS.forEach(u=>ck(!!tenant(u.who), `user ${u.email}: unknown company ${u.who}`));
 const names=new Set(ERP_SCHEMA.map(x=>x.f));
 MAPPING.forEach(g=>g.rows.forEach(r=>{ if(r.erp && r.erp!=='\u2014')
   ck(names.has(r.erp), `mapping source "${r.erp}" is not in ERP_SCHEMA`); }));
-console.log(f.length ? 'FAIL\n'+f.join('\n') : 'OK ' + [GROUP.entities+' entities',
+console.log(f.length ? 'FAIL\n'+f.join('\n') : 'OK ' + [GROUP.entities+' company',
   GROUP.todayTotal+' today', GROUP.mtdTotal+' MTD', REPORT_ROWS.length+' report rows'].join(', '));
 """
     with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False) as fh:

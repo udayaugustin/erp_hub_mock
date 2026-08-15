@@ -29,7 +29,7 @@
 <body class="surface-portal" data-surface="portal" data-nav="invoices"
       data-step="portal-document"
       data-crumbs="My organisation / My invoices / Invoice detail"
-      data-hint="One document, seen from inside the company that raised it. Everything here is scoped to this entity — there is no route from this page to any other company's data.">
+      data-hint="One document, seen in the finance view. Everything here is Al Nasr Marbles' own record.">
 
 <main class="main">
   <div class="page">
@@ -179,8 +179,8 @@
     const why   = exc ? exc.why   : 'The cause is being investigated.';
     const fix   = exc ? exc.fix   : 'No action is needed from you.';
     const who   = ownedByMe
-      ? '<b>Your finance team resolves this.</b> The correction is made in your own ERP — nobody outside this company can make it for you.'
-      : '<b>The central technical team resolves this.</b> It is a platform matter, already assigned, and needs nothing from you.';
+      ? '<b>Your finance team resolves this.</b> The correction is made in your own ERP — nobody else can make it for you.'
+      : '<b>Technical support resolves this.</b> It is a platform matter, already assigned, and needs nothing from you.';
 
     document.getElementById('problem').innerHTML = notice(ownedByMe ? 'warn' : 'info',
       '<b style="font-size:16px">' + title + '</b>' +
