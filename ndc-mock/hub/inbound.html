@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inbound Documents — National Detergent Co E-Invoicing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* page-local — inbound only */
+  .in-fail td { background: color-mix(in srgb, var(--fail) 7%, transparent); }
+  .in-fail td:first-child { box-shadow: inset 3px 0 0 var(--fail); }
+  .in-fail .docno { color: var(--fail); }
+  .stagelbl {
+    display: inline-block; font-size: 12px; font-weight: 600; line-height: 1;
+    padding: 5px 8px; border-radius: 6px; white-space: nowrap;
+    border: 1px solid var(--line-hard); color: var(--text-mid);
+  }
+  .stagelbl.on   { border-color: color-mix(in srgb, var(--ok) 45%, transparent);
+                   background: color-mix(in srgb, var(--ok) 10%, transparent); color: var(--ok); }
+  .stagelbl.mid  { border-color: color-mix(in srgb, var(--warn) 45%, transparent);
+                   background: color-mix(in srgb, var(--warn) 10%, transparent); color: var(--warn); }
+  .stagelbl.bad  { border-color: color-mix(in srgb, var(--fail) 45%, transparent);
+                   background: color-mix(in srgb, var(--fail) 10%, transparent); color: var(--fail); }
+  .stagenum { font-family: var(--font-mono); opacity: .6; margin-right: 4px; }
+  .rules2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+  @media (max-width: 900px) { .rules2 { grid-template-columns: 1fr; } }
+  .ownsplit { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0; }
+  .ownside { padding: 14px 16px; }
+  .ownside + .ownside { border-left: 1px solid var(--line); }
+  @media (max-width: 900px) {
+    .ownsplit { grid-template-columns: 1fr; }
+    .ownside + .ownside { border-left: 0; border-top: 1px solid var(--line); }
+  }
+  .ownside .oh { font-size: 12px; font-weight: 700; letter-spacing: .07em;
+                 text-transform: uppercase; color: var(--text-lo); }
+  .ownside .ow { font-size: 15px; font-weight: 600; margin-top: 5px; }
+  .ownside .ob { font-size: 13px; color: var(--text-mid); margin-top: 6px; line-height: 1.6; }
+  .ownside.is-this { background: color-mix(in srgb, var(--fail) 6%, transparent); }
+  .dd { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 0; }
+  .ddc { padding: 14px 16px; }
+  .ddc + .ddc { border-left: 1px solid var(--line); }
+  @media (max-width: 1000px) {
+    .dd { grid-template-columns: 1fr; }
+    .ddc + .ddc { border-left: 0; border-top: 1px solid var(--line); }
+  }
+  .ddc .n { font-family: var(--font-mono); font-size: 11.5px; font-weight: 700;
+            color: var(--text-lo); letter-spacing: .06em; }
+  .ddc .h { font-size: 14.5px; font-weight: 600; margin-top: 4px; }
+  .ddc .b { font-size: 12.5px; color: var(--text-mid); margin-top: 7px; line-height: 1.6; }
+  .mono-hl { font-family: var(--font-mono); font-size: 12.5px; }
+  /* tighter rhythm — five bands on this screen */
+  .page-head { margin-bottom: 14px; }
+  .section-head.mt24 { margin-top: 12px; }
+  .card-body { padding: 14px 16px; }
+  .ownside { padding: 12px 16px; }
+  /* keyboard-operable disclosure for the single-document walk-through */
+  details.disc > summary {
+    list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12.5px; font-weight: 600; color: var(--accent-hi);
+    border: 1px solid var(--line-hard); border-radius: 999px; padding: 5px 13px;
+  }
+  details.disc > summary::-webkit-details-marker { display: none; }
+  details.disc > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  details.disc[open] > summary { margin-bottom: 12px; }
+  .chev { display: inline-flex; transition: transform .15s var(--ease); }
+  .chev svg { width: 12px; height: 12px; display: block; }
+  details.disc[open] > summary .chev { transform: rotate(90deg); }
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="inbound"
+      data-step="hub-inbound"
+      data-crumbs="Operations / Inbound Documents"
+      data-hint="Supplier invoices coming the other way: archived, and landed as a draft in the ERP that nobody posted for you.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Inbound Documents</h1>
+          <span class="pill pill-ok"><i class="dot"></i>Receiving</span>
+        </div>
+        <p class="page-sub">Supplier invoices arriving from the Peppol network, landed as drafts in the ERP.</p>
+      </div>
+      <div class="page-actions">
+        <span class="small dim" id="dayNote"></span>
+      </div>
+    </div>
+
+    <div class="grid g3 mb16" id="tiles"></div>
+
+    <!-- The two rules are the point of this screen, so they keep a one-line
+         presence above the data. The six stages and the full statement of both
+         rules are explanatory, and now sit below the arrivals table. -->
+    <div class="mb16" id="ruleLine"></div>
+
+    <div class="card card-tight mb16">
+      <div class="card-head">
+        <h2 class="grow">Arrivals</h2>
+        <select class="select select-sm" id="fTo" style="width:auto;min-width:190px"></select>
+        <span class="small dim" id="rowNote"></span>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Document</th>
+              <th>Supplier</th>
+              <th>Routed to</th>
+              <th>Received</th>
+              <th class="r">Total (OMR)</th>
+              <th>Stage</th>
+              <th>In the ERP</th>
+            </tr>
+          </thead>
+          <tbody id="inRows"></tbody>
+        </table>
+      </div>
+      <div class="card-foot">
+        <span class="tiny dim">Not one of these was posted. Every draft is waiting for a person in accounts payable.</span>
+      </div>
+    </div>
+
+    <div class="card mb16">
+      <div class="card-head">
+        <h2 class="grow">One document could not be routed</h2>
+        <span class="pill pill-fail"><i class="dot"></i>Held</span>
+      </div>
+      <div class="card-body" id="failBody"></div>
+      <div class="ownsplit" style="border-top:1px solid var(--line)" id="ownership"></div>
+      <div class="card-foot">
+        <span class="tiny dim">Every exception is triaged this way: is it a data problem, or a platform problem? The answer decides who is asked to fix it.</span>
+      </div>
+    </div>
+
+    <details class="disc">
+      <summary><span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.6" stroke-linecap="round"
+        stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>Follow one document through —
+        routing, archiving, and the draft left in the ERP</summary>
+      <div class="card">
+        <div class="card-head">
+          <h2 class="grow" id="ddTitle"></h2>
+          <span class="pill pill-idle"><i class="dot"></i>Draft — awaiting review</span>
+        </div>
+        <div class="dd" id="ddPanel"></div>
+        <div class="card-foot">
+          <span class="tiny dim grow" id="ddFoot"></span>
+          <button class="btn btn-sm btn-ghost" id="btnXml">Download original XML</button>
+          <span class="tiny dim" id="xmlNote" style="display:none"></span>
+        </div>
+      </div>
+    </details>
+
+    <!-- How it works, below the working content -->
+    <div class="section-head mt24">
+      <div class="grow">
+        <div class="eyebrow">How this direction works</div>
+        <h2>Six stages, and the two rules that govern them</h2>
+      </div>
+    </div>
+
+    <div class="card mb16">
+      <div class="card-head">
+        <h2 class="grow">How an inbound document is handled</h2>
+        <span class="tag">Six stages</span>
+      </div>
+      <div class="card-body">
+        <div id="pipeIn"></div>
+      </div>
+      <div class="card-foot">
+        <span class="tiny dim">The order matters. The original is archived at stage 4, before anything is written into an ERP at stage 5.</span>
+      </div>
+    </div>
+
+    <div class="rules2" id="rules"></div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* ---- figures, all derived from data.js ---- */
+  const heldRows   = INBOUND.filter(r => r.state === 'failed');
+  const draftRows  = INBOUND.filter(r => r.erpRef);
+  const inEntities = new Set(INBOUND.filter(r => r.to).map(r => r.to));
+
+  document.getElementById('dayNote').textContent =
+    DEMO_DATE + ' · ' + num(GROUP.inboundToday) + ' inbound documents so far';
+
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Received today',   value: num(GROUP.inboundToday),
+           meta: 'Received into the National Detergent Co ERP today', tone: 'var(--accent)' }),
+    /* Stated as what the system DOES, not as a zero against what it does not.
+       A tile headed "Posted automatically" reads as the claim, and the 0
+       underneath has to undo it. */
+    stat({ label: 'Created as drafts', value: num(GROUP.inboundToday - heldRows.length),
+           meta: 'Waiting for a person in accounts payable. None posted automatically.',
+           tone: 'var(--ok)' }),
+    stat({ label: 'Held — cannot route', value: num(heldRows.length),
+           meta: 'In the arrivals below · technical support', tone: 'var(--fail)' })
+  ].join('');
+
+  /* ---- the six stages ---- */
+  document.getElementById('pipeIn').innerHTML =
+    pipeline(IN_STAGES.length - 1, { stages: IN_STAGES, times: IN_STAGE_NOTE });
+
+  /* ---- the two rules ---- */
+  document.getElementById('rules').innerHTML = [
+    notice('info', `<strong>The original XML is archived before it reaches the ERP.</strong>
+      Stage 4 stores the supplier's document exactly as it arrived, and that stored copy is the
+      legal record. Stage 5 then creates the ERP draft. If the ERP record is later edited, renumbered
+      or deleted, the archived original does not change.`),
+    notice('info', `<strong>A supplier invoice always arrives as a draft.</strong>
+      The system creates a draft purchase invoice in the ERP and stops there.
+      Nothing is ever posted automatically. A person reviews it against the
+      purchase order and the goods received, and posts it themselves.`)
+  ].join('');
+
+  /* ---- the same two rules, compressed to one line above the data ----------
+     The detail lives at the foot of the page now, but neither rule may drop
+     off the top of this screen — they are what the screen exists to say. */
+  document.getElementById('ruleLine').innerHTML = notice('info',
+    `<strong>Two rules govern everything below.</strong> The original is archived <b>before</b> anything
+     reaches an ERP, and every document lands as a <b>draft</b> — nothing is ever posted automatically.`);
+
+  /* ---- arrivals table ---- */
+  function stageCell(r) {
+    const cls = r.state === 'failed' ? 'bad' : r.state === 'active' ? 'mid' : 'on';
+    return `<span class="stagelbl ${cls}"><span class="stagenum">${r.stage + 1}/${IN_STAGES.length}</span>${IN_STAGES[r.stage]}</span>`;
+  }
+  function erpCell(r) {
+    if (!r.erpRef) return `<div class="small" style="color:var(--text-lo)">${r.erpState}</div>`;
+    const kind = r.credit ? 'Draft credit note' : 'Draft purchase invoice';
+    return `<div class="num" style="font-size:11.5px">${r.erpRef}</div>
+            <div class="tiny dim">${kind} · ${r.erpState.replace('Draft — ', '')}</div>`;
+  }
+  function rowHtml(r) {
+    const s = r.supplier === null ? null : SUPPLIERS[r.supplier];
+    return `<tr class="${r.state === 'failed' ? 'in-fail' : ''}">
+      <td><div class="num docno" style="font-weight:600">${r.no}</div>
+          ${r.credit ? '<div class="tiny dim">Credit note</div>' : ''}</td>
+      <td>${s ? `<div style="font-size:12.5px">${s.name}</div>
+                 <div class="tiny dim num">${s.peppol}</div>`
+              : `<div style="color:var(--fail);font-size:12.5px">Unrecognised sender</div>
+                 <div class="tiny dim num">0248:OM1100777001</div>`}</td>
+      <td>${r.to ? tenantChip(r.to)
+                 : `<span class="chip fail">Not addressed to this company</span>`}</td>
+      <td class="num" style="font-size:11.5px">${r.recv}</td>
+      <td class="r num">${omr(r.total)}</td>
+      <td>${stageCell(r)}</td>
+      <td>${erpCell(r)}</td>
+    </tr>`;
+  }
+
+  const sel = document.getElementById('fTo');
+  sel.innerHTML = '<option value="">All arrivals</option>' +
+    '<option value="__none">Could not be routed</option>';
+
+  function draw() {
+    const v = sel.value;
+    const rows = INBOUND.filter(r =>
+      !v ? true : v === '__none' ? r.to === null : r.to === v);
+    document.getElementById('inRows').innerHTML = rows.map(rowHtml).join('');
+    document.getElementById('rowNote').textContent =
+      rows.length + ' of ' + INBOUND.length + ' shown';
+  }
+  sel.addEventListener('change', draw);
+  draw();
+
+  /* ---- the routing failure ---- */
+  const held = heldRows[0];
+  document.getElementById('failBody').innerHTML = `
+    <div class="row" style="gap:14px;align-items:flex-start;flex-wrap:wrap">
+      <div class="grow" style="min-width:280px">
+        <div class="num" style="font-weight:600;font-size:13.5px">${held.no}</div>
+        <div class="small dim mt4">Arrived ${held.recv} · ${omr(held.total)} OMR ·
+          stopped at stage ${held.stage + 1}, ${IN_STAGES[held.stage]}</div>
+        <p class="small mt12" style="line-height:1.65;max-width:96ch">
+          <strong>What happened.</strong> A supplier's provider transmitted this document addressed to a
+          participant identifier. Routing works by matching the receiving participant identifier on the
+          document to National Detergent Co&rsquo;s registered identifier. ${held.err}
+          The document was accepted and stored, but no draft was created, because the identifier does
+          not match National Detergent Co&rsquo;s.
+        </p>
+        <p class="small mt8" style="line-height:1.65;max-width:96ch">
+          <strong>Why.</strong> Either the identifier was never registered for National Detergent Co, or the
+          supplier addressed it to an identifier National Detergent Co does not use. Both are questions about
+          participant registration, not about the invoice's contents.
+        </p>
+      </div>
+      <div style="min-width:230px">
+        ${kv([
+          ['Sent to participant', '<span class="mono-hl">0248:OM1100777001</span>'],
+          ['Matches National Detergent Co&rsquo;s', '<span style="color:var(--fail)">No</span>'],
+          ['Original XML', 'Archived'],
+          ['ERP draft created', 'No'],
+          ['State', held.erpState]
+        ])}
+      </div>
+    </div>`;
+
+  document.getElementById('ownership').innerHTML = `
+    <div class="ownside is-this">
+      <div class="oh">Who owns this one</div>
+      <div class="ow">Technical support</div>
+      <div class="ob">This is a platform and participant-registration problem, not business data, so the
+        finance team does not resolve it. Technical support checks the participant registration with
+        the accredited service provider and, once the identifier is registered correctly, the document
+        is routed and the draft is created.</div>
+    </div>
+    <div class="ownside">
+      <div class="oh">Contrast — a data problem</div>
+      <div class="ow">The finance team</div>
+      <div class="ob">Had the document routed correctly and then failed on, say, a supplier with no
+        VAT information or an unrecognised account, that exception would appear here for the
+        finance team. It is business data, so the people who own the business data resolve it.
+        Technical support never edits finance master data on its behalf.</div>
+    </div>`;
+
+  /* ---- drill-down: one document ---- */
+  const d  = INBOUND.find(r => r.no === 'GSC-INV-2026-04412');
+  const ds = SUPPLIERS[d.supplier];
+  const dt = tenant(d.to);
+
+  document.getElementById('ddTitle').textContent = d.no + ' — ' + ds.name;
+  document.getElementById('ddPanel').innerHTML = `
+    <div class="ddc">
+      <div class="n">STAGE 2</div>
+      <div class="h">How it was routed</div>
+      <div class="b">The document was addressed to participant
+        <span class="mono-hl">${dt.peppol}</span>. That identifier is registered to
+        <strong>${dt.name}</strong>, so the document was accepted for National Detergent Co.
+        Received from ${ds.name} at ${d.recv}.</div>
+      <div class="mt12">${kv([
+        ['Sender', '<span class="mono-hl">' + ds.peppol + '</span>'],
+        ['Receiver', '<span class="mono-hl">' + dt.peppol + '</span>'],
+        ['Matched identifier', dt.name]
+      ], true)}</div>
+    </div>
+    <div class="ddc">
+      <div class="n">STAGE 4</div>
+      <div class="h">The original was archived first</div>
+      <div class="b">Before anything was written to ${dt.erp}, the supplier's UBL 2.1 XML was stored
+        exactly as received, together with the arrival timestamp and the validation result. That
+        stored copy is the record National Detergent Co would produce in an audit. Nothing that happens in the
+        ERP afterwards alters it.</div>
+      <div class="mt12">${kv([
+        ['Stored', 'Original inbound XML'],
+        ['Archived at', d.recv],
+        ['Independent of the ERP', 'Yes']
+      ], true)}</div>
+    </div>
+    <div class="ddc">
+      <div class="n">STAGE 5</div>
+      <div class="h">The draft waiting in the ERP</div>
+      <div class="b">A draft purchase invoice was created in ${dt.erp} and left unposted. It is
+        matched to the purchase order the supplier quoted. ${dt.short}'s accounts payable team
+        reviews it and posts it, or queries it with the supplier.</div>
+      <div class="mt12">${kv([
+        ['Reference', '<span class="mono-hl">' + d.erpRef + '</span>'],
+        ['State', d.erpState],
+        ['Lines', num(d.lines)],
+        ['Purchase order', '<span class="mono-hl">' + d.po + '</span>'],
+        ['Total', omr(d.total) + ' OMR']
+      ], true)}</div>
+    </div>`;
+
+  document.getElementById('ddFoot').textContent =
+    'Stage 6 of 6 — with ' + dt.short + '. The system has done everything it does; the posting decision is theirs.';
+
+  document.getElementById('btnXml').addEventListener('click', () => {
+    const n = document.getElementById('xmlNote');
+    n.style.display = '';
+    n.textContent = 'Archived original prepared — ' + d.no + '.xml';
+    setTimeout(() => { n.style.display = 'none'; }, 3200);
+  });
+</script>
+</body>
+</html>

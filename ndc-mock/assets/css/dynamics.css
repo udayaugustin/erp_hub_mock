@@ -1,0 +1,256 @@
+/* ==========================================================================
+   Dynamics 365 Finance & Operations look — for the ERP-surface screens only.
+   These screens represent NDC's OWN system (the customer's Dynamics), so they
+   deliberately drop the compliance-hub chrome and wear Microsoft's Fluent
+   design: Segoe UI, the navigation bar, a navigation pane rail, the Action
+   Pane ribbon, a List Page grid, and a Related information (FactBox) pane.
+   Reference: Microsoft Learn — F&O "User interface elements" / List Page pattern.
+   ========================================================================== */
+
+:root {
+  --d-bg:      #faf9f8;   /* neutralLighterAlt — page background */
+  --d-surface: #ffffff;
+  --d-blue:    #0f6cbd;   /* Fluent 2 primary */
+  --d-blue-dk: #115ea3;
+  --d-link:    #0f6cbd;
+  --d-ink:     #201f1e;   /* neutralPrimary */
+  --d-ink2:    #605e5c;   /* neutralSecondary */
+  --d-ink3:    #8a8886;   /* neutralTertiary */
+  --d-line:    #edebe9;   /* neutralLight */
+  --d-line2:   #e1dfdd;   /* neutralQuaternaryAlt */
+  --d-hover:   #f3f2f1;   /* neutralLighter */
+  --d-sel:     #eff6fc;   /* selection blue */
+  --d-green:   #0e700e;
+  --d-green-bg:#dff6dd;
+  --d-red:     #a4262c;
+  --d-red-bg:  #fde7e9;
+  --d-amber:   #6b5900;
+  --d-amber-bg:#fff4ce;
+  --d-warnbar: #fff4ce;
+  --d-warnbd:  #d9a300;
+  --d-font: "Segoe UI", "Segoe UI Web (West European)", -apple-system, BlinkMacSystemFont, system-ui, "Helvetica Neue", Arial, sans-serif;
+}
+
+body.dyn { margin: 0; background: var(--d-bg); color: var(--d-ink);
+  font-family: var(--d-font); font-size: 13px; line-height: 1.4;
+  -webkit-font-smoothing: antialiased; padding-bottom: 84px; }
+body.dyn * { box-sizing: border-box; }
+
+/* inline SVGs carry a viewBox but no intrinsic size; pin sensible defaults so
+   none of them balloon to fill their flex/grid cell. */
+.dyn svg { width: 16px; height: 16px; flex: none; }
+.dyn-portal svg, .dyn-nav-ico svg, .dyn-rail button svg { width: 20px; height: 20px; }
+.dyn-search svg { width: 14px; height: 14px; }
+.dyn-view svg, .dyn-star svg, .dyn-crumb svg, .dyn-fb-title svg { width: 12px; height: 12px; }
+
+/* --- navigation bar -------------------------------------------------------- */
+.dyn-navbar { height: 48px; background: var(--d-surface); border-bottom: 1px solid var(--d-line2);
+  display: flex; align-items: center; padding: 0 8px 0 0; position: relative; z-index: 5; }
+.dyn-nav-left { display: flex; align-items: center; height: 100%; }
+.dyn-portal { width: 48px; height: 48px; display: grid; place-items: center; color: var(--d-ink2);
+  border: none; background: none; cursor: pointer; }
+.dyn-portal:hover { background: var(--d-hover); }
+.dyn-appname { font-size: 15px; font-weight: 600; color: var(--d-ink); padding: 0 10px; white-space: nowrap; }
+.dyn-appname b { font-weight: 700; }
+.dyn-nav-sep { color: var(--d-ink3); font-weight: 400; padding: 0 6px; }
+.dyn-search { display: flex; align-items: center; gap: 8px; margin-left: 14px; height: 30px;
+  width: 300px; max-width: 30vw; border: 1px solid var(--d-line2); border-radius: 2px;
+  padding: 0 10px; color: var(--d-ink3); font-size: 13px; background: var(--d-surface); }
+.dyn-nav-right { margin-left: auto; display: flex; align-items: center; height: 100%; }
+.dyn-nav-ico { width: 40px; height: 48px; display: grid; place-items: center; color: var(--d-ink2);
+  border: none; background: none; cursor: pointer; position: relative; }
+.dyn-nav-ico:hover { background: var(--d-hover); }
+.dyn-nav-ico .dot { position: absolute; top: 12px; right: 11px; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--d-red); }
+.dyn-company { display: flex; flex-direction: column; justify-content: center; padding: 0 12px; height: 100%;
+  border-left: 1px solid var(--d-line); margin-left: 4px; }
+.dyn-company .k { font-size: 10px; color: var(--d-ink3); text-transform: uppercase; letter-spacing: .04em; }
+.dyn-company .v { font-size: 12px; font-weight: 600; }
+.dyn-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--d-blue); color: #fff;
+  display: grid; place-items: center; font-size: 12px; font-weight: 600; margin: 0 8px 0 6px; }
+
+/* --- body: nav-pane rail + workspace --------------------------------------- */
+.dyn-body { display: flex; align-items: stretch; min-height: calc(100vh - 48px); }
+.dyn-rail { width: 48px; flex: none; background: var(--d-surface); border-right: 1px solid var(--d-line2);
+  display: flex; flex-direction: column; align-items: center; padding-top: 6px; gap: 2px; }
+.dyn-rail button { width: 40px; height: 40px; display: grid; place-items: center; border: none;
+  background: none; color: var(--d-ink2); cursor: pointer; border-radius: 2px; position: relative; }
+.dyn-rail button:hover { background: var(--d-hover); }
+.dyn-rail button.is-active { color: var(--d-blue); }
+.dyn-rail button.is-active::before { content: ""; position: absolute; left: -0px; top: 8px; bottom: 8px;
+  width: 2px; background: var(--d-blue); left: 2px; }
+
+.dyn-work { flex: 1; min-width: 0; padding: 0 0 40px; }
+
+/* --- breadcrumb + page head ------------------------------------------------ */
+.dyn-crumb { display: flex; align-items: center; gap: 6px; padding: 8px 20px 0; color: var(--d-ink2);
+  font-size: 12px; }
+.dyn-crumb .sep { color: var(--d-ink3); }
+.dyn-crumb b { color: var(--d-ink); font-weight: 600; }
+.dyn-pagehead { display: flex; align-items: center; gap: 12px; padding: 2px 20px 10px; }
+.dyn-title { font-size: 24px; font-weight: 600; color: var(--d-ink); letter-spacing: -.01em; }
+.dyn-view { display: flex; align-items: center; gap: 5px; color: var(--d-ink2); font-size: 13px;
+  padding-top: 8px; }
+.dyn-view svg { width: 12px; height: 12px; }
+.dyn-star { color: var(--d-ink3); margin-top: 8px; }
+
+/* --- action pane ----------------------------------------------------------- */
+.dyn-actionpane { background: var(--d-surface); border-top: 1px solid var(--d-line);
+  border-bottom: 1px solid var(--d-line2); }
+.dyn-tabs { display: flex; gap: 2px; padding: 0 12px; border-bottom: 1px solid var(--d-line); }
+.dyn-tab { font-size: 13px; color: var(--d-ink2); padding: 7px 10px 6px; cursor: pointer;
+  border-bottom: 2px solid transparent; white-space: nowrap; }
+.dyn-tab:hover { color: var(--d-ink); }
+.dyn-tab.is-active { color: var(--d-ink); font-weight: 600; border-bottom-color: var(--d-blue); }
+.dyn-commands { display: flex; align-items: stretch; gap: 0; padding: 4px 8px 6px; flex-wrap: wrap; }
+.dyn-group { display: flex; flex-direction: column; padding: 0 8px; border-right: 1px solid var(--d-line);
+  gap: 2px; }
+.dyn-group:last-child { border-right: none; }
+.dyn-group-row { display: flex; align-items: center; gap: 0; }
+.dyn-group-cap { font-size: 10.5px; color: var(--d-ink3); text-align: center; padding-top: 1px; }
+.dyn-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--d-ink);
+  background: none; border: none; cursor: pointer; padding: 5px 8px; border-radius: 2px; white-space: nowrap; }
+.dyn-btn:hover { background: var(--d-hover); }
+.dyn-btn svg { width: 16px; height: 16px; color: var(--d-ink2); flex: none; }
+.dyn-btn.pri svg { color: var(--d-blue); }
+.dyn-btn[disabled] { color: var(--d-ink3); cursor: default; }
+.dyn-btn[disabled] svg { color: var(--d-ink3); }
+
+/* --- message bar (Fluent MessageBar) --------------------------------------- */
+.dyn-msgbar { display: flex; align-items: flex-start; gap: 10px; margin: 12px 20px 0;
+  padding: 9px 12px; font-size: 13px; border-radius: 2px; }
+.dyn-msgbar svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }
+.dyn-msgbar.info { background: var(--d-sel); color: var(--d-ink); }
+.dyn-msgbar.info svg { color: var(--d-blue); }
+.dyn-msgbar.warn { background: var(--d-warnbar); color: #4a3b00; border: 1px solid #f3d99a; }
+.dyn-msgbar.warn svg { color: var(--d-warnbd); }
+.dyn-msgbar b { font-weight: 600; }
+
+/* --- main area: grid + factbox --------------------------------------------- */
+.dyn-main { display: flex; align-items: flex-start; gap: 0; padding: 12px 20px 0; }
+.dyn-gridcol { flex: 1; min-width: 0; }
+.dyn-toolbar { display: flex; align-items: center; gap: 10px; padding: 4px 0 8px; }
+.dyn-qfilter { display: flex; align-items: center; gap: 7px; height: 28px; width: 260px;
+  border: 1px solid var(--d-line2); border-radius: 2px; padding: 0 9px; color: var(--d-ink3); font-size: 13px; }
+.dyn-toolbar .link { color: var(--d-link); cursor: pointer; font-size: 13px; }
+.dyn-toolbar .spacer { flex: 1; }
+.dyn-count { color: var(--d-ink2); font-size: 12px; }
+
+.dyn-gridwrap { border: 1px solid var(--d-line2); border-radius: 2px; background: var(--d-surface);
+  overflow-x: auto; }
+table.dyn-grid { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 720px; }
+.dyn-grid thead th { text-align: left; font-weight: 600; color: var(--d-ink2); font-size: 12px;
+  padding: 8px 12px; border-bottom: 1px solid var(--d-line2); white-space: nowrap; background: var(--d-surface);
+  position: sticky; top: 0; }
+.dyn-grid thead th.num, .dyn-grid tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.dyn-grid tbody td { padding: 9px 12px; border-bottom: 1px solid var(--d-hover); color: var(--d-ink);
+  white-space: nowrap; }
+.dyn-grid tbody tr:hover { background: var(--d-hover); }
+.dyn-grid tbody tr.is-sel { background: var(--d-sel); box-shadow: inset 2px 0 0 var(--d-blue); }
+.dyn-grid .chk { width: 18px; }
+.dyn-grid .chk i { display: inline-block; width: 15px; height: 15px; border: 1px solid var(--d-ink3);
+  border-radius: 2px; vertical-align: middle; }
+.dyn-grid tr.is-sel .chk i { background: var(--d-blue); border-color: var(--d-blue); position: relative; }
+.dyn-grid tr.is-sel .chk i::after { content: ""; position: absolute; left: 4px; top: 1px; width: 4px;
+  height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.dyn-grid a.doc { color: var(--d-link); text-decoration: none; font-weight: 600; }
+.dyn-grid a.doc:hover { text-decoration: underline; }
+.dyn-sub { color: var(--d-ink2); font-size: 12px; }
+
+/* status text (Fluent shows status as coloured text/badges) */
+.dyn-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;
+  padding: 1px 8px; border-radius: 10px; }
+.dyn-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.dyn-pill.ok   { color: var(--d-green); background: var(--d-green-bg); }
+.dyn-pill.prog { color: var(--d-amber); background: var(--d-amber-bg); }
+.dyn-pill.rej  { color: var(--d-red);   background: var(--d-red-bg); }
+.dyn-pill.muted{ color: var(--d-ink2);  background: var(--d-hover); }
+
+/* --- FactBox / Related information ----------------------------------------- */
+.dyn-factbox { width: 300px; flex: none; margin-left: 16px; }
+.dyn-fb-head { font-size: 13px; font-weight: 600; color: var(--d-ink); padding: 4px 2px 8px; }
+.dyn-fb { border: 1px solid var(--d-line2); border-radius: 2px; background: var(--d-surface);
+  margin-bottom: 10px; }
+.dyn-fb-title { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px;
+  font-size: 13px; font-weight: 600; color: var(--d-ink); border-bottom: 1px solid var(--d-line); }
+.dyn-fb-title svg { width: 12px; height: 12px; color: var(--d-ink3); }
+.dyn-fb-body { padding: 4px 12px 10px; }
+.dyn-fb-row { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0;
+  border-bottom: 1px solid var(--d-hover); font-size: 12.5px; }
+.dyn-fb-row:last-child { border-bottom: none; }
+.dyn-fb-row .k { color: var(--d-ink2); }
+.dyn-fb-row .v { color: var(--d-ink); font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.dyn-fb-row .v.link { color: var(--d-link); font-weight: 600; }
+.dyn-fb-row .v.mono { font-family: "Cascadia Code", "Consolas", ui-monospace, monospace; font-weight: 500; font-size: 11.5px; }
+
+/* --- generic Dynamics count tiles (used on the FieldAssist page) ----------- */
+.dyn-tiles { display: flex; gap: 10px; flex-wrap: wrap; padding: 12px 20px 0; }
+.dyn-tile { flex: 1; min-width: 150px; background: var(--d-surface); border: 1px solid var(--d-line2);
+  border-radius: 2px; padding: 12px 14px; border-top: 3px solid var(--d-blue); }
+.dyn-tile.warn { border-top-color: var(--d-warnbd); }
+.dyn-tile.ok { border-top-color: var(--d-green); }
+.dyn-tile .k { font-size: 12px; color: var(--d-ink2); }
+.dyn-tile .n { font-size: 28px; font-weight: 600; color: var(--d-ink); line-height: 1.1; margin: 4px 0 3px;
+  font-variant-numeric: tabular-nums; }
+.dyn-tile .s { font-size: 11.5px; color: var(--d-ink3); }
+
+/* --- a Dynamics "fast tab" section header (used on FieldAssist page) -------- */
+.dyn-fasttab { margin: 16px 20px 0; border: 1px solid var(--d-line2); border-radius: 2px;
+  background: var(--d-surface); }
+.dyn-fasttab > h3 { margin: 0; font-size: 14px; font-weight: 600; padding: 10px 14px;
+  border-bottom: 1px solid var(--d-line); display: flex; align-items: center; gap: 8px; }
+.dyn-fasttab > h3 .r { margin-left: auto; font-weight: 400; font-size: 12px; color: var(--d-ink2); }
+.dyn-fasttab .pad { padding: 6px 14px 12px; }
+.dyn-kv { display: flex; flex-wrap: wrap; gap: 4px 28px; }
+.dyn-kv div { display: flex; gap: 8px; padding: 4px 0; font-size: 13px; }
+.dyn-kv .k { color: var(--d-ink2); min-width: 96px; }
+.dyn-kv .v { color: var(--d-ink); font-weight: 600; }
+
+.dyn-arch { margin: 14px 20px 0; font-size: 13px; color: var(--d-ink2); }
+.dyn-arch b { color: var(--d-ink); font-weight: 600; }
+
+/* success / error message-bar variants (detail form) */
+.dyn-msgbar.ok  { background: var(--d-green-bg); color: #0b3d0b; }
+.dyn-msgbar.ok  svg { color: var(--d-green); }
+.dyn-msgbar.err { background: var(--d-red-bg); color: #5c1a1f; border: 1px solid #f1bcc0; }
+.dyn-msgbar.err svg { color: var(--d-red); }
+
+/* a fast tab flagged as a boundary (scope of work) */
+.dyn-fasttab.scope { border-color: #f1bcc0; border-left: 3px solid var(--d-red); }
+.dyn-fasttab.scope > h3 { color: var(--d-red); }
+.dyn-scopelist { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+.dyn-scopelist li { display: grid; grid-template-columns: 14px 1fr; gap: 9px; font-size: 13px;
+  line-height: 1.55; color: var(--d-ink); }
+.dyn-scopelist li::before { content: ""; width: 7px; height: 7px; margin-top: 6px; border-radius: 2px;
+  background: var(--d-red); }
+.dyn-scopelist b { color: var(--d-red); font-weight: 600; }
+.dyn-note { font-size: 12.5px; color: var(--d-ink2); line-height: 1.6; }
+
+/* fast tabs sit flush inside the content column of a detail form */
+.dyn-main .dyn-fasttab { margin: 0 0 12px; }
+
+/* the written-back e-invoice field grid: show the Dynamics field name under the label */
+.dyn-fieldname { font-size: 11px; color: var(--d-blue); font-family: "Cascadia Code", "Consolas", ui-monospace, monospace; }
+
+/* closing panel */
+.dyn-closing { margin: 16px 20px 0; background: var(--d-sel); border: 1px solid #cfe4f6;
+  border-radius: 2px; padding: 16px 18px; }
+.dyn-closing .eyebrow { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--d-blue); font-weight: 600; }
+.dyn-closing h2 { margin: 6px 0 8px; font-size: 18px; font-weight: 600; color: var(--d-ink); }
+.dyn-closing ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 13px; color: var(--d-ink); line-height: 1.55; }
+.dyn-btnrow { display: flex; gap: 8px; margin-top: 14px; }
+.dyn-actbtn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600;
+  text-decoration: none; padding: 7px 14px; border-radius: 2px; border: 1px solid var(--d-line2);
+  color: var(--d-ink); background: var(--d-surface); cursor: pointer; }
+.dyn-actbtn:hover { background: var(--d-hover); }
+.dyn-actbtn.pri { background: var(--d-blue); color: #fff; border-color: var(--d-blue); }
+.dyn-actbtn.pri:hover { background: var(--d-blue-dk); }
+
+/* --- floating walkthrough step bar, made visible over the Fluent surface --- */
+body.dyn .stepnav .count { color: var(--d-ink2); font-weight: 600; font-size: 12px; padding: 0 10px; }
+body.dyn .stepnav .stepbtn { color: var(--d-ink); background: var(--d-surface); border: 1px solid var(--d-line2);
+  border-radius: 2px; padding: 6px 14px; font-size: 13px; font-weight: 600; text-decoration: none; }
+body.dyn .stepnav .stepbtn:hover { background: var(--d-hover); }
+body.dyn .stepnav .stepbtn.next { background: var(--d-blue); color: #fff; border-color: var(--d-blue); }
+body.dyn .stepnav .stepbtn.next:hover { background: var(--d-blue-dk); }
+body.dyn .stepnav .stepbtn.is-off { color: var(--d-ink3); background: var(--d-bg); opacity: .55; }

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The delivery boundary — National Detergent Co E-Invoicing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* page-local — boundary concept screen */
+  .bpoints { list-style: none; display: grid; gap: 12px; }
+  .bpoints li {
+    display: grid; grid-template-columns: 18px minmax(0,1fr); gap: 10px;
+    font-size: 14px; line-height: 1.55; color: var(--text-mid);
+  }
+  .bpoints li .bpn {
+    font-size: 11.5px; font-weight: 700; color: var(--accent);
+    font-variant-numeric: tabular-nums; padding-top: 2px;
+  }
+  .bpoints li b { color: var(--text-hi); font-weight: 600; }
+  .bwhy p { font-size: 14px; line-height: 1.7; color: var(--text-mid); }
+  .bwhy p + p { margin-top: 10px; }
+  .bwhy b { color: var(--text-hi); font-weight: 600; }
+  .bquote { font-size: 15px; line-height: 1.6; }
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="tenants"
+      data-step="hub-boundary"
+      data-crumbs="Operating model / The delivery boundary"
+      data-hint="The invoice has just been raised in the company's own system. This screen draws the line it crosses next.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Where their work ends and ours begins</h1>
+          <span class="pill pill-accent"><i class="dot"></i>Operating model</span>
+        </div>
+        <p class="page-sub" id="psub">One line, agreed before anything is built, so nobody has to ask later who owns what.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="boundary" id="bnd"></div>
+      </div>
+    </div>
+
+    <div class="mt16" id="quote"></div>
+
+    <div class="grid g2 mt16">
+      <div class="card">
+        <div class="card-head">
+          <div class="grow">
+            <div class="eyebrow">The practical consequence</div>
+            <strong style="font-size:13px">What “one complete payload” means</strong>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="bpoints" id="pts"></ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="grow">
+            <div class="eyebrow">The reasoning</div>
+            <strong style="font-size:13px">Why the line sits there</strong>
+          </div>
+        </div>
+        <div class="card-body bwhy" id="why"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* --- the boundary itself ------------------------------------------------ */
+  const side = (cls, head, sub, items) => `
+    <div class="bside ${cls}">
+      <div class="eyebrow">${sub}</div>
+      <div class="bh mt8">${head}</div>
+      <ul class="bl">${items.map(i => `<li>${i}</li>`).join('')}</ul>
+    </div>`;
+
+  document.getElementById('bnd').innerHTML =
+    side('', 'National Detergent Co provides', 'Upstream of the line', BOUNDARY_ENTITY) +
+    `<div class="bline">
+       <i class="bdash"></i>
+       <span class="blbl">Delivery boundary</span>
+       <i class="bdash"></i>
+     </div>` +
+    side('hub', 'The delivery team delivers', 'Downstream of the line', BOUNDARY_HUB);
+
+  /* --- the sentence from the proposal ------------------------------------- */
+  document.getElementById('quote').innerHTML = notice('info',
+    `<div class="bquote">“National Detergent Co is responsible for making <b>one complete invoice payload</b> available at
+      the agreed interface. Everything from that interface onward is delivered by the compliance system.”</div>
+     <div class="tiny dim mt8">Operating model and responsibilities — as stated in the proposal.</div>`);
+
+  /* --- what that means in practice ---------------------------------------- */
+  const PTS = [
+    `The data may live across several tables, or across more than one system inside the company.
+     <b>Assembling it into one payload is National Detergent Co's side of the line.</b>`,
+    `Where a required field does not exist in the ERP at all, adding it is an <b>ERP change</b>,
+     and National Detergent Co owns it.`,
+    `Where the company would rather we did that work, it is <b>quoted separately</b>.`,
+    `Where the ERP already exposes a standard interface, there is <b>no development for the company to do at all</b>.`
+  ];
+  document.getElementById('pts').innerHTML = PTS.map((p, i) =>
+    `<li><span class="bpn">${String(i + 1).padStart(2, '0')}</span><span>${p}</span></li>`).join('');
+
+  /* --- why ----------------------------------------------------------------- */
+  document.getElementById('why').innerHTML = `
+    <p>Everything downstream of the payload is the <b>regulatory machinery</b> —
+      the XML to build, the PINT-OM rules to pass, the accredited provider to talk to,
+      the archive to write. It is built once by the delivery team, so the ERP only ever
+      has to hand over a payload.</p>
+    <p>Everything upstream of it is not that: it is <b>National Detergent Co's own system, its own data and its
+      own master records</b>, and no one outside the company is better placed to assemble it. So the line sits at
+      the payload: <b>the compliance work on one side, the company's own data on the other</b>.</p>`;
+</script>
+</body>
+</html>

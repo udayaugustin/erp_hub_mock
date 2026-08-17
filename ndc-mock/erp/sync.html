@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NDC-CIV-2026-08841 — Dynamics 365 · NDC</title>
+<link rel="stylesheet" href="../assets/css/app.css">
+<link rel="stylesheet" href="../assets/css/dynamics.css">
+</head>
+<!-- ERP surface: the customer invoice record back in Dynamics, showing the
+     e-invoicing result. Fluent chrome; floating walkthrough bar via shell.js. -->
+<body class="dyn" data-surface="erp" data-step="erp-sync" data-shell="off">
+
+<!-- ===================== navigation bar ===================== -->
+<div class="dyn-navbar">
+  <div class="dyn-nav-left">
+    <button class="dyn-portal" title="Dynamics 365">
+      <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="15" y="1" width="4" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/><rect x="15" y="8" width="4" height="5" rx="1"/><rect x="1" y="15" width="5" height="4" rx="1"/><rect x="8" y="15" width="5" height="4" rx="1"/><rect x="15" y="15" width="4" height="4" rx="1"/></svg>
+    </button>
+    <span class="dyn-appname">Finance and operations</span>
+    <div class="dyn-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <span>Search for a page</span>
+    </div>
+  </div>
+  <div class="dyn-nav-right">
+    <button class="dyn-nav-ico" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 6.6 19l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3 12.6H3a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 4.6 6l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 12 3.4V3a2 2 0 0 1 4 0v.1A1.6 1.6 0 0 0 18 4.6l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 19.4 9v0Z"/></svg></button>
+    <button class="dyn-nav-ico" title="Help &amp; support"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></button>
+    <button class="dyn-nav-ico" title="Action center"><span class="dot"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+    <div class="dyn-company"><span class="k">Legal entity</span><span class="v">NDC</span></div>
+    <span class="dyn-avatar">SR</span>
+  </div>
+</div>
+
+<div class="dyn-body">
+  <div class="dyn-rail">
+    <button title="Expand the navigation pane"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    <button title="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></button>
+    <button class="is-active" title="Accounts receivable"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h6"/></svg></button>
+    <button title="Recent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
+  </div>
+
+  <div class="dyn-work">
+    <div class="dyn-crumb"><span>Accounts receivable</span><span class="sep">&rsaquo;</span><span>Invoices</span><span class="sep">&rsaquo;</span><b>NDC-CIV-2026-08841</b></div>
+    <div class="dyn-pagehead">
+      <span class="dyn-title">NDC-CIV-2026-08841</span>
+      <span class="dyn-pill ok" style="margin-top:9px">Acknowledged</span>
+      <span class="dyn-view">Standard view <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span>
+      <span class="dyn-star"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.2l1-5.8-4.3-4.1 5.9-.9Z"/></svg></span>
+    </div>
+
+    <!-- ===================== action pane ===================== -->
+    <div class="dyn-actionpane">
+      <div class="dyn-tabs">
+        <span class="dyn-tab is-active">Invoice</span>
+        <span class="dyn-tab">Collect</span>
+        <span class="dyn-tab">Credit note</span>
+        <span class="dyn-tab">General</span>
+        <span class="dyn-tab">Options</span>
+      </div>
+      <div class="dyn-commands">
+        <div class="dyn-group"><div class="dyn-group-row">
+          <button class="dyn-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Edit</button>
+          <button class="dyn-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4v-6h16v6h-2"/><path d="M8 14h8v8H8z"/></svg>Print with QR</button>
+        </div><div class="dyn-group-cap">Maintain</div></div>
+
+        <div class="dyn-group"><div class="dyn-group-row">
+          <button class="dyn-btn pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>E-invoice status</button>
+          <button class="dyn-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Resend to OTA</button>
+        </div><div class="dyn-group-cap">E-invoicing</div></div>
+
+        <div class="dyn-group"><div class="dyn-group-row">
+          <a class="dyn-btn" href="../hub/document.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M21 14v7H3V3h7"/></svg>View in e-invoicing system</a>
+        </div><div class="dyn-group-cap">Related</div></div>
+      </div>
+    </div>
+
+    <!-- success -->
+    <div class="dyn-msgbar ok">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+      <div><b>Transmitted to the service provider, reported to the Tax Authority, delivered to the buyer.</b> Accepted by the accredited provider at 09:14:07 under acknowledgement <b>ASP-OM-2026-0728-31184</b>; the provider reported it to the Oman Tax Authority (acknowledged 09:15:52); the buyer&rsquo;s provider confirmed delivery at 09:16:41. The result was written back here at 09:16:43 — 2 min 34 s after posting.</div>
+    </div>
+
+    <!-- scope boundary — read first -->
+    <div class="dyn-msgbar err">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>
+      <div><b>Illustration only — writing these values back into Dynamics is not in our scope of work.</b> The e-invoicing service makes every field below available; reading them and updating the Dynamics record belongs to NDC&rsquo;s ERP team or their Dynamics partner. See <b>Scope of work</b> below.</div>
+    </div>
+
+    <div class="dyn-main">
+      <div class="dyn-gridcol">
+
+        <!-- e-invoice status: the written-back fields -->
+        <div class="dyn-fasttab">
+          <h3>E-invoice status <span class="r"><span class="dyn-pill muted">Read-only · from the e-invoicing system</span></span></h3>
+          <div class="pad" style="padding:0">
+            <div class="dyn-gridwrap" style="border:none">
+              <table class="dyn-grid">
+                <thead><tr><th>Field</th><th>Value</th><th>Written at</th></tr></thead>
+                <tbody>
+                  <tr><td>E-invoice status<div class="dyn-fieldname">EInvoiceStatus</div></td><td><span class="dyn-pill ok">Acknowledged</span></td><td class="dyn-sub">28 Jul 09:16:43</td></tr>
+                  <tr><td>Acknowledgement number<div class="dyn-fieldname">EInvoiceAckNumber</div></td><td class="mono">ASP-OM-2026-0728-31184</td><td class="dyn-sub">28 Jul 09:16:43</td></tr>
+                  <tr><td>Peppol reference<div class="dyn-fieldname">EInvoicePeppolRef</div></td><td class="mono">PEP-5117-2026</td><td class="dyn-sub">28 Jul 09:16:43</td></tr>
+                  <tr><td>Document UUID<div class="dyn-fieldname">EInvoiceUUID</div></td><td class="mono" style="word-break:break-all">a4e91b73-2c6d-5f80-9b4a-1e7c3d05f862</td><td class="dyn-sub">28 Jul 09:16:43</td></tr>
+                  <tr><td>QR information<div class="dyn-fieldname">EInvoiceQR</div></td><td>Present <span class="dyn-sub">· rendered on the customer copy</span></td><td class="dyn-sub">28 Jul 09:16:43</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pad"><span class="dyn-note">All of these are fields on this same customer invoice. There is no parallel system and no second place to look.</span></div>
+          </div>
+        </div>
+
+        <!-- scope of work -->
+        <div class="dyn-fasttab scope">
+          <h3>Scope of work — Dynamics-side write-back</h3>
+          <div class="pad">
+            <ul class="dyn-scopelist">
+              <li><span><b>We do not build anything inside Dynamics.</b> No connector, extension or print format on the Dynamics side is part of the current proposal. What we deliver ends at the e-invoicing system&rsquo;s interface.</span></li>
+              <li><span><b>The ERP team collects the data and writes the record.</b> They call the e-invoicing system, take the reference, status and QR information, and perform the insert or update in Dynamics on their own release cycle.</span></li>
+              <li><span><b>Inbound supplier invoices must be created as drafts.</b> When the e-invoicing system passes a supplier invoice to Dynamics, the ERP team creates it as an unposted draft for a person to review. Nothing is posted automatically.</span></li>
+              <li><span><b>If NDC wants us to build it, it is quoted separately.</b> Scope, effort, timeline and cost for the Dynamics-side work are estimated as a separate engagement.</span></li>
+            </ul>
+            <p class="dyn-note" style="margin:12px 0 0">Everything on this screen uses sample data to show what the finished result would look like on the Dynamics record. It is not a working integration.</p>
+          </div>
+        </div>
+
+        <!-- processing history -->
+        <div class="dyn-fasttab">
+          <h3>Processing history <span class="r">8 of 8 complete · end to end 2 min 41 s</span></h3>
+          <div class="pad" style="padding:0">
+            <div class="dyn-gridwrap" style="border:none">
+              <table class="dyn-grid">
+                <thead><tr><th style="width:28px">#</th><th>Step</th><th>Time</th><th>Detail</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td><b>Invoice posted in Dynamics</b></td><td class="dyn-sub">09:14:02</td><td class="dyn-sub" style="white-space:normal">Customer invoice NDC-CIV-2026-08841 posted by S. Al-Rashdi. Status set to Posted.</td></tr>
+                  <tr><td>2</td><td><b>Collected by the system</b></td><td class="dyn-sub">09:14:04</td><td class="dyn-sub" style="white-space:normal">Method 1 — Direct API. Read the customer-invoice data entity. Field allowlist applied.</td></tr>
+                  <tr><td>3</td><td><b>Mapped, built and validated</b></td><td class="dyn-sub">09:14:06</td><td class="dyn-sub" style="white-space:normal">Profile v6. UBL 2.1 built. Oman CIUS Schematron passed — 148 rules, 2 warnings.</td></tr>
+                  <tr><td>4</td><td><b>Archived</b></td><td class="dyn-sub">09:14:06</td><td class="dyn-sub" style="white-space:normal">XML, validation report and audit trail written before anything was transmitted.</td></tr>
+                  <tr><td>5</td><td><b>Transmitted to the ASP</b></td><td class="dyn-sub">09:14:07</td><td class="dyn-sub" style="white-space:normal">Accepted by the accredited provider in 341 ms. Peppol reference PEP-5117-2026.</td></tr>
+                  <tr><td>6</td><td><b>Outcomes tracked on three legs</b></td><td class="dyn-sub">09:16:41</td><td class="dyn-sub" style="white-space:normal">ASP 09:14:07 · OTA report 09:15:52 · buyer delivery 09:16:41.</td></tr>
+                  <tr><td>7</td><td><b>Result published on the interface</b></td><td class="dyn-sub">09:16:43</td><td class="dyn-sub" style="white-space:normal">UUID, status, ack number, Peppol reference and QR held for Dynamics to collect.</td></tr>
+                  <tr><td>8</td><td><b>Collected by Dynamics</b> <span class="dyn-pill rej" style="font-size:11px">ERP team&rsquo;s work</span></td><td class="dyn-sub">09:16:43</td><td class="dyn-sub" style="white-space:normal">The company&rsquo;s connector wrote the result onto the invoice; the print format renders the QR. Not in our scope.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FactBox pane -->
+      <div class="dyn-factbox">
+        <div class="dyn-fb-head">Related information</div>
+
+        <div class="dyn-fb">
+          <div class="dyn-fb-title">QR information</div>
+          <div class="dyn-fb-body">
+            <div style="display:flex;justify-content:center;padding:6px 0"><div id="qr" style="background:#fff;padding:10px;border:1px solid var(--d-line2);border-radius:2px"></div></div>
+            <p class="dyn-note" style="margin:6px 0 0">Written back to the invoice and rendered by the Dynamics print format. The buyer can scan it to verify the invoice.</p>
+          </div>
+        </div>
+
+        <div class="dyn-fb">
+          <div class="dyn-fb-title">Compliance</div>
+          <div class="dyn-fb-body">
+            <div class="dyn-fb-row"><span class="k">Delivery state</span><span class="v" style="color:var(--d-green)">Delivered</span></div>
+            <div class="dyn-fb-row"><span class="k">Reported to the OTA</span><span class="v">09:15:52</span></div>
+            <div class="dyn-fb-row"><span class="k">Archived</span><span class="v">Before transmission</span></div>
+          </div>
+        </div>
+
+        <div class="dyn-fb">
+          <div class="dyn-fb-title">Invoice</div>
+          <div class="dyn-fb-body">
+            <div class="dyn-fb-row"><span class="k">Customer</span><span class="v">Muscat Retail Distributors LLC</span></div>
+            <div class="dyn-fb-row"><span class="k">Account</span><span class="v">CUST-004120</span></div>
+            <div class="dyn-fb-row"><span class="k">Invoice date</span><span class="v">7/28/2026</span></div>
+            <div class="dyn-fb-row"><span class="k">Customer requisition</span><span class="v">PO-3341</span></div>
+            <div class="dyn-fb-row"><span class="k">Invoice amount</span><span class="v">5,061.000 OMR</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- closing -->
+    <div class="dyn-closing">
+      <div class="eyebrow">The end of the walkthrough</div>
+      <h2>The loop is closed.</h2>
+      <ol>
+        <li>The invoice left Dynamics on its own, as a normal customer invoice.</li>
+        <li>It was mapped, built as UBL 2.1, validated against the Oman rules and archived.</li>
+        <li>The e-invoicing system transmitted it to the accredited service provider, which reported it to the Oman Tax Authority and delivered it to the buyer.</li>
+        <li>Its reference, status and QR information are ready to be collected from the e-invoicing system and shown on the original record — the same screen the finance team already uses.</li>
+      </ol>
+      <p class="dyn-note" style="margin:10px 0 0"><b style="color:var(--d-red)">Step 4 is the ERP team&rsquo;s work, not ours.</b> Our delivery ends where the e-invoicing system publishes the data. Building the Dynamics side is a separately scoped, separately costed piece of work.</p>
+      <div class="dyn-btnrow">
+        <a class="dyn-actbtn" href="invoices.html">↺ Start again from Dynamics</a>
+        <a class="dyn-actbtn pri" href="../index.html">Screen map</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* QR code — deterministic pseudo-pattern, 21×21 (version 1). Self-contained. */
+  (function () {
+    const N = 21, PX = 7;
+    const finder = (x, y) => {
+      let lx = null, ly = null;
+      if (x <= 7 && y <= 7)        { if (x === 7 || y === 7) return false; lx = x;      ly = y; }
+      else if (x >= 13 && y <= 7)  { if (x === 13 || y === 7) return false; lx = x - 14; ly = y; }
+      else if (x <= 7 && y >= 13)  { if (x === 7 || y === 13) return false; lx = x;      ly = y - 14; }
+      else return null;
+      const ring = (lx === 0 || lx === 6 || ly === 0 || ly === 6);
+      const core = (lx >= 2 && lx <= 4 && ly >= 2 && ly <= 4);
+      return ring || core;
+    };
+    let cells = '';
+    for (let y = 0; y < N; y++) {
+      for (let x = 0; x < N; x++) {
+        const f = finder(x, y);
+        let on;
+        if (f !== null) on = f;
+        else if (y === 6) on = (x % 2 === 0);
+        else if (x === 6) on = (y % 2 === 0);
+        else {
+          const h = (x * 37 + y * 61 + ((x * y) % 17) * 13 + (((x + 5) ^ (y + 3)) * 7)) % 100;
+          on = h < 48;
+        }
+        cells += `<i style="display:block;width:${PX}px;height:${PX}px;background:${on ? '#111820' : '#fff'}"></i>`;
+      }
+    }
+    document.getElementById('qr').innerHTML =
+      `<div style="display:grid;grid-template-columns:repeat(${N},${PX}px);line-height:0">${cells}</div>`;
+  })();
+</script>
+</body>
+</html>

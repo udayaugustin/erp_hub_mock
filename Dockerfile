@@ -2,9 +2,10 @@
 # No build step — these are plain HTML/CSS/JS files.
 FROM nginx:alpine
 
-# Serve the two client mock sites from nginx's web root.
-# Accessible at:  /wj-mock/  and  /alnasr-mock/
+# Serve the client mock sites from nginx's web root.
+# Accessible at:  /wj-mock/  ·  /alnasr-mock/  ·  /ndc-mock/
 COPY wj-mock/     /usr/share/nginx/html/wj-mock/
 COPY alnasr-mock/ /usr/share/nginx/html/alnasr-mock/
+COPY ndc-mock/    /usr/share/nginx/html/ndc-mock/
 
 EXPOSE 80
