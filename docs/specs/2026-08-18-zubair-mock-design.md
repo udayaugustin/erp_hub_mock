@@ -70,15 +70,18 @@ All share TRN `OM1200094685`. Volumes are annual AR (B2B/B2G), monthly B2C, annu
 
 ## 5. Data-model notes
 
-- VAT grouping: members share **one TRN**; each invoice still carries the **issuing entity's legal name + CR**, under the group TRN. This is the compliance nuance that justifies the hub.
-- Peppol/PINT-OM identity per entity within a single TRN is an **open question** (see §6) — modelled with a sensible placeholder, flagged to confirm.
-- All figures are illustrative; counterparties invented; OMR to 3 decimals, 5% VAT, VATIN `OM` + 10 digits, Peppol scheme `0248`.
+- **VAT-group identity — RESOLVED from the PINT-OM spec (test-docs.peppol.eu).** Within one VAT Group TRN, each entity is identified **per legal entity**, not merged into one group identity. Two levels:
+  1. **Peppol / onboarding level:** each legal entity is its **own Peppol participant** — its own participant/endpoint registration, its own SMP entry, its own ASP onboarding and certificate. Peppol's identifier policy ties the participant identity to the member's own registration; a VAT group "may centralise governance but cannot collapse several legal entities into one shared technical identity." (Confirmed by the UAE VAT-group precedent, which is the same Peppol 5-corner model.)
+  2. **Invoice level (PINT-OM):** the seller is carried by **both** — the **Seller identifier (IBT-029)** with **scheme `CR` = Commercial Registration** (from code list **CL-06-OM**, which offers CR / TIN / CID / SZLN / …) uniquely identifies the *legal entity*, while the **Seller VAT identifier (IBT-031, VATIN)** carries the **shared VAT Group TRN** `OM1200094685`. So the group TRN is a *data field*, not the routing identity; the **CR distinguishes the 12 members**.
+- **This strengthens the hub pitch:** 12 legal entities = 12 Peppol participants (12 endpoints, 12 CRs, 12 certificates) across 4 ERPs, but **one VAT-group return**. Registering, onboarding, routing and monitoring those 12 participants under one compliance view is exactly what a central hub is for.
+- Model implication: every entity in `TENANTS[]` gets its **own CR** (per-entity, `schemeName="CR"`) plus the **shared group VATIN** `OM1200094685`. The tracked invoice shows both on the seller block.
+- All figures are illustrative; counterparties invented; OMR to 3 decimals, 5% VAT, VATIN `OM` + 10 digits. (Exact Oman EAS/ICD scheme for the endpoint address — VAT-based vs CR-based — is a minor detail to confirm against the OTA onboarding portal.)
 
 ---
 
 ## 6. Discovery questions (→ `ZUBAIR-QUESTIONS.md`)
 
-1. Within one VAT Group TRN, how is each entity identified to the OTA / on Peppol (per-entity endpoint vs one group endpoint + issuer CR)?
+1. ~~Within one VAT Group TRN, how is each entity identified to the OTA / on Peppol?~~ **RESOLVED (see §5):** per-entity Peppol participant + per-entity Commercial Registration (CR, IBT-029/CL-06-OM) as the seller identifier, with the shared group VATIN (IBT-031) as the VAT identifier. Only the exact endpoint EAS scheme remains to confirm with the OTA portal.
 2. B2C simplified-invoice mechanism per ERP — batch export cadence from Autoline/SAP, or something live?
 3. ERP connector specifics: SAP BAPI/CPI middleware, Autoline API surface, Orion 11J API, FOCUS X REST.
 4. Which entity/ERP is the reference integration for Phase 2 pilot?

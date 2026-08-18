@@ -1,0 +1,243 @@
+/* ==========================================================================
+   autoline.css — Autoline 8.39 (automotive Dealer Management System) skin for
+   the ERP surface of The Zubair Corporation Central E-Invoicing Hub demo.
+
+   This is the SECOND invoice origin: General Automotive Company LLC runs its
+   showroom, parts and service counters on Autoline 8.39 — a classic, dense,
+   utilitarian DMS. Deliberately NOT SAP Fiori: steel/teal chrome, boxy panels,
+   a tight data grid, monospace document numbers and a function-key footer.
+
+   Namespaced under body.autoline so it cannot collide with app.css, fiori.css
+   or the shell. Light theme only — near-white canvas.
+   ========================================================================== */
+
+body.autoline {
+  /* Autoline steel + teal palette */
+  --al-teal:     #16697a;   /* chrome / primary                */
+  --al-teal-dk:  #0f4c5a;   /* hover / deep                    */
+  --al-teal-lt:  #e2edf0;   /* soft teal fill                  */
+  --al-steel:    #48606b;   /* secondary chrome                */
+  --al-canvas:   #eef1f3;   /* page background (near-white)    */
+  --al-panel:    #ffffff;   /* panels                          */
+  --al-panel-2:  #f6f8f9;   /* alt row / sub-panel             */
+  --al-line:     #b7c2c9;   /* hard border                     */
+  --al-line2:    #d7dee2;   /* thin separator                  */
+  --al-ink:      #1b2a31;   /* primary text                    */
+  --al-ink2:     #4c5c65;   /* labels / secondary              */
+  --al-ink3:     #7c8a92;   /* muted                           */
+  --al-head:     #dbe4e8;   /* grid header fill                */
+
+  /* status */
+  --al-grn:      #1a7a44;  --al-grn-bg: #e2f2e8;  --al-grn-ln: #a9d5ba;
+  --al-blu:      #1f5fa8;  --al-blu-bg: #e3eefb;  --al-blu-ln: #aecbec;
+  --al-amb:      #8a5a08;  --al-amb-bg: #fbefd4;  --al-amb-ln: #e6c987;
+
+  margin: 0;
+  background: var(--al-canvas);
+  color: var(--al-ink);
+  font-family: "Segoe UI", Tahoma, "DejaVu Sans", Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.autoline * { box-sizing: border-box; }
+body.autoline a { color: var(--al-teal); text-decoration: none; }
+body.autoline a:hover { text-decoration: underline; }
+body.autoline .mono {
+  font-family: "IBM Plex Mono", "Consolas", ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: -.01em;
+}
+
+/* ===================== title / chrome bar ===================== */
+body.autoline .al-chrome {
+  display: flex; align-items: center; gap: 14px;
+  height: 46px; padding: 0 14px;
+  background: linear-gradient(180deg, var(--al-teal) 0%, var(--al-teal-dk) 100%);
+  color: #eef6f8;
+  border-bottom: 2px solid #0a3a45;
+}
+body.autoline .al-logo {
+  display: inline-flex; align-items: center; gap: 9px; font-weight: 700;
+  letter-spacing: .02em;
+}
+body.autoline .al-logo .glyph {
+  display: inline-grid; place-items: center; width: 26px; height: 26px;
+  background: #eef6f8; color: var(--al-teal-dk);
+  border-radius: 3px; font-weight: 800; font-size: 15px;
+}
+body.autoline .al-logo .rel {
+  font-size: 11px; font-weight: 600; opacity: .82; letter-spacing: .04em;
+  border-left: 1px solid rgba(255,255,255,.35); padding-left: 9px;
+}
+body.autoline .al-chrome .al-co {
+  font-size: 12.5px; color: #d4e6ea; letter-spacing: .01em;
+}
+body.autoline .al-chrome .al-co b { color: #fff; font-weight: 600; }
+body.autoline .al-chrome .spacer { margin-left: auto; }
+body.autoline .al-chrome .al-user {
+  font-size: 11.5px; color: #cfe2e6; display: inline-flex; align-items: center; gap: 7px;
+}
+body.autoline .al-chrome .al-user .dot { width: 7px; height: 7px; border-radius: 50%; background: #6ee7a8; box-shadow: 0 0 0 2px rgba(110,231,168,.28); }
+
+/* ===================== menu / module strip ===================== */
+body.autoline .al-menu {
+  display: flex; align-items: center; gap: 2px;
+  background: var(--al-steel); color: #e7edf0;
+  padding: 0 10px; height: 30px;
+  border-bottom: 1px solid #0a3a45;
+  font-size: 12px;
+}
+body.autoline .al-menu .item { padding: 4px 11px; border-radius: 2px; opacity: .9; }
+body.autoline .al-menu .item.on { background: rgba(255,255,255,.16); font-weight: 600; opacity: 1; }
+body.autoline .al-menu .path { margin-left: auto; font-size: 11.5px; opacity: .75; letter-spacing: .02em; }
+body.autoline .al-menu .path .mono { color: #dff0f4; }
+
+/* ===================== page frame ===================== */
+body.autoline .al-page {
+  max-width: 1220px; margin: 0 auto; padding: 14px 16px 90px;
+}
+body.autoline .al-pagehead {
+  display: flex; align-items: baseline; gap: 12px; margin: 4px 2px 12px;
+}
+body.autoline .al-pagehead h1 {
+  font-size: 17px; font-weight: 700; color: var(--al-ink); margin: 0; letter-spacing: .01em;
+}
+body.autoline .al-pagehead .sub { font-size: 12px; color: var(--al-ink2); }
+body.autoline .al-pagehead .clock {
+  margin-left: auto; font-size: 11.5px; color: var(--al-ink2);
+  border: 1px solid var(--al-line2); background: var(--al-panel); padding: 3px 9px; border-radius: 2px;
+}
+
+/* ===================== boxy panel ===================== */
+body.autoline .al-panel {
+  background: var(--al-panel); border: 1px solid var(--al-line);
+  border-radius: 2px; margin-bottom: 12px;
+}
+body.autoline .al-panel > .hd {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--al-head); border-bottom: 1px solid var(--al-line);
+  padding: 6px 11px; font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .05em; color: var(--al-teal-dk);
+}
+body.autoline .al-panel > .hd .r { margin-left: auto; font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--al-ink2); }
+body.autoline .al-panel > .bd { padding: 11px; }
+
+/* ===================== tiles ===================== */
+body.autoline .al-tiles {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px;
+}
+body.autoline .al-tile {
+  background: var(--al-panel); border: 1px solid var(--al-line);
+  border-top: 3px solid var(--al-teal); border-radius: 2px; padding: 10px 12px;
+}
+body.autoline .al-tile.warn { border-top-color: var(--al-amb); }
+body.autoline .al-tile .k {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--al-ink3);
+}
+body.autoline .al-tile .v {
+  font-size: 26px; font-weight: 700; color: var(--al-ink); line-height: 1.1; margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+body.autoline .al-tile .u { font-size: 11px; color: var(--al-ink2); margin-top: 2px; }
+
+/* ===================== batch panel ===================== */
+body.autoline .al-batch { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; }
+body.autoline .al-batch .cell {
+  padding: 4px 12px 4px 0; border-right: 1px solid var(--al-line2);
+}
+body.autoline .al-batch .cell:last-child { border-right: 0; }
+body.autoline .al-batch .k {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--al-ink3);
+}
+body.autoline .al-batch .v { font-size: 14px; font-weight: 600; color: var(--al-ink); margin-top: 3px; }
+body.autoline .al-batch .v.mono { font-size: 12.5px; }
+body.autoline .al-flow {
+  margin-top: 10px; padding-top: 9px; border-top: 1px dashed var(--al-line2);
+  font-size: 12px; color: var(--al-ink2); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+body.autoline .al-flow .node {
+  background: var(--al-teal-lt); border: 1px solid var(--al-blu-ln);
+  color: var(--al-teal-dk); font-weight: 600; padding: 2px 8px; border-radius: 2px;
+}
+body.autoline .al-flow .arr { color: var(--al-ink3); font-weight: 700; }
+
+/* ===================== data grid ===================== */
+body.autoline .al-gridwrap { overflow-x: auto; }
+body.autoline table.al-grid {
+  width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 900px;
+}
+body.autoline table.al-grid thead th {
+  background: var(--al-head); color: var(--al-teal-dk);
+  text-align: left; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .04em;
+  padding: 6px 10px; border-bottom: 1px solid var(--al-line); white-space: nowrap;
+  position: sticky; top: 0;
+}
+body.autoline table.al-grid th.num, body.autoline table.al-grid td.num { text-align: right; font-variant-numeric: tabular-nums; }
+body.autoline table.al-grid tbody td {
+  padding: 5px 10px; border-bottom: 1px solid var(--al-line2); white-space: nowrap; color: var(--al-ink);
+}
+body.autoline table.al-grid tbody tr:nth-child(even) { background: var(--al-panel-2); }
+body.autoline table.al-grid tbody tr:hover { background: var(--al-teal-lt); }
+body.autoline table.al-grid td.doc { font-family: "IBM Plex Mono", Consolas, ui-monospace, Menlo, monospace; font-weight: 600; color: var(--al-teal-dk); }
+body.autoline table.al-grid td.total { font-weight: 700; }
+
+/* status chips */
+body.autoline .al-chip {
+  display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .03em;
+  padding: 1px 8px; border-radius: 2px; text-transform: uppercase; border: 1px solid transparent;
+}
+body.autoline .al-chip.reported { color: var(--al-grn); background: var(--al-grn-bg); border-color: var(--al-grn-ln); }
+body.autoline .al-chip.batched  { color: var(--al-blu); background: var(--al-blu-bg); border-color: var(--al-blu-ln); }
+body.autoline .al-chip.queued   { color: var(--al-amb); background: var(--al-amb-bg); border-color: var(--al-amb-ln); }
+
+/* ===================== assumption / callout card ===================== */
+body.autoline .al-callout {
+  background: var(--al-amb-bg); border: 1px solid var(--al-amb-ln);
+  border-left: 4px solid var(--al-amb); border-radius: 2px;
+  padding: 11px 13px; margin-bottom: 12px; display: flex; gap: 11px;
+}
+body.autoline .al-callout .ico {
+  flex: none; width: 22px; height: 22px; display: grid; place-items: center;
+  background: var(--al-amb); color: #fff; border-radius: 50%; font-weight: 800; font-size: 13px;
+}
+body.autoline .al-callout .tt { font-weight: 700; color: var(--al-amb); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+body.autoline .al-callout p { margin: 3px 0 0; font-size: 12.5px; color: #5f4310; line-height: 1.5; }
+body.autoline .al-callout p.q { margin-top: 6px; font-style: italic; color: #6b4f16; }
+
+/* two-column layout for batch + assumption on wide screens */
+body.autoline .al-cols { display: grid; grid-template-columns: 1.35fr 1fr; gap: 12px; align-items: start; }
+body.autoline .al-cols > * { margin-bottom: 0; }
+
+/* ===================== function-key footer strip ===================== */
+body.autoline .al-fkeys {
+  display: flex; flex-wrap: wrap; gap: 0; margin-top: 14px;
+  background: var(--al-steel); border: 1px solid #0a3a45; border-radius: 2px; overflow: hidden;
+}
+body.autoline .al-fkeys .fk {
+  display: inline-flex; align-items: baseline; gap: 6px;
+  padding: 5px 12px; color: #e7edf0; font-size: 11.5px;
+  border-right: 1px solid rgba(255,255,255,.14);
+}
+body.autoline .al-fkeys .fk b { color: #bfe3ea; font-weight: 700; }
+
+/* ===================== floating walkthrough step bar override ===================== */
+/* shell.js injects .stepnav when data-shell="off". Give it Autoline contrast on
+   the near-white canvas: outline Previous, solid teal Next. */
+body.autoline .stepnav .count { color: var(--al-ink2); font-weight: 700; font-size: 12px; padding: 0 10px; }
+body.autoline .stepnav .stepbtn {
+  border: 1px solid var(--al-line); background: var(--al-panel); color: var(--al-ink);
+  border-radius: 2px; height: 32px;
+}
+body.autoline .stepnav .stepbtn:not(.next):hover { background: var(--al-teal-lt); border-color: var(--al-teal); color: var(--al-teal-dk); }
+body.autoline .stepnav .stepbtn.next { background: var(--al-teal); color: #fff; border-color: var(--al-teal); }
+body.autoline .stepnav .stepbtn.next:hover { background: var(--al-teal-dk); color: #fff; }
+body.autoline .stepnav .stepbtn.is-off { color: var(--al-ink3); background: var(--al-panel-2); opacity: .55; }
+
+/* ===================== responsive ===================== */
+@media (max-width: 860px) {
+  body.autoline .al-tiles { grid-template-columns: repeat(2, 1fr); }
+  body.autoline .al-cols { grid-template-columns: 1fr; }
+  body.autoline .al-batch { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  body.autoline .al-batch .cell { border-right: 0; border-bottom: 1px solid var(--al-line2); padding-bottom: 6px; }
+}

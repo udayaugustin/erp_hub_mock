@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zubair Central E-Invoicing Hub · guided walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/app.css">
+<style>
+  .wrap { max-width: 1010px; margin: 0 auto; padding: 0 32px; }
+
+  .hero { padding: 62px 0 4px; position: relative; }
+  .hero h1 {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: clamp(36px, 5.4vw, 60px); line-height: 1.04;
+    letter-spacing: 0; max-width: 17ch; margin-top: 24px;
+  }
+  .hero h1 em { font-style: normal; font-weight: 700; color: var(--gold-ink); }
+  .lede { font-size: 15.5px; color: var(--text-mid); max-width: 60ch; margin-top: 18px; line-height: 1.62; }
+
+  .flow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 28px; }
+  .flow-item {
+    flex: 1; min-width: 148px; padding: 12px 14px; border-radius: var(--r-md);
+    background: var(--surface); border: 1px solid var(--line); position: relative;
+  }
+  .flow-item::after { content: ""; position: absolute; inset: auto 0 0 0; height: 2px; background: var(--tone); border-radius: 0 0 2px 2px; }
+  .flow-item .n { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-lo); }
+  .flow-item .v { font-size: 13.5px; font-weight: 600; margin-top: 5px; }
+
+  .acts { padding: 14px 0 80px; }
+  .act-head {
+    display: flex; align-items: baseline; gap: 12px;
+    margin: 34px 0 11px; padding-bottom: 9px; border-bottom: 1px solid var(--line);
+  }
+  /* roman numerals in a condensed face need tracking or II/III merge */
+  .act-n { font-family: var(--font-display); font-weight: 600; font-size: 26px; letter-spacing: .06em; color: var(--accent); line-height: 1; min-width: 38px; }
+  .act-t { font-size: 15.5px; font-weight: 600; }
+  .act-d { font-size: 12.5px; color: var(--text-lo); margin-left: auto; }
+
+  .step {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px; border: 1px solid var(--line); border-radius: var(--r-md);
+    background: var(--surface); margin-bottom: 6px;
+    transition: border-color .16s var(--ease), transform .16s var(--ease), box-shadow .16s var(--ease);
+  }
+  .step:hover { border-color: var(--accent-line); transform: translateX(3px); box-shadow: var(--shadow); }
+  .step .num {
+    width: 27px; height: 27px; flex: none; border-radius: 50%;
+    display: grid; place-items: center; font-size: 11.5px; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent-hi); border: 1px solid var(--accent-line);
+    font-variant-numeric: tabular-nums;
+  }
+  .step .body { min-width: 0; flex: 1; }
+  .step .t { font-size: 14px; font-weight: 600; }
+  .step .b { font-size: 12.5px; color: var(--text-mid); margin-top: 2px; }
+  .step .go { flex: none; color: var(--accent); font-size: 15px; opacity: 0; transition: opacity .16s var(--ease); }
+  .step:hover .go { opacity: 1; }
+  .step .isnew {
+    flex: none; font-size: 9px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+    padding: 2px 6px; border-radius: 20px; color: var(--ok);
+    border: 1px solid color-mix(in srgb, var(--ok) 32%, transparent);
+    background: color-mix(in srgb, var(--ok) 9%, transparent);
+  }
+
+  .badge {
+    flex: none; font-size: 9.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+    padding: 2.5px 8px; border-radius: 20px; border: 1px solid;
+  }
+  /* one per surface, matching the surface tokens in app.css */
+  .badge.erp    { color: #4C5A6B; border-color: rgba(76,90,107,.32);  background: rgba(76,90,107,.07); }
+  .badge.hub    { color: #1F4585; border-color: rgba(31,69,133,.32);  background: rgba(31,69,133,.07); }
+  .badge.portal { color: #1A5C55; border-color: rgba(26,92,85,.32);   background: rgba(26,92,85,.07); }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 0 20px; }
+    .act-d, .step .b, .step .isnew { display: none; }
+  }
+</style>
+</head>
+<body class="surface-hub" data-shell="off">
+
+<header class="wrap hero">
+  <div class="brandrow">
+    <div class="row-tight">
+      <span class="brand-mark" style="width:30px;height:30px;font-size:18px">Z</span>
+      <span class="stack">
+        <span class="brand-name" style="font-size:15px">The Zubair Corporation</span>
+        <span class="brand-sub">Central E-Invoicing Hub</span>
+      </span>
+    </div>
+
+    <!-- Fawtara X powers the platform. Styles live in app.css, shared with
+         hub/login.html so the mark matches there. -->
+    <div class="cobrand">
+      <span class="cobrand-k">Powered by</span>
+      <img src="assets/img/fawtara-x.png" alt="Fawtara X">
+    </div>
+  </div>
+
+  <h1>Twelve companies.<br>One VAT Group.<br>One way to <em>comply</em>.</h1>
+
+  <p class="lede">An eighteen-step walkthrough in six short acts. An invoice leaves a company's ERP —
+    SAP, Autoline, Orion or FOCUS — becomes a compliant e-invoice, is transmitted and reported,
+    and comes back with its acknowledgement. Twelve legal entities file under one shared VAT Group
+    number, each its own Peppol participant, through one pipe to the OTA. Supplier invoices arrive
+    the other way and land as drafts nobody posted for you. Every company sees only itself.</p>
+
+  <div class="row wrap mt24" style="gap:9px;padding:0">
+    <a class="btn btn-primary btn-lg" href="erp/invoices.html">Start the walkthrough →</a>
+    <span class="small dim" style="margin-left:6px">Roughly 10 minutes · use Next, or the ← → arrow keys</span>
+  </div>
+
+  <div class="flow">
+    <div class="flow-item" style="--tone:#4C5A6B"><div class="n">Starts in</div><div class="v">SAP · Autoline · Orion · FOCUS</div></div>
+    <div class="flow-item" style="--tone:#1F4585"><div class="n">Handled by</div><div class="v">The Central Hub</div></div>
+    <div class="flow-item" style="--tone:#EDAF4A"><div class="n">Reported via</div><div class="v">The accredited provider (ASP)</div></div>
+    <div class="flow-item" style="--tone:#4C5A6B"><div class="n">Ends in</div><div class="v">The same ERP invoice</div></div>
+  </div>
+</header>
+
+<main class="wrap acts" id="acts"></main>
+
+<div class="wrap" style="padding-bottom:70px">
+  <p class="tiny dim" style="text-align:center">
+    Demonstration prototype · real Zubair Corporation VAT Group companies, invented counterparties, illustrative figures<br>
+    Built against the Oman Tax Authority e-invoicing programme · Peppol PINT-OM
+  </p>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+/* The step list is derived from WALKTHROUGH and ACTS in shell.js, so this
+   page can never drift out of order with the walkthrough itself.
+   Page hrefs there are written for pages one folder deep; strip the ../ here. */
+const LABEL = { erp: 'Their ERP', hub: 'Central Hub', portal: 'One company' };
+const NEW_IN_V3 = ['hub-onboard', 'hub-users', 'hub-inbound', 'hub-reports'];
+
+document.getElementById('acts').innerHTML = ACTS.map((act, ai) => {
+  const steps = WALKTHROUGH
+    .map((s, i) => ({ s, i }))
+    .filter(o => o.s.act === ai);
+
+  return `
+    <div class="act-head">
+      <span class="act-n">${act.n}</span><span class="act-t">${act.t}</span>
+      <span class="act-d">${act.d}</span>
+    </div>` + steps.map(o => `
+    <a class="step" href="${o.s.href.replace('../', '')}">
+      <span class="num">${o.i + 1}</span>
+      <span class="body">
+        <span class="t">${o.s.name}</span>
+        <div class="b">${o.s.blurb}</div>
+      </span>
+      ${NEW_IN_V3.includes(o.s.id) ? '<span class="isnew">New</span>' : ''}
+      <span class="badge ${o.s.sfc}">${LABEL[o.s.sfc]}</span>
+      <span class="go">→</span>
+    </a>`).join('');
+}).join('');
+
+</script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Invoice detail — The Zubair Corporation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* page-local — the entity's own view of one document */
+  .docsplit { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+  @media (max-width: 1080px) { .docsplit { grid-template-columns: minmax(0, 1fr); } }
+  .backlink { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600;
+              color: var(--accent-hi); margin-bottom: 12px; }
+  .backlink:hover { text-decoration: underline; }
+  .dlrow { display: flex; flex-wrap: wrap; gap: 9px; }
+  .arch { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; align-items: start;
+          padding: 9px 0; font-size: 14px; }
+  .arch + .arch { border-top: 1px solid var(--line); }
+  .arch svg { width: 15px; height: 15px; color: var(--ok); margin-top: 3px; }
+  .arch .aw { font-size: 13px; color: var(--text-mid); margin-top: 2px; line-height: 1.5; }
+</style>
+</head>
+<!-- Off the guided path, like hub/asp.html: reached by clicking an invoice, not
+     by stepping. data-step is present so the page declares an identity, but it
+     is deliberately not listed in WALKTHROUGH, so no step nav is injected. -->
+<body class="surface-portal" data-surface="portal" data-nav="invoices"
+      data-step="portal-document"
+      data-crumbs="My organisation / My invoices / Invoice detail"
+      data-hint="One document, seen from inside the company that raised it. Everything here is scoped to this entity — there is no route from this page to any other company's data.">
+
+<main class="main">
+  <div class="page">
+
+    <a class="backlink" href="dashboard.html#invoices">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+           stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+        <path d="m15 5-7 7 7 7"/></svg>Back to my invoices</a>
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1 id="docNo"></h1>
+          <span id="docPill"></span>
+          <span class="tag" id="docEntity"></span>
+        </div>
+        <p class="page-sub" id="docSub"></p>
+      </div>
+      <div class="page-actions">
+        <span class="small dim" id="docWhen"></span>
+      </div>
+    </div>
+
+    <!-- Failure guidance sits above everything. If a document has gone wrong,
+         that is the only thing the person opening this page cares about. -->
+    <div id="problem" class="mb16"></div>
+
+    <div class="docsplit">
+
+      <!-- ---------------- left: where it got to ---------------- -->
+      <div>
+        <div class="card mb16">
+          <div class="card-head">
+            <h2 class="grow">Where this document got to</h2>
+            <span class="tag" id="legTag"></span>
+          </div>
+          <div class="card-body" id="legIntro"></div>
+          <div style="border-top:1px solid var(--line)" id="legList"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2 class="grow">Invoice</h2></div>
+          <div class="card-body" id="kvInvoice"></div>
+        </div>
+      </div>
+
+      <!-- ---------------- right: QR, archive, downloads ---------------- -->
+      <div>
+        <div class="card mb16" id="qrCard">
+          <div class="card-head">
+            <h2 class="grow">QR information</h2>
+            <span class="tag">On the customer copy</span>
+          </div>
+          <div class="card-body">
+            <div style="display:flex;justify-content:center">
+              <div id="qr" style="background:#fff;padding:14px;border:1px solid var(--line);border-radius:var(--r-md)"></div>
+            </div>
+            <div class="small muted mt12" id="qrNote"></div>
+          </div>
+        </div>
+
+        <div class="card mb16">
+          <div class="card-head">
+            <h2 class="grow">Held in the archive</h2>
+            <span id="archPill"></span>
+          </div>
+          <div class="card-body" id="archList"></div>
+          <div class="card-foot">
+            <span class="tiny dim" id="archFoot"></span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2 class="grow">Download</h2></div>
+          <div class="card-body">
+            <div class="dlrow">
+              <button class="btn btn-sm" id="dlXml">Official XML</button>
+              <button class="btn btn-sm" id="dlPdf">PDF copy</button>
+              <button class="btn btn-sm btn-ghost" id="dlAck">Acknowledgements</button>
+            </div>
+            <div class="small dim mt12" id="dlNote">Taken from the archive, not regenerated — what you
+              download is the document that was actually sent.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* ---------- which document, and the entity guard ---------------------------
+     This portal belongs to one company. The document is chosen by ?no= so the
+     invoice list can link to any row, but a document belonging to another
+     entity is refused rather than rendered. That refusal is the point of the
+     screen as much as the detail is.                                          */
+  const ME  = tenant('ZCL');
+  const ASKED = new URLSearchParams(location.search).get('no');
+  const HERO  = 'ZCL-SINV-2026-00841';
+
+  /* Only EXCEPTIONS_ENTITY carries a docs list; the platform exceptions are
+     described by cause and count, not by document. Guarded so a missing docs
+     array cannot produce undefined entries. */
+  const ALL = INVOICES.concat(
+    [].concat.apply([], EXCEPTIONS_ENTITY.concat(EXCEPTIONS_PLATFORM)
+        .map(e => e.docs || []))
+      .filter((n, i, a) => a.indexOf(n) === i && !INVOICES.some(d => d.no === n))
+      .map(n => ({ no: n, tenant: n.slice(0, 3), cust: 0, net: 0, vat: 0, total: 0, cur: 'OMR',
+                   type: 'Invoice', stage: 3, state: 'failed', created: '28 Jul 09:48:20',
+                   uuid: null, ackNo: null, ref: null, lines: 0, po: null }))
+  );
+
+  const doc = ALL.find(d => d.no === ASKED && d.tenant === ME.id)
+           || ALL.find(d => d.no === HERO);
+
+  const mine = doc.tenant === ME.id;
+  const cust = CUSTOMERS[doc.cust] || { name: '—' };
+
+  /* ---------- header -------------------------------------------------------- */
+  document.getElementById('docNo').textContent = doc.no;
+  document.getElementById('docEntity').textContent = ME.short;
+  document.getElementById('docWhen').textContent = 'Raised ' + doc.created;
+
+  const STATE_PILL = { ok: 'acknowledged', active: 'active', failed: 'failed', held: 'queued' };
+  document.getElementById('docPill').outerHTML = pill(STATE_PILL[doc.state] || 'pending');
+
+  document.getElementById('docSub').textContent = doc.state === 'failed'
+    ? 'This document has not been reported. What needs to happen is below.'
+    : 'Issued to ' + cust.name + '. Everything on this page is this company’s own record.';
+
+  /* ---------- the problem block, when there is one --------------------------
+     A failure is looked up by document number across both exception lists.
+     Which list it appears in is what decides who fixes it — the entity's own
+     finance team, or the central technical team. The entity never has to work
+     that out for themselves.                                                   */
+  const entityExc   = EXCEPTIONS_ENTITY.find(e => e.docs.indexOf(doc.no) >= 0);
+  const platformExc = EXCEPTIONS_PLATFORM.find(e => e.docs && e.docs.indexOf(doc.no) >= 0);
+  const exc = entityExc || platformExc;
+  const ownedByMe = !!entityExc;
+
+  if (doc.state === 'failed') {
+    const title = exc ? exc.title : 'This document could not be reported';
+    const why   = exc ? exc.why   : 'The cause is being investigated.';
+    const fix   = exc ? exc.fix   : 'No action is needed from you.';
+    const who   = ownedByMe
+      ? '<b>Your finance team resolves this.</b> The correction is made in your own ERP — nobody outside this company can make it for you.'
+      : '<b>The central technical team resolves this.</b> It is a platform matter, already assigned, and needs nothing from you.';
+
+    document.getElementById('problem').innerHTML = notice(ownedByMe ? 'warn' : 'info',
+      '<b style="font-size:16px">' + title + '</b>' +
+      '<div class="mt8">' + why + '</div>' +
+      '<div class="mt8">' + who + '</div>' +
+      (ownedByMe ? '<div class="mt8"><b>What to do:</b> ' + fix + '</div>' : '') +
+      (nextStepNote(doc, exc, ownedByMe)
+        ? '<div class="mt8 small muted">' + nextStepNote(doc, exc, ownedByMe) + '</div>' : ''));
+  }
+
+  /* What the entity is told about timing — the sentence under the instruction.
+     Return a string to show it, or nothing to leave it off.
+       doc        the document; doc.retry is how many times it has been retried
+       exc        the matching exception record, or undefined
+       ownedByMe  true when this company's own finance team must act        */
+  function nextStepNote(doc, exc, ownedByMe) {
+    // TODO(human)
+  }
+
+  /* ---------- where it got to ----------------------------------------------- */
+  const legs = doc.state === 'ok' ? LEGS : doc.state === 'active' ? LEGS_PENDING : [];
+  const doneLegs = legs.filter(l => l.st === 'ok').length;
+
+  document.getElementById('legTag').textContent = doc.state === 'failed'
+    ? 'Stopped at ' + STAGES[doc.stage]
+    : doneLegs + ' of ' + legs.length + ' confirmations received';
+
+  document.getElementById('legIntro').innerHTML = doc.state === 'failed'
+    ? teach('The document stopped at <b>' + STAGES[doc.stage] + '</b> and was never transmitted. '
+          + 'Nothing has been reported to the Tax Authority and nothing reached the buyer, so there '
+          + 'is no incorrect record to withdraw.')
+    : teach('Three confirmations come back separately, on three independent legs, and they can '
+          + 'arrive minutes or hours apart. One of them being slow does not mean anything is wrong.');
+
+  document.getElementById('legList').innerHTML = legs.map(legRow).join('');
+
+  /* ---------- the invoice itself -------------------------------------------- */
+  document.getElementById('kvInvoice').innerHTML = kv([
+    ['Customer', cust.name],
+    ['Raised', doc.created],
+    ['Lines', doc.lines || '—'],
+    ['Net', doc.net ? omr(doc.net) + ' ' + doc.cur : '—'],
+    ['VAT', doc.vat !== undefined ? omr(doc.vat) + ' ' + doc.cur : '—'],
+    ['Total', doc.total ? '<b>' + omr(doc.total) + ' ' + doc.cur + '</b>' : '—'],
+    ['Purchase order', doc.po || '—'],
+    ['Document UUID', doc.uuid ? '<span class="mono" style="font-size:13px">' + doc.uuid + '</span>' : 'Not issued — the document was never built'],
+    ['Acknowledgement', doc.ackNo ? '<span class="mono" style="font-size:13px">' + doc.ackNo + '</span>' : '—']
+  ]);
+
+  /* ---------- QR ------------------------------------------------------------ */
+  const hasQr = doc.state === 'ok';
+  if (!hasQr) {
+    document.getElementById('qrCard').style.display = 'none';
+  } else {
+    document.getElementById('qrNote').textContent =
+      'Printed on the copy your customer receives. Scanning it verifies the invoice against the '
+      + 'record held for this company.';
+  }
+
+  /* ---------- archive ------------------------------------------------------- */
+  const archived = doc.state === 'ok' || doc.state === 'active';
+  document.getElementById('archPill').outerHTML = archived
+    ? pill('ok', 'Held') : pill('idle', 'Nothing archived yet');
+
+  const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" '
+              + 'stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>';
+
+  document.getElementById('archList').innerHTML = archived
+    ? ARCHIVE_ITEMS.filter(a => a.size !== '—').map(a =>
+        '<div class="arch">' + CHECK + '<div><div style="font-weight:600">' + a.item + '</div>'
+        + '<div class="aw">' + a.why + '</div></div></div>').join('')
+    : '<div class="small muted">The document never reached the point of being archived. Once it is '
+      + 'corrected and reported, everything above is kept automatically.</div>';
+
+  document.getElementById('archFoot').textContent = archived
+    ? 'Kept for the statutory period and available to this company at any time.'
+    : 'Nothing is lost — the ERP invoice itself is untouched.';
+
+  /* ---------- downloads (demonstration only) -------------------------------- */
+  const note = document.getElementById('dlNote');
+  const REAL = note.textContent;
+  function fakeDownload(what) {
+    note.innerHTML = '<b>' + what + '</b> would download here. This is a demonstration screen — '
+                   + 'no file is produced.';
+    setTimeout(function () { note.textContent = REAL; }, 3600);
+  }
+  document.getElementById('dlXml').addEventListener('click', function () { fakeDownload('The official UBL XML'); });
+  document.getElementById('dlPdf').addEventListener('click', function () { fakeDownload('A PDF copy'); });
+  document.getElementById('dlAck').addEventListener('click', function () { fakeDownload('The acknowledgement record'); });
+
+  if (!archived) {
+    ['dlXml', 'dlPdf', 'dlAck'].forEach(function (id) {
+      const b = document.getElementById(id);
+      b.disabled = true; b.style.opacity = '.45'; b.style.cursor = 'not-allowed';
+    });
+    note.textContent = 'Nothing to download until the document has been reported.';
+  }
+
+  /* ---------- QR block art — same generator as the ERP screen ---------------- */
+  if (hasQr) (function () {
+    const N = 21, PX = 8;
+    const finder = function (x, y) {
+      let lx = null, ly = null;
+      if (x <= 7 && y <= 7)        { if (x === 7 || y === 7) return false; lx = x;      ly = y; }
+      else if (x >= 13 && y <= 7)  { if (x === 13 || y === 7) return false; lx = x - 14; ly = y; }
+      else if (x <= 7 && y >= 13)  { if (x === 7 || y === 13) return false; lx = x;      ly = y - 14; }
+      else return null;
+      const ring = (lx === 0 || lx === 6 || ly === 0 || ly === 6);
+      const core = (lx >= 2 && lx <= 4 && ly >= 2 && ly <= 4);
+      return ring || core;
+    };
+    let cells = '';
+    for (let y = 0; y < N; y++) {
+      for (let x = 0; x < N; x++) {
+        const f = finder(x, y);
+        let on;
+        if (f !== null) on = f;
+        else if (y === 6) on = (x % 2 === 0);
+        else if (x === 6) on = (y % 2 === 0);
+        else {
+          const h = (x * 37 + y * 61 + ((x * y) % 17) * 13 + (((x + 5) ^ (y + 3)) * 7)) % 100;
+          on = h < 48;
+        }
+        cells += '<i style="display:block;width:' + PX + 'px;height:' + PX + 'px;background:'
+               + (on ? '#111820' : '#fff') + '"></i>';
+      }
+    }
+    document.getElementById('qr').innerHTML =
+      '<div style="display:grid;grid-template-columns:repeat(' + N + ',' + PX + 'px);line-height:0">'
+      + cells + '</div>';
+  })();
+</script>
+</body>
+</html>

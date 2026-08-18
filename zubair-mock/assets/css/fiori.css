@@ -1,0 +1,299 @@
+/* ==========================================================================
+   fiori.css — SAP S/4HANA (SAP Fiori · Horizon theme) skin for the ERP surface
+   of The Zubair Corporation Central E-Invoicing Hub demo.
+
+   Namespaced under body.fiori so it cannot collide with app.css or the shell.
+   Mirrors the role of ndc-mock's dynamics.css, but wears SAP Fiori instead of
+   Microsoft Fluent. Light theme only.
+   ========================================================================== */
+
+body.fiori {
+  /* Horizon palette */
+  --f-blue:      #0a6ed1;   /* primary / interactive           */
+  --f-blue-dk:   #0854a0;   /* hover                           */
+  --f-blue-bg:   #e3f0fd;   /* selected row / light accent     */
+  --f-shell:     #354a5f;   /* shell bar dark                  */
+  --f-shell-2:   #2b3d4f;
+  --f-bg:        #f5f6f7;   /* page background                 */
+  --f-card:      #ffffff;
+  --f-line:      #d9d9d9;   /* card / table border             */
+  --f-line2:     #e5e5e5;   /* thin separators                 */
+  --f-ink:       #1d2d3e;   /* primary text                    */
+  --f-ink2:      #556b82;   /* secondary text / labels         */
+  --f-ink3:      #89919a;
+  --f-pos:       #107e3e;   /* positive                        */
+  --f-crit:      #e9730c;   /* critical                        */
+  --f-neg:       #bb0000;   /* negative                        */
+  --f-neu:       #6a6d70;   /* neutral                         */
+
+  margin: 0;
+  background: var(--f-bg);
+  color: var(--f-ink);
+  font-family: "72", "72full", Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.fiori * { box-sizing: border-box; }
+body.fiori a { color: var(--f-blue); text-decoration: none; }
+body.fiori a:hover { text-decoration: underline; }
+body.fiori .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 12.5px; }
+
+/* ===================== shell bar ===================== */
+body.fiori .f-shell {
+  height: 44px;
+  background: var(--f-shell);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  position: relative;
+  z-index: 20;
+}
+body.fiori .f-shell-left,
+body.fiori .f-shell-right { display: flex; align-items: center; gap: 4px; flex: 1; }
+body.fiori .f-shell-right { justify-content: flex-end; }
+body.fiori .f-shell-center {
+  position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+  height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  max-width: 46%;
+}
+body.fiori .f-shell-center .t { font-size: 14px; font-weight: 700; line-height: 1.1; white-space: nowrap; }
+body.fiori .f-shell-center .s { font-size: 11px; color: #c6d2dd; line-height: 1.1; white-space: nowrap; }
+body.fiori .f-shell-logo {
+  display: flex; align-items: center; gap: 8px; padding: 0 8px; height: 44px;
+}
+body.fiori .f-shell-logo .mark {
+  width: 24px; height: 24px; border-radius: 4px; background: #fff; color: var(--f-shell);
+  font-weight: 800; font-size: 15px; display: grid; place-items: center;
+}
+body.fiori .f-shell-logo .co { font-size: 13px; font-weight: 600; white-space: nowrap; }
+body.fiori .f-shell-btn {
+  width: 36px; height: 36px; border: none; background: transparent; color: #fff;
+  border-radius: 4px; display: grid; place-items: center; cursor: pointer;
+}
+body.fiori .f-shell-btn:hover { background: rgba(255,255,255,.14); }
+body.fiori .f-shell-btn svg { width: 18px; height: 18px; }
+body.fiori .f-avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: #7996b4; color: #fff;
+  font-size: 12px; font-weight: 700; display: grid; place-items: center; margin-left: 4px;
+}
+
+/* ===================== page canvas ===================== */
+body.fiori .f-page { padding: 12px; max-width: 1500px; margin: 0 auto; }
+
+/* ===================== list report: filter bar ===================== */
+body.fiori .f-title-bar { display: flex; align-items: baseline; gap: 12px; padding: 6px 4px 12px; flex-wrap: wrap; }
+body.fiori .f-title { font-size: 20px; font-weight: 700; color: var(--f-ink); }
+body.fiori .f-title-sub { font-size: 13px; color: var(--f-ink2); }
+
+body.fiori .f-filterbar {
+  background: var(--f-card); border: 1px solid var(--f-line); border-radius: 8px;
+  padding: 10px 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+body.fiori .f-chip {
+  display: inline-flex; flex-direction: column; padding: 4px 12px 4px 0;
+  border-right: 1px solid var(--f-line2); margin-right: 4px;
+}
+body.fiori .f-chip:last-of-type { border-right: none; }
+body.fiori .f-chip .k { font-size: 11px; color: var(--f-ink2); }
+body.fiori .f-chip .v { font-size: 13px; font-weight: 600; color: var(--f-ink); }
+body.fiori .f-filterbar .spacer { flex: 1; }
+body.fiori .f-go {
+  background: var(--f-blue); color: #fff; border: none; border-radius: 6px;
+  padding: 6px 16px; font: inherit; font-weight: 600; font-size: 13px; cursor: pointer;
+}
+body.fiori .f-go:hover { background: var(--f-blue-dk); }
+body.fiori .f-linkbtn { color: var(--f-blue); font-size: 13px; font-weight: 600; cursor: pointer; }
+
+/* ===================== message strip ===================== */
+body.fiori .f-strip {
+  display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px;
+  border-radius: 8px; margin-bottom: 12px; font-size: 13px; line-height: 1.5;
+  border: 1px solid; background: var(--f-card);
+}
+body.fiori .f-strip svg { width: 18px; height: 18px; flex: none; margin-top: 1px; }
+body.fiori .f-strip.info { border-color: #7fbdf0; background: #eff6fc; color: #14395c; }
+body.fiori .f-strip.info svg { color: var(--f-blue); }
+body.fiori .f-strip.ok   { border-color: #9ed3ad; background: #ecf7ef; color: #0c5c2e; }
+body.fiori .f-strip.ok svg { color: var(--f-pos); }
+body.fiori .f-strip.err  { border-color: #eab7b7; background: #fbecec; color: #8a0f0f; }
+body.fiori .f-strip.err svg { color: var(--f-neg); }
+body.fiori .f-strip.warn { border-color: #f2c99a; background: #fdf3e8; color: #8a4a06; }
+body.fiori .f-strip.warn svg { color: var(--f-crit); }
+body.fiori .f-strip b { font-weight: 700; }
+
+/* ===================== object status (coloured text + dot) ===================== */
+body.fiori .f-status { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+body.fiori .f-status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+body.fiori .f-status.pos  { color: var(--f-pos); }
+body.fiori .f-status.crit { color: var(--f-crit); }
+body.fiori .f-status.neg  { color: var(--f-neg); }
+body.fiori .f-status.neu  { color: var(--f-neu); }
+body.fiori .f-status.info { color: var(--f-blue); }
+
+/* ===================== table (list report) ===================== */
+body.fiori .f-card {
+  background: var(--f-card); border: 1px solid var(--f-line); border-radius: 8px; overflow: hidden;
+}
+body.fiori .f-card-head {
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--f-line2);
+}
+body.fiori .f-card-head h3 { margin: 0; font-size: 15px; font-weight: 700; color: var(--f-ink); }
+body.fiori .f-card-head .r { margin-left: auto; font-size: 12px; color: var(--f-ink2); }
+
+body.fiori .f-tablewrap { overflow-x: auto; }
+body.fiori table.f-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 760px; }
+body.fiori table.f-table thead th {
+  text-align: left; font-weight: 700; font-size: 12px; color: var(--f-ink2);
+  padding: 9px 12px; border-bottom: 1px solid var(--f-line); background: #fafafa; white-space: nowrap;
+}
+body.fiori table.f-table th.num, body.fiori table.f-table td.num { text-align: right; white-space: nowrap; }
+body.fiori table.f-table tbody td {
+  padding: 10px 12px; border-bottom: 1px solid var(--f-line2); color: var(--f-ink); vertical-align: middle;
+}
+body.fiori table.f-table tbody tr:hover { background: #f7f9fb; }
+body.fiori table.f-table tbody tr.is-sel { background: var(--f-blue-bg); box-shadow: inset 3px 0 0 var(--f-blue); }
+body.fiori table.f-table tbody tr.is-sel:hover { background: #d8e9fb; }
+body.fiori table.f-table td .doc { font-weight: 600; }
+body.fiori table.f-table td .sub { color: var(--f-ink2); font-size: 12px; }
+body.fiori .f-chkcol { width: 34px; text-align: center; }
+body.fiori .f-chk { width: 15px; height: 15px; border: 1.5px solid var(--f-ink3); border-radius: 3px; display: inline-block; vertical-align: middle; }
+body.fiori tr.is-sel .f-chk { border-color: var(--f-blue); background: var(--f-blue); position: relative; }
+body.fiori tr.is-sel .f-chk::after { content: ""; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+
+/* footer / action bar */
+body.fiori .f-footbar {
+  display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-top: 1px solid var(--f-line2);
+  background: #fafafa;
+}
+body.fiori .f-footbar .spacer { flex: 1; }
+body.fiori .f-btn {
+  border: 1px solid var(--f-line); background: var(--f-card); color: var(--f-blue);
+  border-radius: 6px; padding: 6px 14px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+body.fiori .f-btn:hover { background: #f0f4f8; }
+body.fiori .f-btn.pri { background: var(--f-blue); border-color: var(--f-blue); color: #fff; }
+body.fiori .f-btn.pri:hover { background: var(--f-blue-dk); }
+
+/* ===================== object page header ===================== */
+body.fiori .f-op-head {
+  background: var(--f-card); border: 1px solid var(--f-line); border-radius: 8px;
+  padding: 16px 18px; margin-bottom: 12px;
+}
+body.fiori .f-op-titlerow { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+body.fiori .f-op-title { font-size: 22px; font-weight: 700; color: var(--f-ink); }
+body.fiori .f-op-sub { font-size: 14px; color: var(--f-ink2); margin-top: 2px; }
+body.fiori .f-op-facts {
+  display: flex; flex-wrap: wrap; gap: 26px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--f-line2);
+}
+body.fiori .f-fact { min-width: 120px; }
+body.fiori .f-fact .k { font-size: 11px; color: var(--f-ink2); text-transform: none; }
+body.fiori .f-fact .v { font-size: 15px; font-weight: 600; color: var(--f-ink); margin-top: 2px; }
+
+/* ===================== icon tab bar ===================== */
+body.fiori .f-tabbar {
+  display: flex; gap: 4px; padding: 0 6px; border-bottom: 1px solid var(--f-line);
+  background: var(--f-card); border-radius: 8px 8px 0 0; overflow-x: auto;
+}
+body.fiori .f-tab {
+  padding: 12px 14px 10px; font-size: 14px; font-weight: 600; color: var(--f-ink2);
+  border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap;
+}
+body.fiori .f-tab:hover { color: var(--f-ink); }
+body.fiori .f-tab.is-active { color: var(--f-blue); border-bottom-color: var(--f-blue); }
+
+/* ===================== object page sections ===================== */
+body.fiori .f-section {
+  background: var(--f-card); border: 1px solid var(--f-line); border-top: none;
+  padding: 16px 18px; margin-bottom: 12px;
+}
+body.fiori .f-section.first { border-top-left-radius: 0; border-top-right-radius: 0; }
+body.fiori .f-section.card { border-top: 1px solid var(--f-line); border-radius: 8px; }
+body.fiori .f-section > h3 {
+  margin: 0 0 12px; font-size: 15px; font-weight: 700; color: var(--f-ink);
+  display: flex; align-items: center; gap: 10px;
+}
+body.fiori .f-section > h3 .r { margin-left: auto; font-size: 12px; font-weight: 400; color: var(--f-ink2); }
+
+body.fiori .f-formgrid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 4px 34px;
+}
+body.fiori .f-formrow {
+  display: flex; justify-content: space-between; gap: 16px; padding: 7px 0; border-bottom: 1px solid var(--f-line2);
+}
+body.fiori .f-formrow .k { color: var(--f-ink2); font-size: 13px; }
+body.fiori .f-formrow .v { color: var(--f-ink); font-size: 13px; font-weight: 600; text-align: right; word-break: break-word; }
+
+/* pill / tag (read-only, muted) */
+body.fiori .f-tag {
+  display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 11px; font-weight: 600;
+  background: #eef1f4; color: var(--f-ink2); border: 1px solid var(--f-line);
+}
+body.fiori .f-tag.blue { background: var(--f-blue-bg); color: var(--f-blue-dk); border-color: #bcd9f5; }
+
+/* field name subscript in status table */
+body.fiori .f-fieldname { font-family: "SFMono-Regular", Consolas, monospace; font-size: 11px; color: var(--f-ink3); margin-top: 2px; }
+
+/* ===================== scope-of-work section ===================== */
+body.fiori .f-section.scope { border-color: #eab7b7; border-top: 3px solid var(--f-neg); }
+body.fiori .f-section.scope > h3 { color: #8a0f0f; }
+body.fiori ul.f-scopelist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+body.fiori ul.f-scopelist li { display: flex; gap: 10px; font-size: 13px; line-height: 1.5; color: var(--f-ink); }
+body.fiori ul.f-scopelist li::before {
+  content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--f-neg); margin-top: 6px;
+}
+body.fiori ul.f-scopelist li b { font-weight: 700; }
+body.fiori .f-note { font-size: 12px; color: var(--f-ink2); line-height: 1.5; }
+
+/* ===================== QR panel ===================== */
+body.fiori .f-qr-panel { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; }
+body.fiori #qr { background: #fff; padding: 10px; border: 1px solid var(--f-line); border-radius: 4px; }
+body.fiori .f-qr-side { flex: 1; min-width: 220px; }
+
+/* ===================== identity block (seller / e-invoice) ===================== */
+body.fiori .f-identity {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 4px;
+}
+body.fiori .f-id-card {
+  border: 1px solid var(--f-line); border-radius: 8px; padding: 12px 14px; background: #fbfcfd;
+}
+body.fiori .f-id-card .lbl { font-size: 11px; color: var(--f-ink2); }
+body.fiori .f-id-card .big { font-size: 16px; font-weight: 700; color: var(--f-ink); margin: 3px 0; font-family: "SFMono-Regular", Consolas, monospace; }
+body.fiori .f-id-card .desc { font-size: 12px; color: var(--f-ink2); line-height: 1.45; }
+
+/* ===================== two-column object page layout ===================== */
+body.fiori .f-op-cols { display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 12px; align-items: start; }
+body.fiori .f-op-side .f-section { margin-bottom: 12px; }
+@media (max-width: 900px) { body.fiori .f-op-cols { grid-template-columns: 1fr; } }
+
+/* ===================== closing block ===================== */
+body.fiori .f-closing {
+  background: var(--f-card); border: 1px solid var(--f-line); border-radius: 8px; padding: 22px 24px; margin-top: 4px;
+}
+body.fiori .f-closing .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--f-blue); }
+body.fiori .f-closing h2 { margin: 6px 0 12px; font-size: 22px; color: var(--f-ink); }
+body.fiori .f-closing ol { margin: 0; padding-left: 20px; color: var(--f-ink); font-size: 13.5px; line-height: 1.65; }
+body.fiori .f-btnrow { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+body.fiori .f-actbtn {
+  border: 1px solid var(--f-line); background: var(--f-card); color: var(--f-ink);
+  border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+body.fiori .f-actbtn:hover { background: #f0f4f8; text-decoration: none; }
+body.fiori .f-actbtn.pri { background: var(--f-blue); border-color: var(--f-blue); color: #fff; }
+body.fiori .f-actbtn.pri:hover { background: var(--f-blue-dk); }
+
+/* ===================== floating walkthrough step bar (shell.js) =====================
+   shell.js injects .stepnav when data-shell="off". Give it SAP contrast:
+   outlined Previous, solid SAP-blue Next — as NDC did for its Dynamics bar. */
+body.fiori .stepnav .count { color: var(--f-ink2); font-weight: 600; font-size: 12px; padding: 0 10px; }
+body.fiori .stepnav .stepbtn {
+  color: var(--f-blue); background: var(--f-card); border: 1px solid var(--f-line);
+  border-radius: 6px; font-weight: 600;
+}
+body.fiori .stepnav .stepbtn:hover { background: #f0f4f8; }
+body.fiori .stepnav .stepbtn.next { background: var(--f-blue); color: #fff; border-color: var(--f-blue); }
+body.fiori .stepnav .stepbtn.next:hover { background: var(--f-blue-dk); }
+body.fiori .stepnav .stepbtn.is-off { color: var(--f-ink3); background: var(--f-bg); opacity: .55; }

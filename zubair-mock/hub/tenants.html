@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Companies — Zubair Central E-Invoicing Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* ---- page-local to hub/tenants.html. Do not move to app.css. ---- */
+  .wavecard{border:1px solid var(--line);border-radius:var(--r-md);padding:11px 13px;background:var(--surface)}
+  .wavecard.is-active{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+    background:color-mix(in srgb,var(--accent) 5%,var(--surface))}
+  .wavecard .wn2{font-size: 11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--text-lo)}
+  .wavecard .wv{font-size: 16.5px;font-weight:700;white-space:nowrap;flex:none}
+  .wavepip{display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--line-hard);margin-right:4px}
+  .wavepip.complete{background:var(--ok)} .wavepip.active{background:var(--warn)} .wavepip.planned{background:var(--idle)}
+  .mrow{display:flex;gap:13px;align-items:flex-start;padding:11px 0}
+  .mrow + .mrow{border-top:1px solid var(--line)}
+  .mrow .mcount{font-family:var(--font-mono);font-size: 22px;font-weight:600;min-width:38px;text-align:right}
+  tr.is-self td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="tenants"
+      data-step="hub-tenants"
+      data-crumbs="Configuration / Companies"
+      data-hint="Each company is a configuration record — its ERP, how we connect to it, which rollout wave it sits in, and how much of its mapping is done. Adding company 90 is a form, not a project.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Companies</h1>
+          <span class="pill pill-accent"><i class="dot"></i>12 legal entities</span>
+          <span id="livePill"></span>
+        </div>
+        <p class="page-sub">Every company in the group, configured and monitored from this one console.</p>
+      </div>
+      <div class="page-actions">
+        <a class="btn btn-sm btn-primary" href="onboard.html">Onboard a company</a>
+      </div>
+    </div>
+
+    <div class="grid g3 mb16" id="tiles"></div>
+
+    <!-- The company list leads. This is a console: you open Companies to find a
+         company, not to read about wave phasing. Everything explanatory now sits
+         underneath the table. -->
+    <section style="margin-top:0">
+      <div class="card card-tight">
+        <div class="card-head wrap" style="gap:10px">
+          <div class="search" style="width:250px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input class="input input-sm" id="fSearch" placeholder="Search company name">
+          </div>
+          <select class="select select-sm" id="fStatus" style="width:auto"></select>
+          <select class="select select-sm" id="fWave" style="width:auto"></select>
+          <button class="btn btn-sm btn-ghost" id="fClear">Clear</button>
+          <span class="right small dim nowrap" id="countNote"></span>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th style="min-width:168px">Company</th><th>ERP</th><th class="nowrap">Wave</th>
+                <th style="min-width:210px">How we connect</th>
+                <th style="min-width:140px">Mapping progress</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="coRows"></tbody>
+          </table>
+        </div>
+        <div class="card-foot">
+          <span class="small dim" id="tableFoot"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Context, below the working content and two-up so it stays compact -->
+    <section>
+      <div class="grid g2">
+
+        <div class="card">
+          <div class="card-head">
+            <h2 class="grow">How the group connects</h2>
+            <span class="tag">After the ERP inventory</span>
+          </div>
+          <div class="card-body">
+            <div id="methodRows"></div>
+            <div class="divider"></div>
+            <div id="selfRow"></div>
+            <div class="mt12" id="methodNote"></div>
+          </div>
+          <div class="card-foot">
+            <span class="tiny dim" id="methodMath"></span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2 class="grow">Rollout waves</h2>
+            <span class="tag">By OTA mandate and readiness</span>
+          </div>
+          <div class="card-body">
+            <div class="stack" id="waveCards"></div>
+          </div>
+          <div class="card-foot">
+            <span class="tiny dim">One delayed entity does not hold up the group. Each wave cuts over on its own date.</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* ---------- header + tiles ------------------------------------------------ */
+  document.getElementById('livePill').outerHTML = pill('live', `${GROUP.live} live`);
+
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Legal entities', value: GROUP.entities,
+           meta: 'One configuration record each', tone: 'var(--accent)' }),
+    stat({ label: 'Live', value: GROUP.live,
+           meta: 'Sending documents today', tone: 'var(--ok)' }),
+    stat({ label: 'Still onboarding', value: GROUP.onboarding,
+           meta: `${GROUP.notStarted} not started`, tone: 'var(--warn)' })
+  ].join('');
+
+  /* ---------- rollout waves ------------------------------------------------- */
+  /* Laid out as compact rows rather than three columns — the waves now sit in a
+     half-width card below the table, and the count belongs beside the name. */
+  document.getElementById('waveCards').innerHTML = WAVES.map(w => `
+    <div class="wavecard ${w.state === 'active' ? 'is-active' : ''}">
+      <div class="row-tight">
+        <span class="wavepip ${w.state}"></span>
+        <span class="wn2 grow">${w.name} · ${w.state}</span>
+        <span class="wv">${w.live}<span class="dim" style="font-weight:400;font-size:12px"> of ${w.entities} live</span></span>
+      </div>
+      <div class="mt8">${bar(Math.round(w.live / w.entities * 100),
+        w.state === 'complete' ? 'var(--ok)' : w.state === 'active' ? 'var(--warn)' : 'var(--idle)')}</div>
+      <div class="tiny dim mt8">${w.window} &middot; ${w.note}</div>
+    </div>`).join('');
+
+  /* ---------- filters ------------------------------------------------------- */
+  const STATUSES = [...new Set(TENANTS.map(t => t.status))];
+  document.getElementById('fStatus').innerHTML =
+    '<option value="">All statuses</option>' +
+    STATUSES.map(s => `<option value="${s}">${PILL_MAP[s] ? PILL_MAP[s][1] : s}</option>`).join('');
+
+  document.getElementById('fWave').innerHTML =
+    '<option value="">All waves</option>' +
+    WAVES.map(w => `<option value="${w.n}">${w.name} — ${w.window}</option>`).join('');
+
+  /* ---------- company table ------------------------------------------------- */
+  const ROWS = TENANTS;
+
+  document.getElementById('coRows').innerHTML = ROWS.map(t => {
+    const self    = t.deploy === 'self-hosted';
+    const mapPct  = Math.round(t.mapped / t.mapTotal * 100);
+    const mapTone = mapPct === 100 ? 'var(--ok)' : mapPct >= 85 ? 'var(--accent)' : 'var(--warn)';
+    return `
+    <tr class="${self ? 'is-self' : ''}">
+      <td>
+        <a class="link" href="tenant-detail.html">${t.short}</a>
+        <div class="tiny dim">${t.city}</div>
+      </td>
+      <td><div class="nowrap small">${t.erp}</div></td>
+      <td class="nowrap"><span class="chip info">Wave ${t.wave}</span></td>
+      <td>
+        <div class="row-tight" style="gap:7px">
+          ${self ? methodChip('self') : methodChip(t.method)}
+          <span class="small">${self ? 'Runs in the entity’s own environment' : METHODS[t.method].short}</span>
+        </div>
+        <div class="tiny dim" style="margin-top:3px"
+             ${self ? `title="${t.reason}"` : ''}>${self ? t.reason : t.conn}</div>
+        ${self ? `<div class="tiny muted" style="margin-top:2px">Same software, same rules. It transmits directly to the ASP and never connects to the Hub.</div>` : ''}
+      </td>
+      <td>
+        <div class="row tiny mb8">
+          <span class="muted">fields</span>
+          <span class="right num" style="font-weight:600;color:${mapTone}">${t.mapped}/${t.mapTotal}</span>
+        </div>
+        ${bar(mapPct, mapTone)}
+      </td>
+      <td class="nowrap">
+        ${self ? pill('self-hosted') : t.silent ? pill('silent') : pill(t.status)}
+        ${t.silent ? `<div class="tiny" style="margin-top:3px;color:var(--fail)">Nothing for ${t.silentFor}</div>` : ''}
+      </td>
+    </tr>`;
+  }).join('');
+
+  /* ---------- filtering ----------------------------------------------------- */
+  const trs = Array.from(document.querySelectorAll('#coRows tr'));
+  function applyFilters() {
+    const q  = document.getElementById('fSearch').value.trim().toLowerCase();
+    const st = document.getElementById('fStatus').value;
+    const wv = document.getElementById('fWave').value;
+    let shown = 0;
+    trs.forEach((tr, i) => {
+      const t = ROWS[i];
+      const hit = (!q  || (t.short + ' ' + t.name + ' ' + t.city + ' ' + t.erp).toLowerCase().includes(q))
+               && (!st || t.status === st)
+               && (!wv || String(t.wave) === wv);
+      tr.style.display = hit ? '' : 'none';
+      if (hit) shown++;
+    });
+    document.getElementById('countNote').textContent =
+      `${shown} of ${GROUP.entities} shown`;
+    const wname = wv ? WAVES.find(w => w.n === Number(wv)) : null;
+    document.getElementById('tableFoot').textContent = wname
+      ? `${wname.name} — ${wname.entities} entities in the group, ${wname.live} live. ${wname.note}`
+      : `${GROUP.live} live · ${GROUP.onboarding} onboarding · ${GROUP.notStarted} not started · ${GROUP.selfHosted} self-hosted`;
+  }
+  document.getElementById('fSearch').addEventListener('input', applyFilters);
+  document.getElementById('fStatus').addEventListener('change', applyFilters);
+  document.getElementById('fWave').addEventListener('change', applyFilters);
+  document.getElementById('fClear').addEventListener('click', () => {
+    document.getElementById('fSearch').value = '';
+    document.getElementById('fStatus').value = '';
+    document.getElementById('fWave').value = '';
+    applyFilters();
+  });
+  applyFilters();
+
+  /* ---------- how the group connects ---------------------------------------
+     Counts are per entity and only for entities whose ERP inventory is done.  */
+  const MCOUNT = { 1: GROUP.m1, 2: GROUP.m2, 3: GROUP.m3 };
+  const assessed = GROUP.m1 + GROUP.m2 + GROUP.m3;
+
+  document.getElementById('methodRows').innerHTML = [1, 2, 3].map(m => `
+    <div class="mrow">
+      <span class="mcount" style="color:var(--text-hi)">${MCOUNT[m]}</span>
+      <div class="grow">
+        <div class="row-tight" style="gap:8px">${methodChip(m, true)}
+          <span class="tiny dim">Entity-side software: ${METHODS[m].onsite}</span></div>
+        <div class="small muted" style="margin-top:3px">${METHODS[m].how}</div>
+        <div class="tiny dim" style="margin-top:2px">${METHODS[m].use}</div>
+      </div>
+    </div>`).join('') + `
+    <div class="mrow">
+      <span class="mcount" style="color:var(--text-lo)">${GROUP.pendingAssessment}</span>
+      <div class="grow">
+        <div class="row-tight" style="gap:8px"><span class="chip">ERP inventory not complete</span></div>
+        <div class="small muted" style="margin-top:3px">
+          No connection method has been chosen for these entities yet. The method is selected per entity
+          <b>after</b> the ERP inventory and technical assessment — it is not assumed here.
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('selfRow').innerHTML = `
+    <div class="mrow" style="padding-top:2px">
+      <span class="mcount" style="color:var(--warn)">${GROUP.selfHosted}</span>
+      <div class="grow">
+        <div class="row-tight" style="gap:8px">${methodChip('self')}
+          <span style="font-weight:600">Self-hosted utility — exception</span></div>
+        <div class="small muted" style="margin-top:3px">
+          Runs inside the entity’s own environment. Invoice data never leaves it, and the utility transmits
+          directly to the ASP. These entities have <b>no connection to the Hub</b> and are monitored separately.
+        </div>
+        <div class="tiny dim" style="margin-top:2px">
+          Qualifies only where a documented legal, contractual or governance restriction prevents centralising invoice data.
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('methodNote').innerHTML = teach(
+    `The ${assessed} method counts cover only entities whose ERP inventory is complete. ` +
+    `The ${GROUP.hubEntities} / ${GROUP.selfHosted} split between the Hub and the self-hosted exception is ` +
+    `<b>indicative</b>, and is confirmed by the entity governance classification.`);
+
+  document.getElementById('methodMath').textContent =
+    `${GROUP.m1} + ${GROUP.m2} + ${GROUP.m3} + ${GROUP.pendingAssessment} = ` +
+    `${GROUP.m1 + GROUP.m2 + GROUP.m3 + GROUP.pendingAssessment} entities connect through the Hub · ` +
+    `+ ${GROUP.selfHosted} self-hosted = ` +
+    `${GROUP.m1 + GROUP.m2 + GROUP.m3 + GROUP.pendingAssessment + GROUP.selfHosted} legal entities`;
+</script>
+</body>
+</html>

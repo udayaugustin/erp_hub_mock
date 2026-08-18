@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reports — Zubair Central E-Invoicing Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+/* page-local — Reports only */
+.repcard .rtag { display: inline-block; margin-top: 8px; }
+.tbl th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+.tbl th.sortable:hover { color: var(--accent-hi); }
+.tbl th.sortable .sarrow { opacity: .35; font-size: 11.5px; margin-left: 3px; }
+.tbl th.sortable.is-sorted { color: var(--accent-hi); }
+.tbl th.sortable.is-sorted .sarrow { opacity: 1; }
+.tbl tfoot td {
+  padding: 10px 11px; border-top: 2px solid var(--line-hard); font-weight: 700;
+  background: var(--bg-alt); font-size: 14px;
+}
+.tbl tfoot td:first-child { padding-left: 14px; }
+.tbl tfoot td:last-child  { padding-right: 14px; }
+.tbl tfoot .r { text-align: right; font-variant-numeric: tabular-nums; }
+.comprow { display: grid; grid-template-columns: minmax(0,1.1fr) 90px 90px 74px minmax(120px,1fr) 62px;
+  gap: 12px; align-items: center; padding: 11px 14px; border-bottom: 1px solid var(--line); }
+.comprow:last-child { border-bottom: 0; }
+.comprow.head { background: var(--bg-alt); font-size: 11.5px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--text-lo); }
+.comprow .cnum { font-variant-numeric: tabular-nums; text-align: right; font-size: 14px; }
+.comprow .cname { font-size: 14px; font-weight: 600; }
+.comprow .cpct { font-variant-numeric: tabular-nums; text-align: right; font-size: 13px; font-weight: 600; }
+.repbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 900px) {
+  .comprow { grid-template-columns: minmax(0,1fr) 70px 70px; }
+  .comprow > :nth-child(n+4) { display: none; }
+}
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="reports"
+      data-step="hub-reports"
+      data-crumbs="Records / Reports"
+      data-hint="The reports a group tax function actually asks for: what was invoiced, and whether every document reached the Authority.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Reports</h1>
+          <span class="pill pill-accent"><i class="dot"></i>Group-wide</span>
+        </div>
+        <p class="page-sub" id="page-sub"></p>
+      </div>
+      <div class="page-actions">
+        <select class="select select-sm" id="period" style="width:150px">
+          <option value="jul-2026">July 2026</option>
+          <option value="jun-2026">June 2026</option>
+          <option value="q2-2026">Q2 2026</option>
+          <option value="ytd-2026">Year to date</option>
+        </select>
+        <button class="btn btn-sm btn-primary" id="export">Export</button>
+      </div>
+    </div>
+
+    <div id="export-note" class="mb16" style="display:none"></div>
+
+    <section class="mb16">
+      <div class="section-head">
+        <div class="grow">
+          <div class="eyebrow">Catalogue</div>
+          <h2>Choose a report</h2>
+        </div>
+        <span class="small dim">Click a card to open it</span>
+      </div>
+      <div class="repgrid" id="catalogue"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="grow">
+          <div class="eyebrow" id="rep-eyebrow"></div>
+          <h2 id="rep-title"></h2>
+        </div>
+        <span class="small dim" id="rep-period"></span>
+      </div>
+
+      <div id="rep-lead" class="mb12"></div>
+      <div class="card card-tight" id="rep-body"></div>
+      <div id="rep-foot" class="mt12"></div>
+      <div id="dl-note" class="mt12" style="display:none"></div>
+
+      <div id="closing" class="mt16"></div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+(function () {
+
+  /* ---- period ------------------------------------------------------------- */
+  var PERIODS = {
+    'jul-2026': { label: 'July 2026',    note: 'month to date' },
+    'jun-2026': { label: 'June 2026',    note: 'complete month' },
+    'q2-2026':  { label: 'Q2 2026',      note: 'Apr — Jun' },
+    'ytd-2026': { label: 'Year to date', note: '1 Jan — ' + DEMO_DATE }
+  };
+  var periodKey = 'jul-2026';
+  var BASE_PERIOD = 'jul-2026';
+
+  /* ---- totals, summed from REPORT_ROWS — never hard-coded ------------------ */
+  function totals() {
+    return REPORT_ROWS.reduce(function (a, r) {
+      a.docs += r.docs; a.net += r.net; a.vat += r.vat;
+      a.zero += r.zero; a.ack += r.ack; a.failed += r.failed;
+      return a;
+    }, { docs: 0, net: 0, vat: 0, zero: 0, ack: 0, failed: 0 });
+  }
+
+  function ent(id) { var t = tenant(id); return t ? t.name : id; }
+  function entShort(id) { var t = tenant(id); return t ? t.short : id; }
+
+  /* ---- sort state for the VAT summary ------------------------------------- */
+  var sortKey = 'docs', sortDir = -1;
+
+  function sortedRows() {
+    return REPORT_ROWS.slice().sort(function (a, b) {
+      if (sortKey === 'id') return entShort(a.id).localeCompare(entShort(b.id)) * sortDir * -1;
+      return (a[sortKey] - b[sortKey]) * sortDir;
+    });
+  }
+
+  /* ---- report definitions -------------------------------------------------- */
+  var VAT_COLS = [
+    { k: 'id',     t: 'Entity',            r: false },
+    { k: 'docs',   t: 'Documents',         r: true },
+    { k: 'net',    t: 'Net (OMR)',         r: true },
+    { k: 'vat',    t: 'VAT (OMR)',         r: true },
+    { k: 'zero',   t: 'Zero-rated (OMR)',  r: true },
+    { k: 'ack',    t: 'Acknowledged',      r: true },
+    { k: 'failed', t: 'Failed',            r: true }
+  ];
+
+  function vatSummary() {
+    var t = totals();
+    var head = '<thead><tr>' + VAT_COLS.map(function (c) {
+      var on = c.k === sortKey;
+      return '<th class="sortable ' + (on ? 'is-sorted' : '') + ' ' + (c.r ? 'r' : '') + '" data-sort="' + c.k + '">' +
+        c.t + '<span class="sarrow">' + (on ? (sortDir === -1 ? '▼' : '▲') : '▴▾') + '</span></th>';
+    }).join('') + '</tr></thead>';
+
+    var body = '<tbody>' + sortedRows().map(function (r) {
+      return '<tr>' +
+        '<td>' + tenantChip(r.id) + '</td>' +
+        '<td class="r">' + num(r.docs) + '</td>' +
+        '<td class="r">' + omr(r.net) + '</td>' +
+        '<td class="r">' + omr(r.vat) + '</td>' +
+        '<td class="r">' + omr(r.zero) + '</td>' +
+        '<td class="r">' + num(r.ack) + '</td>' +
+        '<td class="r">' + (r.failed ? '<span class="chip fail">' + num(r.failed) + '</span>' : num(r.failed)) + '</td>' +
+      '</tr>';
+    }).join('') + '</tbody>';
+
+    var foot = '<tfoot><tr>' +
+      '<td>Total — ' + REPORT_ROWS.length + ' entities</td>' +
+      '<td class="r">' + num(t.docs) + '</td>' +
+      '<td class="r">' + omr(t.net) + '</td>' +
+      '<td class="r">' + omr(t.vat) + '</td>' +
+      '<td class="r">' + omr(t.zero) + '</td>' +
+      '<td class="r">' + num(t.ack) + '</td>' +
+      '<td class="r">' + num(t.failed) + '</td>' +
+    '</tr></tfoot>';
+
+    return '<div class="table-wrap"><table class="tbl" style="width:100%">' + head + body + foot + '</table></div>';
+  }
+
+  function bindSort() {
+    Array.prototype.forEach.call(document.querySelectorAll('#rep-body th[data-sort]'), function (th) {
+      th.addEventListener('click', function () {
+        var k = th.getAttribute('data-sort');
+        if (k === sortKey) { sortDir = -sortDir; } else { sortKey = k; sortDir = -1; }
+        document.getElementById('rep-body').innerHTML = vatSummary();
+        bindSort();
+      });
+    });
+  }
+
+  function completeness() {
+    var t = totals();
+    var rows = REPORT_ROWS.slice().sort(function (a, b) {
+      return (a.ack / a.docs) - (b.ack / b.docs);
+    });
+    var head = '<div class="comprow head">' +
+      '<div>Entity</div><div class="cnum">Raised</div><div class="cnum">Acknowledged</div>' +
+      '<div class="cnum">Gap</div><div>Completeness</div><div class="cpct">%</div></div>';
+
+    var body = rows.map(function (r) {
+      var gap = r.docs - r.ack;
+      var p = (r.ack / r.docs) * 100;
+      var tone = p >= 99 ? 'var(--ok)' : p >= 97 ? 'var(--warn)' : 'var(--fail)';
+      return '<div class="comprow">' +
+        '<div class="cname">' + tenantChip(r.id) + '</div>' +
+        '<div class="cnum">' + num(r.docs) + '</div>' +
+        '<div class="cnum">' + num(r.ack) + '</div>' +
+        '<div class="cnum">' + (gap ? '<span class="chip fail">' + num(gap) + '</span>' : '0') + '</div>' +
+        '<div>' + bar(p, tone) + '</div>' +
+        '<div class="cpct">' + pct(p) + '</div>' +
+      '</div>';
+    }).join('');
+
+    var gapTotal = t.docs - t.ack;
+    var foot = '<div class="comprow" style="background:var(--bg-alt);border-top:2px solid var(--line-hard);font-weight:700">' +
+      '<div class="cname">Total — ' + REPORT_ROWS.length + ' entities</div>' +
+      '<div class="cnum">' + num(t.docs) + '</div>' +
+      '<div class="cnum">' + num(t.ack) + '</div>' +
+      '<div class="cnum">' + num(gapTotal) + '</div>' +
+      '<div>' + bar((t.ack / t.docs) * 100, 'var(--accent)') + '</div>' +
+      '<div class="cpct">' + pct((t.ack / t.docs) * 100) + '</div>' +
+    '</div>';
+
+    return head + body + foot;
+  }
+
+  /* generic table used by the remaining reports — each has its own column set */
+  function simpleTable(cols, rows) {
+    var head = '<thead><tr>' + cols.map(function (c) {
+      return '<th class="' + (c.r ? 'r' : '') + '">' + c.t + '</th>';
+    }).join('') + '</tr></thead>';
+    var body = '<tbody>' + rows.map(function (row) {
+      return '<tr>' + cols.map(function (c, i) {
+        return '<td class="' + (c.r ? 'r' : '') + '">' + row[i] + '</td>';
+      }).join('') + '</tr>';
+    }).join('') + '</tbody>';
+    return '<div class="table-wrap"><table class="tbl" style="width:100%">' + head + body + '</table></div>';
+  }
+
+  function exceptionAgeing() {
+    var t = totals();
+    var rows = REPORT_ROWS.slice().sort(function (a, b) { return b.failed - a.failed; })
+      .map(function (r) {
+        var share = (r.failed / t.failed) * 100;
+        return [tenantChip(r.id), num(r.failed), pct(share), num(r.docs), pct((r.failed / r.docs) * 100)];
+      });
+    rows.push(['<strong>Total — ' + REPORT_ROWS.length + ' entities</strong>',
+      '<strong>' + num(t.failed) + '</strong>', '<strong>' + pct(100) + '</strong>',
+      '<strong>' + num(t.docs) + '</strong>', '<strong>' + pct((t.failed / t.docs) * 100) + '</strong>']);
+    return simpleTable([
+      { t: 'Entity' }, { t: 'Open failures', r: true }, { t: 'Share of group failures', r: true },
+      { t: 'Documents in period', r: true }, { t: 'Failure rate', r: true }
+    ], rows);
+  }
+
+  function docTypes() {
+    var t = totals();
+    var rows = REPORT_ROWS.slice().sort(function (a, b) { return b.docs - a.docs; })
+      .map(function (r) {
+        return [tenantChip(r.id), num(r.docs), omr(r.net), omr(r.zero),
+                pct(r.zero === 0 ? 0 : (r.zero / (r.net || 1)) * 100)];
+      });
+    rows.push(['<strong>Total — ' + REPORT_ROWS.length + ' entities</strong>',
+      '<strong>' + num(t.docs) + '</strong>', '<strong>' + omr(t.net) + '</strong>',
+      '<strong>' + omr(t.zero) + '</strong>', '<strong>' + pct((t.zero / t.net) * 100) + '</strong>']);
+    return simpleTable([
+      { t: 'Entity' }, { t: 'Documents', r: true }, { t: 'Net (OMR)', r: true },
+      { t: 'Zero-rated (OMR)', r: true }, { t: 'Zero-rated share', r: true }
+    ], rows);
+  }
+
+  function inboundReport() {
+    var ids = REPORT_ROWS.map(function (r) { return r.id; });
+    var list = TENANTS.filter(function (t) { return ids.indexOf(t.id) > -1; })
+      .sort(function (a, b) { return b.inToday - a.inToday; });
+    var tot = list.reduce(function (s, t) { return s + t.inToday; }, 0);
+    var rows = list.map(function (t) {
+      return [tenantChip(t.id), num(t.inToday),
+        t.inbound ? pill('live', 'Routing on') : pill('draft', 'Not enabled'),
+        methodChip(t.deploy === 'self-hosted' ? 'self' : t.method)];
+    });
+    rows.push(['<strong>Total — ' + list.length + ' entities</strong>',
+      '<strong>' + num(tot) + '</strong>', '', '']);
+    return simpleTable([
+      { t: 'Entity' }, { t: 'Received today', r: true },
+      { t: 'Inbound routing' }, { t: 'Connection' }
+    ], rows);
+  }
+
+  function waveReadiness() {
+    var list = TENANTS.slice().sort(function (a, b) { return a.wave - b.wave || a.id.localeCompare(b.id); });
+    var rows = list.map(function (t) {
+      var p = (t.mapped / t.mapTotal) * 100;
+      return ['<strong>Wave ' + t.wave + '</strong>', tenantChip(t.id),
+        num(t.mapped) + ' / ' + num(t.mapTotal),
+        '<div style="min-width:110px">' + bar(p, p >= 100 ? 'var(--ok)' : p >= 85 ? 'var(--warn)' : 'var(--fail)') + '</div>',
+        pct(p), pill(t.status)];
+    });
+    return simpleTable([
+      { t: 'Wave' }, { t: 'Entity' }, { t: 'Fields mapped', r: true },
+      { t: 'Progress' }, { t: 'Complete', r: true }, { t: 'State' }
+    ], rows);
+  }
+
+  /* ---- catalogue wiring ---------------------------------------------------- */
+  var VIEWS = {
+    'VAT summary by entity': {
+      slug: 'vat-summary',
+      eyebrow: 'Finance',
+      lead: function () {
+        var t = totals();
+        return teach('Net, VAT and zero-rated totals per legal entity, taken from the archived documents rather than ' +
+          'from any one ERP. The total row is the sum of the rows above it: ' + num(t.docs) + ' documents, ' +
+          'OMR ' + omr(t.vat) + ' of VAT. Click any column heading to sort.');
+      },
+      render: vatSummary,
+      after: bindSort,
+      foot: function () {
+        var t = totals();
+        return notice('info', 'Acknowledged plus failed equals documents on every row and on the total: ' +
+          num(t.ack) + ' + ' + num(t.failed) + ' = ' + num(t.docs) + '. Nothing is unaccounted for.');
+      }
+    },
+    'Reporting completeness': {
+      slug: 'reporting-completeness',
+      eyebrow: 'Compliance',
+      lead: function () {
+        return teach('This is the report a tax function actually needs. For each entity: documents raised in the ERP ' +
+          'against documents acknowledged along the reporting leg. The gap is what has <em>not</em> yet been ' +
+          'acknowledged as reported to the Authority. Worst first.');
+      },
+      render: completeness,
+      foot: function () {
+        var t = totals();
+        var worst = REPORT_ROWS.slice().sort(function (a, b) { return (a.ack / a.docs) - (b.ack / b.docs); })[0];
+        return notice('warn', '<strong>' + num(t.docs - t.ack) + ' documents across ' + REPORT_ROWS.length +
+          ' entities have not been acknowledged.</strong> ' + ent(worst.id) + ' accounts for ' +
+          num(worst.docs - worst.ack) + ' of them. Each one is a live exception with a named owner &mdash; ' +
+          'business-data problems sit with the entity finance team, platform and connector problems with the central team.');
+      }
+    },
+    'Exception ageing': {
+      slug: 'exception-ageing',
+      eyebrow: 'Operations',
+      lead: function () {
+        return notice('info', 'Open failures by entity, and each entity&rsquo;s share of the group total. ' +
+          'The full report bands every failure by age and names who owns the fix.');
+      },
+      render: exceptionAgeing
+    },
+    'Document type breakdown': {
+      slug: 'document-type-breakdown',
+      eyebrow: 'Finance',
+      lead: function () {
+        return notice('info', 'Value composition per entity, showing how much of each entity&rsquo;s net turnover is ' +
+          'zero-rated. The full report separates invoices, credit notes and simplified documents &mdash; credit notes ' +
+          'are in scope alongside invoices.');
+      },
+      render: docTypes
+    },
+    'Inbound supplier documents': {
+      slug: 'inbound-supplier-documents',
+      eyebrow: 'Operations',
+      lead: function () {
+        return notice('info', 'Supplier documents received today, per entity, with the routing state and how that ' +
+          'entity is connected. Drafts are created in the receiving ERP and posted by that entity&rsquo;s finance team.');
+      },
+      render: inboundReport
+    },
+    'Wave readiness': {
+      slug: 'wave-readiness',
+      eyebrow: 'Programme',
+      lead: function () {
+        return notice('info', 'Mapping progress per entity, grouped by rollout wave. A wave is only ready when every ' +
+          'entity in it has passed connection and mapping tests.');
+      },
+      render: waveReadiness
+    }
+  };
+
+  var current = REPORT_TYPES[0].n;
+
+  function paintCatalogue() {
+    document.getElementById('catalogue').innerHTML = REPORT_TYPES.map(function (r, i) {
+      return '<div class="repcard ' + (r.n === current ? 'is-active' : '') + '" data-rep="' + i + '" tabindex="0">' +
+        '<div class="rt">' + r.n + '</div>' +
+        '<div class="rd">' + r.d + '</div>' +
+        '<span class="tag rtag">' + r.tag + '</span>' +
+      '</div>';
+    }).join('');
+    Array.prototype.forEach.call(document.querySelectorAll('[data-rep]'), function (c) {
+      function go() { current = REPORT_TYPES[+c.getAttribute('data-rep')].n; paintCatalogue(); paintReport(); }
+      c.addEventListener('click', go);
+      c.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    });
+  }
+
+  function paintReport() {
+    var def = VIEWS[current];
+    var meta = REPORT_TYPES.filter(function (r) { return r.n === current; })[0];
+    var p = PERIODS[periodKey];
+
+    document.getElementById('rep-eyebrow').textContent = meta.tag;
+    document.getElementById('rep-title').textContent = current;
+    document.getElementById('rep-period').innerHTML =
+      p.label + ' <span class="dim">· ' + p.note + '</span>';
+
+    var lead = def.lead ? def.lead() : '';
+    if (periodKey !== BASE_PERIOD) {
+      lead += notice('warn', 'This prototype carries one period of data. The rows below remain ' +
+        PERIODS[BASE_PERIOD].label + ', but the export is named for ' + p.label + '.');
+    }
+    document.getElementById('rep-lead').innerHTML = lead;
+    document.getElementById('rep-body').innerHTML = def.render();
+    document.getElementById('rep-foot').innerHTML =
+      (def.foot ? def.foot() : '') +
+      '<div class="repbar mt12">' +
+        '<button class="btn btn-sm btn-ghost" id="dl">Download this report</button>' +
+        '<span class="small dim">CSV, and the same figures as a PDF pack for the audit file.</span>' +
+      '</div>';
+    document.getElementById('dl-note').style.display = 'none';
+    if (def.after) def.after();
+
+    document.getElementById('dl').addEventListener('click', function () {
+      var n = document.getElementById('dl-note');
+      n.innerHTML = notice('ok', '<span class="chip-mono">' + fileName() + '</span> &mdash; prepared. ' +
+        'It would download here; nothing leaves the prototype.');
+      n.style.display = '';
+    });
+  }
+
+  function fileName() {
+    return VIEWS[current].slug + '-' + periodKey + '.csv';
+  }
+
+  /* ---- period + export ------------------------------------------------------ */
+  document.getElementById('period').addEventListener('change', function (e) {
+    periodKey = e.target.value;
+    document.getElementById('export-note').style.display = 'none';
+    paintReport();
+  });
+
+  document.getElementById('export').addEventListener('click', function () {
+    var n = document.getElementById('export-note');
+    n.innerHTML = notice('ok', '<span class="chip-mono">' + fileName() + '</span> &mdash; prepared for ' +
+      PERIODS[periodKey].label + ', ' + REPORT_ROWS.length + ' entities. ' +
+      'In the live platform this downloads, or is delivered on a schedule to a named group of recipients.');
+    n.style.display = '';
+  });
+
+  /* ---- static copy ----------------------------------------------------------- */
+  (function () {
+    var t = totals();
+    document.getElementById('page-sub').innerHTML =
+      'Six standard reports over the archived documents. ' + num(t.docs) + ' documents in the current period, ' +
+      'OMR ' + omr(t.vat) + ' of VAT, ' + num(t.docs - t.ack) + ' not yet acknowledged.';
+  })();
+
+  document.getElementById('closing').innerHTML = teach(
+    'These figures are group-wide because the viewer is signed in as the central team. The same reports exist in ' +
+    'each company&rsquo;s own portal, filtered to that company alone &mdash; an entity administrator sees their own ' +
+    'VAT summary and their own completeness figure, and none of the other ' + (GROUP.entities - 1) + ' companies. ' +
+    'Five entities are detailed in this prototype; the live report lists every reporting entity.');
+
+  paintCatalogue();
+  paintReport();
+})();
+</script>
+</body>
+</html>
