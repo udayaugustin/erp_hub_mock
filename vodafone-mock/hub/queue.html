@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Pipeline — Vodafone Oman E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* ---- page-local to hub/queue.html. Do not move to app.css. ---- */
+  .page-head{margin-bottom:14px}
+  .card-body{padding:14px 16px}
+  /* stage board — one card per stage, wrapping across the width */
+  #stageBoard{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:10px}
+  @media (max-width:1180px){#stageBoard{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media (max-width:640px){#stageBoard{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .stg{border:1px solid var(--line);border-radius:9px;padding:11px 12px;background:var(--surface);
+    display:flex;flex-direction:column;gap:6px;min-height:118px}
+  .stg.on{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));
+    background:color-mix(in srgb,var(--accent) 5%,var(--surface))}
+  .stg-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .stg-ix{font-size:11px;font-weight:700;color:var(--text-lo);font-family:'IBM Plex Mono',monospace}
+  .stg-name{font-weight:600;font-size:13px;color:var(--text-hi);line-height:1.2}
+  .stg-note{font-size:11px;color:var(--text-lo);line-height:1.35}
+  .stg-count{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;
+    padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--accent) 14%,transparent);
+    color:var(--accent-hi);white-space:nowrap}
+  .stg-count.zero{background:color-mix(in srgb,var(--text-lo) 12%,transparent);color:var(--text-lo)}
+  .qtiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  @media (max-width:820px){.qtiles{grid-template-columns:1fr}}
+  tr.tracked{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+  tr.tracked td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="queue"
+      data-step="hub-queue"
+      data-crumbs="Operations / Live Pipeline"
+      data-hint="Where every live document is right now — the nine stages a B2B invoice passes through before the OTA acknowledges it.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Live Pipeline</h1>
+          <span id="flightPill"></span>
+        </div>
+        <p class="page-sub">The B2B postpaid stream, cleared to the OTA one document at a time.</p>
+      </div>
+      <div class="page-actions">
+        <select class="select select-sm" id="refresh" style="width:auto">
+          <option value="on">Auto-refresh · 5 s</option>
+          <option value="off">Paused</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="small dim mb12" id="refreshNote"></div>
+
+    <div class="qtiles mb16" id="tiles"></div>
+
+    <div class="card mb16">
+      <div class="card-head">
+        <h2 class="grow">The nine stages</h2>
+        <span class="tag" id="stageTag"></span>
+        <span class="small dim" id="clock"></span>
+      </div>
+      <div class="card-body">
+        <div id="stageBoard"></div>
+        <div id="stageNote" class="mt12"></div>
+      </div>
+    </div>
+
+    <section style="margin-top:0">
+      <div class="card card-tight">
+        <div class="card-head">
+          <h2 class="grow">B2B documents in flight</h2>
+          <span id="retryPill"></span>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Customer</th>
+                <th>Type</th>
+                <th>Scenario</th>
+                <th class="right">Total (OMR)</th>
+                <th>Stage</th>
+                <th>State</th>
+              </tr>
+            </thead>
+            <tbody id="queueRows"></tbody>
+          </table>
+        </div>
+        <div class="card-foot">
+          <span class="small dim grow" id="tableFoot"></span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card">
+        <div class="card-head"><h2 class="grow">Consumer volume runs on a different clock</h2><span class="tag">B2C · daily batch</span></div>
+        <div class="card-body" id="batchNote"></div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* ---------- the live B2B pipeline -----------------------------------------
+     STAGE_COUNT covers stages 0–6, the ones a document can be waiting at.
+     Nothing queues at Result published or Archive: the result is published the
+     moment an outcome arrives, and archiving follows it.                       */
+  const inFlight = STAGE_COUNT.reduce((a, b) => a + b, 0);      /* = 27 */
+  const busiest  = STAGE_COUNT.indexOf(Math.max.apply(null, STAGE_COUNT));
+
+  document.getElementById('flightPill').outerHTML = pill('active', `${num(inFlight)} in flight`);
+  document.getElementById('clock').textContent   = DEMO_CLOCK;
+  document.getElementById('stageTag').textContent = `${num(inFlight)} B2B documents in flight`;
+
+  /* ---------- tiles --------------------------------------------------------- */
+  const B2B = stream('b2b-sell');
+  const b2bRows = INVOICES.filter(d => d.stream === 'b2b-sell');
+  const failed  = b2bRows.filter(d => d.state === 'failed').length;
+
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'In flight now', value: num(inFlight),
+           meta: `On the B2B postpaid pipeline · busiest at ${STAGES[busiest]}`, tone: 'var(--accent)' }),
+    stat({ label: 'B2B cleared today', value: num(B2B.today),
+           meta: `${num(B2B.mtd)} month to date · standard tax invoices`, tone: 'var(--ok)' }),
+    stat({ label: 'Needs attention', value: num(failed),
+           meta: failed ? 'Held at Validate — total mismatch' : 'No failures in flight', tone: failed ? 'var(--fail)' : 'var(--ok)' })
+  ].join('');
+
+  /* ---------- stage board --------------------------------------------------- */
+  document.getElementById('stageBoard').innerHTML = STAGES.map((s, i) => {
+    const inflight = i < STAGE_COUNT.length;
+    const count = inflight ? STAGE_COUNT[i] : 0;
+    const cls   = (inflight && i === busiest) ? 'stg on' : 'stg';
+    const badge = inflight
+      ? `<span class="stg-count">${num(count)}</span>`
+      : `<span class="stg-count zero">no queue</span>`;
+    return `<div class="${cls}">
+      <div class="stg-top"><span class="stg-ix">${String(i + 1).padStart(2, '0')}</span>${badge}</div>
+      <div class="stg-name">${STAGE_SHORT[i]}</div>
+      <div class="stg-note">${STAGE_NOTE[i]}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('stageNote').innerHTML = teach(
+    `The largest group right now is <b>${STAGES[busiest]}</b>, with ${STAGE_COUNT[busiest]} documents. ` +
+    `Two different stages write the document down. <b>Record</b> is step 5: the XML and audit trail are stored ` +
+    `<b>before</b> anything is transmitted, so there is evidence of what was sent even if transmission later fails. ` +
+    `<b>Archive</b> is step 9 — the long-term legal record, which cannot be written any earlier because it holds ` +
+    `the acknowledgements, and those only exist once the round trip to the OTA is done.`);
+
+  /* ---------- the table ----------------------------------------------------- */
+  const TRACKED = 'VOD-INV-2026-00417';
+  const FAIL_BG = 'background:color-mix(in srgb, var(--fail) 7%, transparent)';
+  const stPill  = s => s === 'ok' ? pill('ok') : s === 'active' ? pill('active') : pill('failed');
+
+  document.getElementById('queueRows').innerHTML = b2bRows.map(inv => {
+    const c = CUSTOMERS[inv.cust];
+    const isTracked = inv.no === TRACKED;
+    const rowStyle = inv.state === 'failed' ? FAIL_BG : '';
+    return `<tr class="${isTracked ? 'tracked' : ''}" style="${rowStyle}">
+      <td class="nowrap">
+        <a class="link id" href="document.html">${inv.no}</a>
+        ${isTracked ? '<div class="tiny" style="color:var(--accent-hi);font-weight:600">Tracked end-to-end</div>' : ''}
+        <div class="tiny dim num">${inv.created}</div>
+      </td>
+      <td>${c.name}</td>
+      <td class="nowrap"><span class="chip ${inv.type === 'Credit Note' ? 'info' : ''}">${inv.type}</span>
+        ${inv.against ? `<div class="tiny dim">against <span class="id">${inv.against}</span></div>` : ''}</td>
+      <td class="nowrap"><span class="tag">${inv.scen}</span></td>
+      <td class="right num">${omr(inv.total)}</td>
+      <td class="nowrap">
+        <div style="font-weight:600">${STAGES[inv.stage]}</div>
+        <div class="tiny dim">Stage ${inv.stage + 1} of ${STAGES.length}</div>
+      </td>
+      <td class="nowrap">${stPill(inv.state)}
+        ${inv.retry ? `<div class="tiny dim" style="margin-top:3px">retry ${inv.retry}</div>` : ''}
+        ${inv.awaiting ? `<div class="tiny dim" style="margin-top:3px">awaiting ${inv.awaiting}</div>` : ''}
+      </td>
+    </tr>`;
+  }).join('');
+
+  const retrying = b2bRows.filter(d => d.retry > 0).length;
+  document.getElementById('retryPill').outerHTML = retrying
+    ? pill('warn', `${retrying} retrying`)
+    : pill('ok', 'None retrying');
+
+  document.getElementById('tableFoot').textContent =
+    `${b2bRows.length} B2B documents shown · ${num(B2B.today)} cleared today · tracked invoice ${TRACKED} highlighted.`;
+
+  /* ---------- the B2C daily batch ------------------------------------------- */
+  const bt = GROUP.batchToday;
+  document.getElementById('batchNote').innerHTML =
+    `<p class="small" style="margin:0 0 12px">Business-customer postpaid invoices clear <b>live</b>, one document at a
+     time, on the pipeline above. Consumer invoices — postpaid bills and prepaid top-ups — are far too high a volume to
+     clear line-by-line, so they are collected and reported to the OTA in <b>one scheduled batch a day</b> instead.</p>` +
+    kv([
+      ['Today’s batch', `<span class="id">${bt.id}</span>`],
+      ['Documents', `<span class="num">${num(bt.count)}</span>`],
+      ['Window', bt.window],
+      ['Reported at', bt.reportedAt + ' · ' + pill(bt.state)],
+      ['Acknowledgement', `<span class="mono" style="font-size:11px">${bt.ack}</span>`]
+    ], true);
+
+  /* ---------- auto-refresh control ------------------------------------------ */
+  const rn = document.getElementById('refreshNote');
+  function drawRefresh() {
+    const on = document.getElementById('refresh').value === 'on';
+    rn.innerHTML = on
+      ? `Refreshing every 5 seconds. Figures shown as at <b>${DEMO_CLOCK}</b>.`
+      : `Paused. Figures frozen at <b>${DEMO_CLOCK}</b> and will not move until refresh is resumed.`;
+  }
+  document.getElementById('refresh').addEventListener('change', drawRefresh);
+  drawRefresh();
+</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in — Vodafone Oman E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body class="surface-hub" data-shell="off" data-step="hub-login">
+
+<div class="auth">
+
+  <div class="auth-aside">
+    <div class="auth-grid"></div>
+
+    <div class="brandrow">
+      <div class="row-tight">
+        <span class="brand-mark" style="width:32px;height:32px;font-size:19px">V</span>
+        <span class="stack">
+          <span class="brand-name" style="font-size:16px">Vodafone Oman</span>
+          <span class="brand-sub">E-Invoicing Console</span>
+        </span>
+      </div>
+
+      <!-- Mark only. The "Powered by" wording is carried on the screen map;
+           repeating it on every screen would read as an advertisement. -->
+      <div class="cobrand">
+        <img src="../assets/img/fawtara-x.png" alt="Powered by Fawtara X">
+      </div>
+    </div>
+
+    <h1 class="auth-hero mt24">One pipe.<br>Six invoice streams.<br><em>Every document Oman-ready.</em></h1>
+
+    <div class="auth-points">
+      <div class="auth-point">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+        <div>Every stream reported to the Oman Tax Authority through one accredited service provider.</div>
+      </div>
+      <div class="auth-point">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V7l6-4v6l6-4v6l6-4v14z"/></svg>
+        <div>B2B cleared live, consumer volume reported by daily batch — from your billing system, no re-keying.</div>
+      </div>
+      <div class="auth-point">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <div>Invoice data and the legal archive held in-country.</div>
+      </div>
+    </div>
+
+    <div class="auth-foot">
+      Vodafone Oman · Muscat · Oman Tax Authority e-invoicing programme<br>
+      Peppol reporting model · PINT-OM validation
+    </div>
+  </div>
+
+  <div class="auth-form" style="padding-bottom:96px">
+    <div class="auth-box">
+      <h1 style="font-size:26px">Sign in to the Console</h1>
+      <p class="muted small mt8 mb16">This is the console the Vodafone e-invoicing team uses to watch every
+        document on its way to the OTA — the live B2B pipeline, the daily consumer batch and the inbound stream.</p>
+
+      <form onsubmit="location.href='dashboard.html';return false">
+        <label class="field">
+          <span class="label">Work email</span>
+          <input class="input" type="email" value="einvoicing@vodafone.om" autocomplete="username">
+        </label>
+        <label class="field">
+          <span class="label">Password</span>
+          <input class="input" type="password" value="demo-password" autocomplete="current-password">
+        </label>
+
+        <div class="row small mb16">
+          <label class="row-tight" style="cursor:pointer">
+            <input type="checkbox" checked> <span class="muted">Keep me signed in</span>
+          </label>
+          <a class="right" style="color:var(--accent-hi)" href="#">Forgot password?</a>
+        </div>
+
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Sign in</button>
+      </form>
+
+      <div class="divider"></div>
+
+      <button class="btn btn-block" onclick="location.href='dashboard.html'">
+        <svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V6z"/></svg>
+        Continue with company SSO
+      </button>
+
+      <p class="tiny dim mt16" style="text-align:center">
+        Demonstration prototype. Vodafone Oman is real; every figure is illustrative. Not a live system.<br>
+        Credentials are pre-filled. <a href="../index.html" style="color:var(--text-mid)">Back to screen map</a>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inbound & RCM — Vodafone Oman E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* page-local — inbound only */
+  .in-fail td { background: color-mix(in srgb, var(--fail) 7%, transparent); }
+  .in-fail td:first-child { box-shadow: inset 3px 0 0 var(--fail); }
+  .in-fail .docno { color: var(--fail); }
+  .stagelbl {
+    display: inline-block; font-size: 12px; font-weight: 600; line-height: 1;
+    padding: 5px 8px; border-radius: 6px; white-space: nowrap;
+    border: 1px solid var(--line-hard); color: var(--text-mid);
+  }
+  .stagelbl.on   { border-color: color-mix(in srgb, var(--ok) 45%, transparent);
+                   background: color-mix(in srgb, var(--ok) 10%, transparent); color: var(--ok); }
+  .stagelbl.mid  { border-color: color-mix(in srgb, var(--warn) 45%, transparent);
+                   background: color-mix(in srgb, var(--warn) 10%, transparent); color: var(--warn); }
+  .stagelbl.bad  { border-color: color-mix(in srgb, var(--fail) 45%, transparent);
+                   background: color-mix(in srgb, var(--fail) 10%, transparent); color: var(--fail); }
+  .stagenum { font-family: var(--font-mono); opacity: .6; margin-right: 4px; }
+  .mono-hl { font-family: var(--font-mono); font-size: 12.5px; }
+  .page-head { margin-bottom: 14px; }
+  .section-head.mt24 { margin-top: 12px; }
+  .card-body { padding: 14px 16px; }
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="inbound"
+      data-step="hub-inbound"
+      data-crumbs="Operations / Inbound & RCM"
+      data-hint="Vodafone as buyer: supplier invoices from inside Oman land as drafts in your ERP; imports from outside Oman are captured under reverse charge.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Inbound &amp; RCM</h1>
+          <span class="pill pill-ok"><i class="dot"></i>Receiving</span>
+        </div>
+        <p class="page-sub">Vodafone as buyer — two ways a supplier bill reaches you. Inside Oman it arrives over Peppol and lands as a draft purchase invoice. Outside Oman there is no e-invoice to receive; the import is self-accounted under reverse charge.</p>
+      </div>
+      <div class="page-actions">
+        <span class="small dim" id="dayNote"></span>
+      </div>
+    </div>
+
+    <div class="grid g3 mb16" id="tiles"></div>
+
+    <div class="mb16" id="ruleLine"></div>
+
+    <!-- ==================== SECTION A ==================== -->
+    <div class="section-head">
+      <div class="grow">
+        <div class="eyebrow">Supplier inside Oman</div>
+        <h2>Peppol inbound → ERP draft</h2>
+      </div>
+      <span class="small dim">Stream 1 · settled</span>
+    </div>
+
+    <div class="card mb16">
+      <div class="card-head">
+        <h2 class="grow">How an inbound supplier document is handled</h2>
+        <span class="tag">Six stages</span>
+      </div>
+      <div class="card-body">
+        <div id="pipeIn"></div>
+      </div>
+      <div class="card-foot">
+        <span class="tiny dim">The original is archived at stage 4, before anything is written into your ERP at stage 5. Nothing is ever posted automatically.</span>
+      </div>
+    </div>
+
+    <div class="mb16" id="routeNote"></div>
+
+    <div class="card card-tight mb16">
+      <div class="card-head">
+        <h2 class="grow">Cleared supplier invoices, landing as drafts</h2>
+        <span class="small dim" id="peppolNote"></span>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Document</th>
+              <th>Supplier</th>
+              <th>Received</th>
+              <th class="r">Total (OMR)</th>
+              <th>Stage</th>
+              <th>In your ERP</th>
+            </tr>
+          </thead>
+          <tbody id="peppolRows"></tbody>
+        </table>
+      </div>
+      <div class="card-foot">
+        <span class="tiny dim">Not one of these was posted. Every draft is waiting for a person in Vodafone finance to review it against the purchase order and post it.</span>
+      </div>
+    </div>
+
+    <div class="card mb16">
+      <div class="card-head">
+        <h2 class="grow">One document could not be matched to Vodafone</h2>
+        <span class="pill pill-fail"><i class="dot"></i>Held</span>
+      </div>
+      <div class="card-body" id="failBody"></div>
+      <div class="card-foot">
+        <span class="tiny dim">The original was accepted and archived, but no ERP draft was created — the platform team confirms the participant registration before it can be routed.</span>
+      </div>
+    </div>
+
+    <!-- ==================== SECTION B ==================== -->
+    <div class="section-head mt24">
+      <div class="grow">
+        <div class="eyebrow">Supplier outside Oman</div>
+        <h2>Reverse charge (RCM)</h2>
+      </div>
+      <span class="small dim">Stream 2 · to confirm with OTA</span>
+    </div>
+
+    <div class="mb16" id="rcmIntro"></div>
+
+    <div class="card card-tight mb16">
+      <div class="card-head">
+        <h2 class="grow">Imported services — self-accounted</h2>
+        <span class="small dim" id="rcmNote"></span>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Document</th>
+              <th>Supplier</th>
+              <th>Received</th>
+              <th class="r">Net (OMR)</th>
+              <th class="r">VAT (OMR)</th>
+              <th>Record in your ERP</th>
+            </tr>
+          </thead>
+          <tbody id="rcmRows"></tbody>
+        </table>
+      </div>
+      <div class="card-foot">
+        <span class="tiny dim">Suppliers outside Oman have no Peppol participant — the <span class="mono-hl">peppol</span> field is null on their master record. There is no inbound document to clear.</span>
+      </div>
+    </div>
+
+    <div id="rcmCards" class="stack"></div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* ---- split the inbound set by kind, all from data.js ---- */
+  const peppolAll = INBOUND.filter(r => r.kind === 'peppol');
+  const heldRows  = peppolAll.filter(r => r.state === 'failed');
+  const draftRows = peppolAll.filter(r => r.erpRef);
+  const rcmRows   = INBOUND.filter(r => r.kind === 'rcm');
+
+  document.getElementById('dayNote').textContent =
+    DEMO_DATE + ' · ' + num(GROUP.inboundToday) + ' inbound documents today';
+
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Received today', value: num(GROUP.inboundToday),
+           meta: num(GROUP.inboundInside) + ' inside Oman · ' + num(GROUP.inboundOutside) + ' imported', tone: 'var(--accent)' }),
+    stat({ label: 'Created as ERP drafts', value: num(GROUP.inboundInside - heldRows.length),
+           meta: 'Peppol inbound, awaiting finance review. None posted automatically.', tone: 'var(--ok)' }),
+    stat({ label: 'Reverse-charge records', value: num(GROUP.inboundOutside),
+           meta: 'Imports self-accounted for the VAT return — nothing cleared', tone: 'var(--info)' })
+  ].join('');
+
+  document.getElementById('ruleLine').innerHTML = notice('info',
+    `<strong>Two directions for a supplier bill.</strong> Inside Oman, a cleared e-invoice arrives over Peppol
+     and the Hub lands it as a <b>draft</b> purchase invoice in your ERP. Outside Oman, there is no e-invoice —
+     Vodafone self-accounts VAT under <b>reverse</b> charge and Fawtara keeps the record.`);
+
+  /* ---- Section A: the six stages ---- */
+  document.getElementById('pipeIn').innerHTML =
+    pipeline(IN_STAGES.length - 1, { stages: IN_STAGES, times: IN_STAGE_NOTE });
+
+  document.getElementById('routeNote').innerHTML = notice('info',
+    `<strong>Matched to Vodafone by identity, not by group.</strong> Vodafone is one legal entity, so routing is
+     simple: a document is delivered to Vodafone when its receiving participant is
+     <span class="mono-hl">0248:OM1200087234</span> and the buyer identifier resolves to Commercial Registration
+     <span class="mono-hl">1279001</span>. There is no company to choose between.`);
+
+  /* ---- Section A: cleared drafts table ---- */
+  function stageCell(r) {
+    const cls = r.state === 'failed' ? 'bad' : r.state === 'active' ? 'mid' : 'on';
+    return `<span class="stagelbl ${cls}"><span class="stagenum">${r.stage + 1}/${IN_STAGES.length}</span>${IN_STAGES[r.stage]}</span>`;
+  }
+  function erpCell(r) {
+    if (!r.erpRef) return `<div class="small" style="color:var(--text-lo)">${r.erpState}</div>`;
+    return `<div class="num" style="font-size:11.5px">${r.erpRef}</div>
+            <div class="tiny dim">Draft purchase invoice · ${r.erpState.replace('Draft — ', '')}</div>`;
+  }
+  document.getElementById('peppolRows').innerHTML = draftRows.map(r => {
+    const s = SUPPLIERS[r.supplier];
+    return `<tr>
+      <td><div class="num docno" style="font-weight:600">${r.no}</div>
+          <div class="tiny dim">PO ${r.po} · ${num(r.lines)} lines</div></td>
+      <td><div style="font-size:12.5px">${s.name}</div>
+          <div class="tiny dim num">${s.peppol}</div></td>
+      <td class="num" style="font-size:11.5px">${r.recv}</td>
+      <td class="r num">${omr(r.total)}</td>
+      <td>${stageCell(r)}</td>
+      <td>${erpCell(r)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('peppolNote').textContent =
+    num(draftRows.length) + ' shown · both landed as drafts';
+
+  /* ---- Section A: the held / unmatched case ---- */
+  const held = heldRows[0];
+  document.getElementById('failBody').innerHTML = `
+    <div class="row" style="gap:14px;align-items:flex-start;flex-wrap:wrap">
+      <div class="grow" style="min-width:280px">
+        <div class="num" style="font-weight:600;font-size:13.5px;color:var(--fail)">${held.no}</div>
+        <div class="small dim mt4">Arrived ${held.recv} · ${omr(held.total)} OMR ·
+          stopped at stage ${held.stage + 1}, ${IN_STAGES[held.stage]}</div>
+        <p class="small mt12" style="line-height:1.65;max-width:96ch">
+          <strong>What happened.</strong> A supplier's provider transmitted this document over Peppol.
+          ${held.err} The document was accepted and the original archived, but no draft was created in
+          your ERP, because the Hub cannot confirm it is addressed to Vodafone.
+        </p>
+        <p class="small mt8" style="line-height:1.65;max-width:96ch">
+          <strong>Who owns it.</strong> This is a participant-registration question for the central platform
+          team, not a finance data problem. Once the identifier is confirmed against Vodafone's registration,
+          the document is routed and the draft is created.
+        </p>
+      </div>
+      <div style="min-width:230px">
+        ${kv([
+          ['Sent to participant', '<span class="mono-hl">0248:OM1100777001</span>'],
+          ['Vodafone participant', '<span class="mono-hl">0248:OM1200087234</span>'],
+          ['Original XML', 'Archived'],
+          ['ERP draft created', 'No'],
+          ['State', held.erpState],
+          ['Owner', 'Central platform team']
+        ])}
+      </div>
+    </div>`;
+
+  /* ---- Section B: reverse-charge intro ---- */
+  document.getElementById('rcmIntro').innerHTML = notice('info',
+    `<strong>No inbound Peppol document, nothing cleared.</strong> Cross-border services do not arrive as an
+     Oman e-invoice. Vodafone self-accounts output and input VAT on the same return under the reverse-charge
+     mechanism — net nil where fully recoverable. Fawtara captures the record for the VAT return and archives
+     the original supplier document for audit.`);
+
+  /* ---- Section B: RCM table ---- */
+  document.getElementById('rcmRows').innerHTML = rcmRows.map(r => {
+    const s = SUPPLIERS[r.supplier];
+    return `<tr>
+      <td><div class="num docno" style="font-weight:600">${r.no}</div>
+          <div class="tiny dim">${s.country} · ${num(r.lines)} lines</div></td>
+      <td><div style="font-size:12.5px">${s.name}</div>
+          <div class="tiny dim num">${s.vatin} · no Peppol participant</div></td>
+      <td class="num" style="font-size:11.5px">${r.recv}</td>
+      <td class="r num">${omr(r.net)}</td>
+      <td class="r num">${omr(r.vat)}</td>
+      <td><div class="num" style="font-size:11.5px">${r.erpRef}</div>
+          <div class="tiny dim">${r.erpState}</div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('rcmNote').textContent =
+    num(rcmRows.length) + ' imports · self-accounted';
+
+  /* ---- Section B: per-record explanation ---- */
+  document.getElementById('rcmCards').innerHTML = rcmRows.map(r => {
+    const s = SUPPLIERS[r.supplier];
+    return `<div class="card card-tight">
+      <div class="card-head">
+        <h2 class="grow">${r.no} — ${s.name}</h2>
+        <span class="chip info">Reverse charge</span>
+      </div>
+      <div class="card-body">
+        <p class="small" style="line-height:1.65;margin:0">${r.note}</p>
+        <div class="mt12">${kv([
+          ['Origin', s.country + ' · outside Oman'],
+          ['Inbound Peppol', 'None'],
+          ['Net', omr(r.net) + ' OMR'],
+          ['Self-accounted VAT', omr(r.vat) + ' OMR (output = input, net nil where recoverable)'],
+          ['ERP record', r.erpRef + ' · ' + r.erpState],
+          ['Original document', 'Archived for audit']
+        ], true)}</div>
+      </div>
+    </div>`;
+  }).join('');
+</script>
+</body>
+</html>

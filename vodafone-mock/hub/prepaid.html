@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prepaid top-ups — Vodafone Oman E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+/* page-local — OTA positions */
+.otatag {
+  display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+  font-size: 12px; font-weight: 600; letter-spacing: .02em; line-height: 1.35;
+  padding: 4px 10px; border-radius: var(--r-sm); white-space: normal;
+  color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warn) 34%, transparent);
+}
+.otatag svg { width: 13px; height: 13px; flex: none; }
+.pcard { margin-bottom: 16px; }
+.pcard .card-head { align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+.pcard h3 { font-family: var(--font-cond, inherit); font-size: 18px; font-weight: 700; margin-top: 2px; line-height: 1.25; }
+.plabel { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-lo); margin-bottom: 5px; }
+.basis { font-size: 14.5px; line-height: 1.55; }
+.treat { margin: 6px 0 0; padding-left: 20px; }
+.treat li { font-size: 14.5px; line-height: 1.55; margin-bottom: 7px; }
+.treat li:last-child { margin-bottom: 0; }
+.pblock + .pblock { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.channels { font-size: 13.5px; line-height: 1.5; color: var(--text-mid); }
+.exgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.exminor { font-size: 13px; color: var(--text-mid); line-height: 1.5; }
+.exrows { display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; margin: 10px 0; }
+.exrows .k { font-size: 13.5px; color: var(--text-mid); }
+.exrows .v { font-size: 14px; font-variant-numeric: tabular-nums; text-align: right; font-weight: 600; }
+.exrows .v.big { font-size: 15.5px; }
+@media (max-width: 760px) { .exgrid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="prepaid"
+      data-step="hub-prepaid"
+      data-crumbs="OTA positions / Prepaid top-ups"
+      data-hint="How Fawtara reads prepaid recharges for VAT — a single-purpose voucher, taxed at the top-up. To confirm with the OTA.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Prepaid top-ups &amp; recharges</h1>
+          <span class="pill pill-warn"><i class="dot"></i>To confirm</span>
+        </div>
+        <p class="page-sub" id="page-sub"></p>
+      </div>
+    </div>
+
+    <div id="frame" class="mb16"></div>
+
+    <section>
+      <div class="section-head">
+        <div class="grow">
+          <div class="eyebrow">Recommended positions</div>
+          <h2>What Fawtara takes to the OTA</h2>
+        </div>
+        <span class="small dim">Two treatments in one agenda cluster</span>
+      </div>
+      <div id="positions"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="grow">
+          <div class="eyebrow">Worked example</div>
+          <h2>An OMR 5 voucher top-up</h2>
+        </div>
+      </div>
+      <div id="example"></div>
+    </section>
+
+    <div id="closing" class="mt24"></div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+(function () {
+
+  function positionCard(p) {
+    var lis = p.treatment.map(function (t) { return '<li>' + t + '</li>'; }).join('');
+    return '<div class="card pcard">' +
+      '<div class="card-head">' +
+        '<div class="grow">' +
+          '<div class="eyebrow">Agenda · ' + p.agenda + '</div>' +
+          '<h3>' + p.headline + '</h3>' +
+        '</div>' +
+        '<span class="otatag">' + icon('clock', 'otatag-ico') + p.tag + '</span>' +
+      '</div>' +
+      '<div class="card-body">' +
+        '<div class="pblock">' +
+          '<div class="plabel">Basis</div>' +
+          '<div class="basis">' + p.basis + '</div>' +
+        '</div>' +
+        '<div class="pblock">' +
+          '<div class="plabel">How Fawtara reads the treatment</div>' +
+          '<ol class="treat">' + lis + '</ol>' +
+        '</div>' +
+        '<div class="pblock">' +
+          '<div class="plabel">Across channels</div>' +
+          '<div class="channels">' + p.channels + '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function pos(id) { return OTA_POSITIONS.filter(function (p) { return p.id === id; })[0]; }
+
+  /* framing — a position brought to the meeting, not a settled rule */
+  document.getElementById('frame').innerHTML = teach(
+    'Prepaid recharges are one of the two treatments the OTA has not yet settled. What follows is ' +
+    '<strong>Fawtara&rsquo;s recommended reading</strong> — a position to bring to the table on Thursday, ' +
+    'not a ruling. Both cards below belong to the same agenda cluster: buying credit, and spending it on a plan. ' +
+    'Each carries the amber <em>to confirm with OTA</em> tag until it is agreed.');
+
+  document.getElementById('positions').innerHTML =
+    positionCard(pos('prepaid')) + positionCard(pos('buyplan'));
+
+  /* worked example — OMR 5 voucher, from the B2C batch dataset */
+  document.getElementById('example').innerHTML =
+    '<div class="exgrid">' +
+      '<div class="card">' +
+        '<div class="card-head">' +
+          '<div class="grow"><div class="eyebrow">At the top-up · tax point</div>' +
+            '<h3 style="font-size:16px;font-weight:700;margin-top:2px">Simplified tax invoice issued</h3></div>' +
+          '<span class="chip ok">VAT recognised</span>' +
+        '</div>' +
+        '<div class="card-body">' +
+          '<div class="exminor">Customer buys an <strong>OMR 5</strong> voucher at retail POS. A simplified B2C ' +
+            'tax invoice is issued and the 5% VAT is recognised now, on the face value.</div>' +
+          '<div class="exrows">' +
+            '<div class="k">Net</div><div class="v">' + omr(4.762) + '</div>' +
+            '<div class="k">VAT · 5%</div><div class="v">' + omr(0.238) + '</div>' +
+            '<div class="k">Total charged</div><div class="v big">' + omr(5.000) + '</div>' +
+          '</div>' +
+          '<div class="mono tiny dim">VOD-TOP-2026-0820-771204 · Retail POS · reported in the daily B2C batch</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card">' +
+        '<div class="card-head">' +
+          '<div class="grow"><div class="eyebrow">Later · as the balance is used</div>' +
+            '<h3 style="font-size:16px;font-weight:700;margin-top:2px">No new tax point</h3></div>' +
+          '<span class="pill pill-idle"><i class="dot"></i>No invoice</span>' +
+        '</div>' +
+        '<div class="card-body">' +
+          '<div class="exminor">Over the following days the customer makes calls, sends SMS and uses data. Each ' +
+            'draws the <strong>OMR 5</strong> balance down — but none of it is a new supply for VAT.</div>' +
+          '<div class="exrows">' +
+            '<div class="k">Data session · 1.2 GB</div><div class="v">balance −</div>' +
+            '<div class="k">Calls &amp; SMS</div><div class="v">balance −</div>' +
+            '<div class="k">Further invoices</div><div class="v big">' + omr(0) + '</div>' +
+          '</div>' +
+          '<div class="exminor">The tax was already collected at the top-up, so consumption raises ' +
+            '<strong>no further invoice</strong>. This is what keeps millions of usage events off the pipe.</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  document.getElementById('page-sub').innerHTML =
+    'Fawtara&rsquo;s reading: prepaid credit is a single-purpose voucher, so the tax point is the top-up — not the ' +
+    'later call, SMS or data session. Two positions here, both to confirm with the OTA.';
+
+  document.getElementById('closing').innerHTML = notice('warn',
+    '<strong>Nothing on this screen is a settled rule.</strong> It is the position Fawtara recommends and will put ' +
+    'to the OTA. If the Authority reads prepaid differently — for example, taxing at consumption — the treatment ' +
+    'and the pipeline both change. That decision is exactly what Thursday&rsquo;s session is for.');
+
+})();
+</script>
+</body>
+</html>

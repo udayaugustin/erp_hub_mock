@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B2B Invoices — Vodafone Oman billing system</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* origin hero strip — same visual language, local to the billing screens */
+  .erp-hero { display:flex; align-items:center; gap:14px; padding:14px 16px;
+    border:1px solid var(--line); border-radius:12px; background:var(--bg-alt);
+    margin-bottom:16px; }
+  .erp-hero .mk { width:38px; height:38px; flex:none; border-radius:9px;
+    display:grid; place-items:center; font-weight:700; font-size:18px;
+    color:#fff; background:linear-gradient(135deg,#e60000,#b30000); }
+  .erp-hero .h1 { font-weight:700; font-size:15px; }
+  .erp-hero .h2 { font-size:13px; color:var(--text-mid); margin-top:2px; line-height:1.5; }
+  .line-tbl td { padding:7px 10px; }
+  .sel-mark { font-size:10.5px; font-weight:700; letter-spacing:.04em;
+    text-transform:uppercase; color:var(--accent-hi); }
+</style>
+</head>
+<body class="surface-erp" data-surface="erp" data-nav="billing"
+      data-step="erp-billing"
+      data-crumbs="Billing / B2B Invoices"
+      data-hint="A postpaid B2B invoice raised in your billing system — posted as usual, before Fawtara ever sees it.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>B2B Invoices</h1>
+          <span class="tag">Accounts receivable</span>
+        </div>
+        <p class="page-sub">Business-customer postpaid invoices, raised and posted in your billing system.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm">Export</button>
+        <button class="btn btn-sm btn-primary">New invoice</button>
+      </div>
+    </div>
+
+    <div class="erp-hero">
+      <div class="mk">V</div>
+      <div class="grow">
+        <div class="h1">Vodafone Oman · Your billing system</div>
+        <div class="h2">This is where the invoice is born. It is created, priced and posted here as an ordinary
+          receivable — the e-invoicing Hub only reads it afterwards. Nothing on this screen depends on Fawtara.</div>
+      </div>
+    </div>
+
+    <div class="split-wide">
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">Posted &amp; draft invoices</h2>
+              <span class="small dim" id="listCount"></span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="tbl" style="min-width:820px">
+                  <thead>
+                    <tr>
+                      <th>Invoice&nbsp;no.</th>
+                      <th>Customer</th>
+                      <th>Date</th>
+                      <th>Due</th>
+                      <th class="r">Net</th>
+                      <th class="r">VAT</th>
+                      <th class="r">Total (OMR)</th>
+                      <th>Document</th>
+                      <th>E-invoice</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rows"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-foot">
+              <span class="small dim">The highlighted row is the invoice followed end to end through the walkthrough.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">Selected invoice</h2>
+              <span class="sel-mark">Tracked</span>
+            </div>
+            <div class="card-body" id="detail"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Line summary</h2><span class="tag">5 lines</span></div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="tbl line-tbl" style="min-width:0">
+                  <thead><tr><th>Service</th><th class="r">Qty</th><th class="r">Net (OMR)</th></tr></thead>
+                  <tbody id="lines"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* ---- pills for the two status columns --------------------------------- */
+  function docPill(s) {
+    const map = { 'Posted': 'ok', 'Draft': 'idle' };
+    return `<span class="pill pill-${map[s] || 'idle'}"><i class="dot"></i>${s}</span>`;
+  }
+  function ePill(s) {
+    const map = {
+      'Acknowledged': 'ok', 'In Progress': 'warn',
+      'Rejected by ASP': 'fail', 'Not Applicable': 'idle'
+    };
+    return `<span class="pill pill-${map[s] || 'idle'}"><i class="dot"></i>${s}</span>`;
+  }
+
+  const TRACKED = 'VOD-INV-2026-00417';
+
+  /* ---- invoice list ----------------------------------------------------- */
+  document.getElementById('rows').innerHTML = ERP_INVOICES.map(r => {
+    const sel = r.no === TRACKED;
+    return `<tr class="${sel ? 'is-sel' : ''}">
+      <td class="nowrap"><span class="mono" style="font-size:12.5px">${r.no}</span>
+        ${sel ? '<div class="sel-mark" style="margin-top:2px">◆ Tracked end to end</div>' : ''}</td>
+      <td>${r.cust}</td>
+      <td class="nowrap">${r.date}</td>
+      <td class="nowrap">${r.due}</td>
+      <td class="r num">${omr(r.net)}</td>
+      <td class="r num">${omr(r.vat)}</td>
+      <td class="r num" style="font-weight:600">${omr(r.total)}</td>
+      <td>${docPill(r.docStatus)}</td>
+      <td>${ePill(r.eStatus)}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('listCount').textContent = ERP_INVOICES.length + ' invoices';
+
+  /* ---- selected invoice detail (the tracked one) ------------------------ */
+  const inv = ERP_INVOICES.find(r => r.no === TRACKED);
+  document.getElementById('detail').innerHTML = kv([
+    ['Invoice no.', '<span class="mono" style="font-size:12px">' + inv.no + '</span>'],
+    ['Customer', inv.cust],
+    ['Issue date', inv.date],
+    ['Due date', inv.due],
+    ['Net amount', '<span class="num">' + omr(inv.net) + '</span>'],
+    ['VAT (5%)', '<span class="num">' + omr(inv.vat) + '</span>'],
+    ['Total payable', '<span class="num" style="color:var(--accent-hi);font-weight:600">' + omr(inv.total) + ' OMR</span>'],
+    ['Document status', docPill(inv.docStatus)],
+    ['E-invoice status', ePill(inv.eStatus)]
+  ], true);
+
+  /* ---- line summary for the tracked invoice (page-local detail) --------- */
+  const LINES = [
+    { s: 'Dedicated internet · 100 Mbps · monthly', q: '1', net: 4800.000 },
+    { s: 'Fixed voice trunk · PRI, 30 channels',     q: '1', net: 2200.000 },
+    { s: 'Managed SD-WAN · 12 sites',                q: '12', net: 3600.000 },
+    { s: 'Mobile fleet plan · 40 lines',             q: '40', net: 1600.000 },
+    { s: 'Cloud PBX seats · 20',                     q: '20', net: 280.000 }
+  ];
+  document.getElementById('lines').innerHTML = LINES.map(l =>
+    `<tr><td>${l.s}</td><td class="r num">${l.q}</td><td class="r num">${omr(l.net)}</td></tr>`
+  ).join('') +
+    `<tr><td style="font-weight:600">Net total</td><td></td>
+       <td class="r num" style="font-weight:600">${omr(inv.net)}</td></tr>`;
+</script>
+</body>
+</html>

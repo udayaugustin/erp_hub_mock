@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why Fawtara — Vodafone Oman E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+/* page-local — value / differentiators */
+.featgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.feat {
+  border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface);
+  padding: 20px; display: flex; flex-direction: column; gap: 10px;
+  transition: border-color .18s var(--ease), transform .18s var(--ease), box-shadow .18s var(--ease);
+}
+.feat:hover { border-color: var(--accent-line); transform: translateY(-1px); box-shadow: var(--shadow); }
+.feat-ico {
+  width: 40px; height: 40px; flex: none; border-radius: var(--r-sm);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--accent-hi); background: var(--accent-soft); border: 1px solid var(--accent-line);
+}
+.feat-ico svg { width: 21px; height: 21px; }
+.feat-k { font-size: 16px; font-weight: 700; line-height: 1.25; }
+.feat-d { font-size: 14px; line-height: 1.55; color: var(--text-mid); }
+.agrow { display: grid; grid-template-columns: 200px 1fr; gap: 8px 20px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.agrow:last-child { border-bottom: 0; }
+.agrow .ak { font-size: 13.5px; font-weight: 700; letter-spacing: .01em; color: var(--accent-hi); }
+.agrow .ad { font-size: 14px; line-height: 1.55; }
+@media (max-width: 640px) { .agrow { grid-template-columns: 1fr; gap: 4px; } }
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="value"
+      data-step="hub-value"
+      data-crumbs="Reference / Why Fawtara"
+      data-hint="What sets Fawtara apart as Vodafone's ASP — accreditation, Oman data residency, telco-scale batch, and positions on the open questions.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Why Fawtara</h1>
+          <span class="pill pill-accent"><i class="dot"></i>Accredited ASP</span>
+        </div>
+        <p class="page-sub" id="page-sub"></p>
+      </div>
+    </div>
+
+    <section>
+      <div class="section-head">
+        <div class="grow">
+          <div class="eyebrow">Differentiators</div>
+          <h2>What sets Fawtara apart</h2>
+        </div>
+        <span class="small dim">As Vodafone Oman&rsquo;s service provider</span>
+      </div>
+      <div class="featgrid" id="value-grid"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="grow">
+          <div class="eyebrow">Thursday&rsquo;s agenda</div>
+          <h2>How this maps to the meeting</h2>
+        </div>
+      </div>
+      <div class="card card-tight">
+        <div class="card-body" style="padding:6px 20px" id="agenda-map"></div>
+      </div>
+      <div id="closing" class="mt16"></div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+(function () {
+
+  document.getElementById('page-sub').innerHTML =
+    'Vodafone raises and receives invoices in six ways. Fawtara carries all of them to the Oman Tax Authority ' +
+    'through one accredited pipe — and brings a recommended reading on the treatments still open. What that ' +
+    'means in practice:';
+
+  document.getElementById('value-grid').innerHTML = FAWTARA_VALUE.map(function (item) {
+    return '<div class="feat">' +
+      '<div class="feat-ico">' + icon(item.ico, 'fi') + '</div>' +
+      '<div class="feat-k">' + item.k + '</div>' +
+      '<div class="feat-d">' + item.d + '</div>' +
+    '</div>';
+  }).join('');
+
+  /* qualitative map to the meeting agenda — no commercial numbers */
+  var AGENDA = [
+    { k: 'What sets Fawtara apart', d: 'A licensed Accredited Service Provider running every stream through one integration and one console — not a reporting bolt-on stitched onto the billing system.' },
+    { k: 'Compliance', d: 'PINT-OM validation before anything is sent, and outcome tracking on all three Peppol legs after. The legal XML archive and audit trail are written before transmission.' },
+    { k: 'Data residency', d: 'Invoice data and the compliance archive stay in-country. No customer or billing data leaves Oman to be cleared or reported.' },
+    { k: 'OTA-interface alignment', d: 'Built to the OTA&rsquo;s interface and code lists — and, on the treatments the OTA has not yet settled, Fawtara arrives with a recommended position rather than an open question.' },
+    { k: 'Commercial model', d: 'One provider across B2B, B2C, prepaid, inbound and reverse-charge, so the commercial conversation is a single relationship — the specifics are for the commercial session, not this screen.' }
+  ];
+
+  document.getElementById('agenda-map').innerHTML = AGENDA.map(function (a) {
+    return '<div class="agrow"><div class="ak">' + a.k + '</div><div class="ad">' + a.d + '</div></div>';
+  }).join('');
+
+  document.getElementById('closing').innerHTML = teach(
+    'Two of Vodafone&rsquo;s six streams — prepaid top-ups and out-of-bundle usage — carry treatments the OTA has ' +
+    'not settled. On both, Fawtara comes to the table with a recommended reading tagged <em>to confirm with OTA</em>. ' +
+    'That is the difference this console is built to show: one accredited pipe for every stream, and positions ' +
+    'ready for the open questions.');
+
+})();
+</script>
+</body>
+</html>

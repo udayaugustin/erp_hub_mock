@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reports — Vodafone Oman E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+/* page-local — Reports only */
+.repcard .rtag { display: inline-block; margin-top: 8px; }
+.tbl tfoot td {
+  padding: 10px 11px; border-top: 2px solid var(--line-hard); font-weight: 700;
+  background: var(--bg-alt); font-size: 14px;
+}
+.tbl tfoot td:first-child { padding-left: 14px; }
+.tbl tfoot td:last-child  { padding-right: 14px; }
+.tbl tfoot .r { text-align: right; font-variant-numeric: tabular-nums; }
+.confirm-tag { display:inline-block; margin-left:8px; font-size:11px; font-weight:600;
+  padding:2px 7px; border-radius:999px; white-space:nowrap;
+  color: var(--warn); border:1px solid color-mix(in srgb, var(--warn) 34%, transparent);
+  background: color-mix(in srgb, var(--warn) 10%, transparent); }
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="reports"
+      data-step="hub-reports"
+      data-crumbs="Records / Reports"
+      data-hint="VAT by stream, reporting completeness, daily-batch reconciliation, and the register of open OTA positions.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Reports</h1>
+          <span class="pill pill-accent"><i class="dot"></i>Vodafone Oman</span>
+        </div>
+        <p class="page-sub" id="page-sub"></p>
+      </div>
+      <div class="page-actions">
+        <select class="select select-sm" id="period" style="width:150px">
+          <option value="aug-2026">August 2026</option>
+          <option value="jul-2026">July 2026</option>
+          <option value="q2-2026">Q2 2026</option>
+          <option value="ytd-2026">Year to date</option>
+        </select>
+        <button class="btn btn-sm btn-primary" id="export">Export</button>
+      </div>
+    </div>
+
+    <div id="export-note" class="mb16" style="display:none"></div>
+
+    <section class="mb16">
+      <div class="section-head">
+        <div class="grow">
+          <div class="eyebrow">Catalogue</div>
+          <h2>Choose a report</h2>
+        </div>
+        <span class="small dim">Six standard reports over the archived documents</span>
+      </div>
+      <div class="repgrid" id="catalogue"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="grow">
+          <div class="eyebrow">Finance</div>
+          <h2>VAT summary by stream</h2>
+        </div>
+        <span class="small dim" id="rep-period"></span>
+      </div>
+
+      <div id="rep-lead" class="mb12"></div>
+      <div class="card card-tight" id="rep-body"></div>
+      <div id="rep-foot" class="mt12"></div>
+      <div id="dl-note" class="mt12" style="display:none"></div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+(function () {
+
+  var PERIODS = {
+    'aug-2026': { label: 'August 2026',  note: 'month to date' },
+    'jul-2026': { label: 'July 2026',    note: 'complete month' },
+    'q2-2026':  { label: 'Q2 2026',      note: 'Apr — Jun' },
+    'ytd-2026': { label: 'Year to date', note: '1 Jan — ' + DEMO_DATE }
+  };
+  var periodKey = 'aug-2026';
+  var BASE_PERIOD = 'aug-2026';
+
+  /* is this stream one of the two unsettled OTA positions? */
+  function proposed(id) { var s = stream(id); return s && s.position === 'proposed'; }
+
+  /* ---- totals, summed from REPORT_ROWS — never hard-coded ------------------ */
+  function totals() {
+    return REPORT_ROWS.reduce(function (a, r) {
+      a.docs += r.docs; a.net += r.net; a.vat += r.vat;
+      a.zero += r.zero; a.ack += r.ack; a.failed += r.failed;
+      return a;
+    }, { docs: 0, net: 0, vat: 0, zero: 0, ack: 0, failed: 0 });
+  }
+
+  /* ---- VAT summary by stream ---------------------------------------------- */
+  function vatSummary() {
+    var t = totals();
+    var head = '<thead><tr>' +
+      '<th>Stream</th>' +
+      '<th class="r">Documents</th>' +
+      '<th class="r">Net (OMR)</th>' +
+      '<th class="r">VAT (OMR)</th>' +
+      '<th class="r">Zero-rated (OMR)</th>' +
+      '<th class="r">Acknowledged</th>' +
+      '<th class="r">Failed</th>' +
+      '</tr></thead>';
+
+    var body = '<tbody>' + REPORT_ROWS.slice().sort(function (a, b) { return b.docs - a.docs; })
+      .map(function (r) {
+        var flag = proposed(r.id) ? '<span class="confirm-tag">to confirm with OTA</span>' : '';
+        return '<tr>' +
+          '<td><span style="font-weight:600">' + r.name + '</span>' + flag + '</td>' +
+          '<td class="r num">' + num(r.docs) + '</td>' +
+          '<td class="r num">' + omr(r.net) + '</td>' +
+          '<td class="r num">' + omr(r.vat) + '</td>' +
+          '<td class="r num">' + omr(r.zero) + '</td>' +
+          '<td class="r num">' + num(r.ack) + '</td>' +
+          '<td class="r num">' + (r.failed ? '<span class="chip fail">' + num(r.failed) + '</span>' : num(r.failed)) + '</td>' +
+        '</tr>';
+      }).join('') + '</tbody>';
+
+    var foot = '<tfoot><tr>' +
+      '<td>Total — ' + REPORT_ROWS.length + ' streams</td>' +
+      '<td class="r">' + num(t.docs) + '</td>' +
+      '<td class="r">' + omr(t.net) + '</td>' +
+      '<td class="r">' + omr(t.vat) + '</td>' +
+      '<td class="r">' + omr(t.zero) + '</td>' +
+      '<td class="r">' + num(t.ack) + '</td>' +
+      '<td class="r">' + num(t.failed) + '</td>' +
+    '</tr></tfoot>';
+
+    return '<div class="table-wrap"><table class="tbl" style="width:100%">' + head + body + foot + '</table></div>';
+  }
+
+  /* ---- catalogue ---------------------------------------------------------- */
+  var current = 0;
+  function paintCatalogue() {
+    document.getElementById('catalogue').innerHTML = REPORT_TYPES.map(function (r, i) {
+      return '<div class="repcard ' + (i === current ? 'is-active' : '') + '" data-rep="' + i + '" tabindex="0">' +
+        '<div class="rt">' + r.n + '</div>' +
+        '<div class="rd">' + r.d + '</div>' +
+        '<span class="tag rtag">' + r.tag + '</span>' +
+      '</div>';
+    }).join('');
+    Array.prototype.forEach.call(document.querySelectorAll('[data-rep]'), function (c) {
+      function go() { current = +c.getAttribute('data-rep'); paintCatalogue(); }
+      c.addEventListener('click', go);
+      c.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    });
+  }
+
+  /* ---- lead + foot copy --------------------------------------------------- */
+  function paintReport() {
+    var t = totals();
+    var p = PERIODS[periodKey];
+    document.getElementById('rep-period').innerHTML =
+      p.label + ' <span class="dim">· ' + p.note + '</span>';
+
+    var lead = teach('Net, VAT and zero-rated totals per invoice stream, taken from the archived documents ' +
+      'rather than from any one system. The total row is the sum of the rows above it: ' + num(t.docs) +
+      ' documents and OMR ' + omr(t.vat) + ' of VAT this period. Acknowledged plus failed equals documents on ' +
+      'every row.');
+    if (periodKey !== BASE_PERIOD) {
+      lead += notice('warn', 'This prototype carries one period of data. The rows below remain ' +
+        PERIODS[BASE_PERIOD].label + ', but the export is named for ' + p.label + '.');
+    }
+    document.getElementById('rep-lead').innerHTML = lead;
+    document.getElementById('rep-body').innerHTML = vatSummary();
+
+    document.getElementById('rep-foot').innerHTML =
+      notice('warn', '<strong>Two streams carry a tax treatment the OTA has not yet settled.</strong> ' +
+        'The prepaid top-ups row, and out-of-bundle usage — which is aggregated into the B2C postpaid row rather ' +
+        'than reported on its own — are shown on Fawtara&rsquo;s recommended reading and remain <b>to confirm with OTA</b>. ' +
+        'They correspond to the open positions still to confirm with the OTA.') +
+      '<div class="row mt12" style="gap:10px;flex-wrap:wrap;align-items:center">' +
+        '<button class="btn btn-sm btn-ghost" id="dl">Download this report</button>' +
+        '<span class="small dim">CSV, and the same figures as a PDF pack for the audit file.</span>' +
+      '</div>';
+    document.getElementById('dl-note').style.display = 'none';
+
+    document.getElementById('dl').addEventListener('click', function () {
+      var n = document.getElementById('dl-note');
+      n.innerHTML = notice('ok', '<span class="chip-mono">vat-summary-by-stream-' + periodKey + '.csv</span> &mdash; prepared. ' +
+        'It would download here; nothing leaves the prototype.');
+      n.style.display = '';
+    });
+  }
+
+  /* ---- period + export ---------------------------------------------------- */
+  document.getElementById('period').addEventListener('change', function (e) {
+    periodKey = e.target.value;
+    document.getElementById('export-note').style.display = 'none';
+    paintReport();
+  });
+
+  document.getElementById('export').addEventListener('click', function () {
+    var n = document.getElementById('export-note');
+    n.innerHTML = notice('ok', '<span class="chip-mono">vat-summary-by-stream-' + periodKey + '.csv</span> &mdash; prepared for ' +
+      PERIODS[periodKey].label + ', ' + REPORT_ROWS.length + ' streams. ' +
+      'In the live console this downloads, or is delivered on a schedule to a named group of recipients.');
+    n.style.display = '';
+  });
+
+  /* ---- static copy -------------------------------------------------------- */
+  (function () {
+    var t = totals();
+    document.getElementById('page-sub').innerHTML =
+      'Six standard reports over Vodafone&rsquo;s archived documents. ' + num(t.docs) + ' documents in the current period, ' +
+      'OMR ' + omr(t.vat) + ' of VAT, ' + num(t.docs - t.ack) + ' not yet acknowledged.';
+  })();
+
+  paintCatalogue();
+  paintReport();
+})();
+</script>
+</body>
+</html>

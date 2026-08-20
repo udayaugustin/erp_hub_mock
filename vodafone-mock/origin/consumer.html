@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consumer Billing — Vodafone Oman billing system</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  .erp-hero { display:flex; align-items:center; gap:14px; padding:14px 16px;
+    border:1px solid var(--line); border-radius:12px; background:var(--bg-alt);
+    margin-bottom:16px; }
+  .erp-hero .mk { width:38px; height:38px; flex:none; border-radius:9px;
+    display:grid; place-items:center; font-weight:700; font-size:18px;
+    color:#fff; background:linear-gradient(135deg,#e60000,#b30000); }
+  .erp-hero .h1 { font-weight:700; font-size:15px; }
+  .erp-hero .h2 { font-size:13px; color:var(--text-mid); margin-top:2px; line-height:1.5; }
+  .splitrow { display:flex; align-items:center; gap:12px; padding:11px 0;
+    border-bottom:1px solid var(--line); }
+  .splitrow:last-child { border-bottom:0; }
+  .splitrow .k { width:200px; flex:none; font-size:13.5px; }
+  .splitrow .v { width:96px; flex:none; text-align:right; font-weight:600;
+    font-variant-numeric:tabular-nums; }
+  .splitrow .b { flex:1; }
+  .chrow { display:flex; align-items:center; gap:10px; padding:9px 0;
+    border-bottom:1px solid var(--line); font-size:13.5px; }
+  .chrow:last-child { border-bottom:0; }
+  .chrow .cn { width:22px; height:22px; flex:none; border-radius:6px;
+    display:grid; place-items:center; font-size:11px; font-weight:700;
+    background:var(--accent-soft); color:var(--accent-hi); }
+</style>
+</head>
+<body class="surface-erp" data-surface="erp" data-nav="consumer"
+      data-step="erp-consumer"
+      data-crumbs="Billing / Consumer Billing"
+      data-hint="Consumer billing at telco volume — postpaid bills and prepaid recharges, collected for one daily batch to the OTA.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Consumer Billing</h1>
+          <span class="tag">Postpaid &amp; prepaid</span>
+        </div>
+        <p class="page-sub">The high-volume B2C origin — simplified invoices, reported to the OTA in one scheduled batch a day.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm">Batch history</button>
+      </div>
+    </div>
+
+    <div class="erp-hero">
+      <div class="mk">V</div>
+      <div class="grow">
+        <div class="h1">Vodafone Oman · Your billing system</div>
+        <div class="h2">Consumer billing runs at telco scale — hundreds of thousands of simplified invoices a day.
+          They are not cleared live at each recharge; the billing system collects the whole day and reports it to the
+          OTA through the Hub in a single overnight window.</div>
+      </div>
+    </div>
+
+    <div class="grid g4 mb16" id="tiles"></div>
+
+    <div class="split-wide">
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">Today's consumer documents — how they split</h2>
+              <span class="small dim">reported at <b id="reportedAt"></b></span>
+            </div>
+            <div class="card-body" id="split"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">Sample documents</h2>
+              <span class="tag">simplified · 5% VAT</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="tbl" style="min-width:760px">
+                  <thead>
+                    <tr>
+                      <th>Document&nbsp;no.</th>
+                      <th>Channel</th>
+                      <th>Customer</th>
+                      <th>Item</th>
+                      <th class="r">Net</th>
+                      <th class="r">VAT</th>
+                      <th class="r">Total (OMR)</th>
+                      <th>Time</th>
+                      <th>State</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rows"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-foot">
+              <span class="small dim">These are simplified consumer invoices — no buyer VAT number, reported in the daily batch, not cleared one by one.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Today's batch</h2></div>
+            <div class="card-body" id="batch"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Channels</h2><span class="tag" id="chCount"></span></div>
+            <div class="card-body" id="channels"></div>
+          </div>
+        </section>
+
+        <section id="assumeWrap"></section>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  const B = B2C_BATCH;
+
+  /* ---- KPI tiles -------------------------------------------------------- */
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Consumer docs today', value: num(B.todayCount),
+           meta: 'across all four channels', tone: 'var(--accent)' }),
+    stat({ label: 'Month to date', value: num(B.monthCount),
+           meta: 'August 2026', tone: 'var(--info)' }),
+    stat({ label: 'Awaiting sync', value: num(B.awaitingSync),
+           meta: 'queued for the next batch', tone: 'var(--warn)' }),
+    stat({ label: 'Channels', value: num(B.channels),
+           meta: 'POS · app · dealer · voucher', tone: 'var(--ok)' })
+  ].join('');
+
+  document.getElementById('reportedAt').textContent = B.batch.reportedAt;
+
+  /* ---- composition split ------------------------------------------------ */
+  const maxAbs = Math.max.apply(null, B.split.map(s => Math.abs(s.v)));
+  document.getElementById('split').innerHTML = B.split.map(s => {
+    const w = Math.max(2, (Math.abs(s.v) / maxAbs) * 100);
+    const tone = s.v < 0 ? 'var(--warn)' : 'var(--accent)';
+    return `<div class="splitrow">
+      <span class="k">${s.k}</span>
+      <span class="b">${bar(w, tone)}</span>
+      <span class="v">${num(s.v)}</span>
+    </div>`;
+  }).join('') +
+    `<p class="small dim" style="margin:12px 0 0">${B.note}</p>`;
+
+  /* ---- sample rows ------------------------------------------------------ */
+  function statePill(s) {
+    const map = { reported: ['ok', 'Reported'], batched: ['info', 'Batched'], queued: ['idle', 'Queued'] };
+    const m = map[s] || ['idle', s];
+    return `<span class="pill pill-${m[0]}"><i class="dot"></i>${m[1]}</span>`;
+  }
+  document.getElementById('rows').innerHTML = B.rows.map(r => `
+    <tr>
+      <td class="nowrap"><span class="mono" style="font-size:12px">${r.no}</span></td>
+      <td class="nowrap">${r.ch}</td>
+      <td class="nowrap">${r.cust}</td>
+      <td>${r.item}</td>
+      <td class="r num">${omr(r.net)}</td>
+      <td class="r num">${omr(r.vat)}</td>
+      <td class="r num" style="font-weight:600">${omr(r.total)}</td>
+      <td class="nowrap">${r.t}</td>
+      <td>${statePill(r.state)}</td>
+    </tr>`).join('');
+
+  /* ---- today's batch summary ------------------------------------------- */
+  document.getElementById('batch').innerHTML = kv([
+    ['Batch ID', '<span class="mono" style="font-size:11.5px">' + B.batch.id + '</span>'],
+    ['Documents', '<span class="num">' + num(B.batch.count) + '</span>'],
+    ['Window', B.batch.window],
+    ['Reported at', B.batch.reportedAt],
+    ['State', pill('completed', 'Reported')],
+    ['Acknowledgement', '<span class="mono" style="font-size:11px">' + B.batch.ack + '</span>']
+  ], true);
+
+  /* ---- channels --------------------------------------------------------- */
+  document.getElementById('chCount').textContent = B.streams.length + ' streams';
+  document.getElementById('channels').innerHTML = B.streams.map((s, i) =>
+    `<div class="chrow"><span class="cn">${i + 1}</span><span class="grow">${s}</span>
+      ${icon('users', 'nav-ico')}</div>`).join('') +
+    `<p class="small dim" style="margin:12px 0 0">Every channel feeds the same daily batch. No channel calls the OTA at the point of sale.</p>`;
+
+  /* ---- assumption (amber) ---------------------------------------------- */
+  document.getElementById('assumeWrap').innerHTML =
+    `<div class="card">
+      <div class="card-body">
+        ${notice('warn', '<b>Assumption · to confirm</b><div class="small" style="margin-top:5px;line-height:1.6">' + B.assumption + '</div>')}
+      </div>
+    </div>`;
+</script>
+</body>
+</html>

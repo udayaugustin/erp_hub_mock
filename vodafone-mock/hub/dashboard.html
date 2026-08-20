@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — Vodafone Oman E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* ---- page-local to hub/dashboard.html. Do not move to app.css. ---- */
+  /* six-stream board */
+  .streamnum{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;
+    border-radius:6px;font-family:var(--font-mono);font-size:12.5px;font-weight:600;flex:none;
+    color:var(--accent-hi);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+  .dirtag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;white-space:nowrap}
+  .dirtag.out{color:var(--info)}
+  .dirtag.in{color:var(--accent-hi)}
+  .modepill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:99px;
+    font-size:12px;font-weight:600;white-space:nowrap;border:1px solid var(--line)}
+  .modepill.live{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent);
+    background:color-mix(in srgb,var(--ok) 9%,transparent)}
+  .modepill.batch{color:var(--info);border-color:color-mix(in srgb,var(--info) 40%,transparent);
+    background:color-mix(in srgb,var(--info) 9%,transparent)}
+  .modepill.capture{color:var(--text-lo);background:var(--bg-alt)}
+  tr.stream-proposed td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
+
+  /* week bar chart */
+  .weekbars{display:flex;align-items:flex-end;gap:10px;height:118px;padding-top:6px}
+  .weekbars .wk{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1 1 0;height:100%}
+  .weekbars .wk .col{width:100%;max-width:34px;display:flex;align-items:flex-end;height:100%}
+  .weekbars .wk .col i{display:block;width:100%;border-radius:5px 5px 0 0;
+    background:color-mix(in srgb,var(--accent) 30%,var(--line));transition:height .5s ease}
+  .weekbars .wk.is-today .col i{background:var(--accent-hi)}
+  .weekbars .wk.is-weekend .col i{background:color-mix(in srgb,var(--warn) 34%,var(--line))}
+  .weekbars .wk .d{font-size:11px;font-weight:600;color:var(--text-lo)}
+  .weekbars .wk.is-today .d{color:var(--accent-hi)}
+  .attn{padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--bg-alt)}
+  .attn + .attn{margin-top:9px}
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="dashboard"
+      data-step="hub-dashboard"
+      data-crumbs="Operations / Dashboard"
+      data-hint="Vodafone's whole e-invoicing picture on one screen — all six streams, today's volume and health, and what needs attention.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Dashboard</h1>
+          <span id="statePill"></span>
+        </div>
+        <p class="page-sub" id="sub"></p>
+      </div>
+      <div class="page-actions">
+        <span class="tag" id="entTag"></span>
+      </div>
+    </div>
+
+    <div class="grid g4 mb16" id="tiles"></div>
+
+    <section style="margin-top:0">
+      <div class="section-head">
+        <h2 class="grow">The six invoice streams</h2>
+        <span class="small dim" id="streamNote"></span>
+      </div>
+      <div class="card card-tight">
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th style="width:34px">#</th>
+                <th>Stream</th>
+                <th>Role</th>
+                <th class="nowrap">Direction</th>
+                <th>Document</th>
+                <th>Mode</th>
+                <th>Position</th>
+                <th class="r nowrap">Today</th>
+              </tr>
+            </thead>
+            <tbody id="streamRows"></tbody>
+          </table>
+        </div>
+        <div class="card-foot">
+          <span class="small dim" id="streamFoot"></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="split-wide">
+      <div>
+        <section style="margin-top:0">
+          <div class="section-head">
+            <h2 class="grow">Outbound volume, this week</h2>
+            <span class="small dim" id="weekTotalNote"></span>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <div class="weekbars" id="weekBars"></div>
+              <div class="divider"></div>
+              <div class="small muted" id="weekNote"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div>
+        <section style="margin-top:0">
+          <div class="section-head">
+            <h2 class="grow">Needs attention</h2>
+            <span class="small dim">Today</span>
+          </div>
+          <div class="card">
+            <div class="card-body" id="attn"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* ---------- derived figures — one entity, six streams -------------------- */
+  const successPct = GROUP.todaySuccess / GROUP.todayTotal * 100;
+  const failedPct  = GROUP.todayFailed  / GROUP.todayTotal * 100;
+  const proposed   = STREAMS.filter(s => s.position === 'proposed');
+  const settled    = STREAMS.filter(s => s.position === 'settled');
+
+  /* the walkthrough page each stream links to */
+  const STREAM_HREF = {
+    'b2b-buy-in':  'inbound.html',
+    'b2b-buy-out': 'inbound.html',
+    'b2b-sell':    '../origin/billing.html',
+    'b2c-post':    'batch.html',
+    'b2c-prepaid': 'prepaid.html',
+    'oob':         'usage.html'
+  };
+
+  document.getElementById('sub').textContent =
+    `${GROUP.name} — one entity, ${GROUP.streams} invoice streams. ${DEMO_DAY} ${DEMO_CLOCK}.`;
+  document.getElementById('entTag').textContent = `VATIN ${GROUP.trn}`;
+
+  /* header pill: derived from the day's health */
+  document.getElementById('statePill').outerHTML =
+    GROUP.todayFailed > 0 ? pill('warn', `${num(GROUP.todayFailed)} failed today`)
+                          : pill('ok', 'All streams reporting');
+
+  /* ---------- KPI tiles ----------------------------------------------------- */
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Outbound today', value: num(GROUP.todayTotal), tone: 'var(--info)',
+           meta: `B2B postpaid + consumer batch, ${DEMO_DAY}` }),
+    stat({ label: 'Succeeded today', value: num(GROUP.todaySuccess), tone: 'var(--ok)',
+           meta: `${pct(successPct)} of today’s documents` }),
+    stat({ label: 'Failed today', value: num(GROUP.todayFailed), tone: 'var(--fail)',
+           meta: `${pct(failedPct)} — owned by the source data` }),
+    stat({ label: 'In flight now', value: num(GROUP.todayPending), tone: 'var(--warn)',
+           meta: 'Moving through clearing' }),
+    stat({ label: 'Month to date', value: num(GROUP.mtdTotal), tone: 'var(--accent)',
+           meta: `${num(GROUP.mtdFailed)} failed this month` }),
+    stat({ label: 'Inbound today', value: num(GROUP.inboundToday), tone: 'var(--accent-hi)',
+           meta: `${num(GROUP.inboundInside)} inside Oman · ${num(GROUP.inboundOutside)} imported (RCM)` }),
+    stat({ label: 'ASP response, avg', value: `${GROUP.aspAvgMs}<span style="font-size:15px;color:var(--text-lo)"> ms</span>`,
+           tone: 'var(--ok)', meta: 'Accredited service provider round-trip' })
+  ].join('');
+
+  /* ---------- the six-stream board (centrepiece) --------------------------- */
+  function modePill(mode) {
+    const lbl = { live: 'Live · per document', batch: 'Batch · once a day', capture: 'Capture · nothing to clear' }[mode] || mode;
+    return `<span class="modepill ${mode}">${lbl}</span>`;
+  }
+  function positionPill(pos) {
+    return pos === 'settled'
+      ? `<span class="pill pill-ok"><i class="dot"></i>Settled</span>`
+      : `<span class="pill pill-warn"><i class="dot"></i>To confirm</span>`;
+  }
+  function dirTag(dir) {
+    return dir === 'out'
+      ? `<span class="dirtag out">Issues&nbsp;→</span>`
+      : `<span class="dirtag in">←&nbsp;Receives</span>`;
+  }
+
+  document.getElementById('streamNote').textContent =
+    `${settled.length} settled · ${proposed.length} awaiting OTA confirmation`;
+
+  document.getElementById('streamRows').innerHTML = STREAMS.map(s => `
+    <tr class="${s.position === 'proposed' ? 'stream-proposed' : ''}">
+      <td><span class="streamnum">${s.n}</span></td>
+      <td style="max-width:280px">
+        <a class="link nowrap" href="${STREAM_HREF[s.id] || '#'}">${s.title}</a>
+        <div class="tiny dim" style="margin-top:2px">${s.origin} → ${s.target}</div>
+      </td>
+      <td class="nowrap"><span class="small">${s.role}</span></td>
+      <td>${dirTag(s.dir)}</td>
+      <td style="max-width:150px"><span class="small">${s.doc}</span></td>
+      <td>${modePill(s.mode)}</td>
+      <td>${positionPill(s.position)}</td>
+      <td class="r num">${s.today === null ? '—' : num(s.today)}</td>
+    </tr>`).join('');
+
+  document.getElementById('streamFoot').innerHTML =
+    `${STREAMS.length} streams · one integration, one console · ` +
+    `two streams (prepaid, out-of-bundle) carry treatments still to confirm with the OTA.`;
+
+  /* ---------- week bar chart ----------------------------------------------- */
+  const weekMax   = Math.max.apply(null, GROUP.week);
+  const weekTotal  = GROUP.week.reduce((a, b) => a + b, 0);
+  document.getElementById('weekTotalNote').textContent =
+    `${num(weekTotal)} documents · ${GROUP.weekDays[0]}–${GROUP.weekDays[GROUP.weekDays.length - 1]}`;
+
+  document.getElementById('weekBars').innerHTML = GROUP.week.map((v, i) => {
+    const isToday   = i === GROUP.week.length - 1;
+    const isWeekend = GROUP.weekDays[i] === 'Fri' || GROUP.weekDays[i] === 'Sat';
+    const h = Math.max(6, (v / weekMax) * 100);
+    return `<div class="wk ${isToday ? 'is-today' : ''} ${isWeekend ? 'is-weekend' : ''}"
+                 title="${GROUP.weekDays[i]} · ${num(v)}">
+      <div class="col"><i style="height:${h}%"></i></div>
+      <div class="d">${GROUP.weekDays[i]}</div>
+    </div>`;
+  }).join('');
+
+  const deltaPct  = (GROUP.todayTotal - GROUP.prevSameDay) / GROUP.prevSameDay * 100;
+  const deltaUp   = deltaPct >= 0;
+  document.getElementById('weekNote').innerHTML =
+    `The two low bars are Friday and Saturday — the Omani weekend. Today’s ${num(GROUP.todayTotal)} outbound ` +
+    `documents are <span class="${deltaUp ? 'delta-up' : 'delta-down'}">${deltaUp ? '▲' : '▼'} ${Math.abs(deltaPct).toFixed(1)}%</span> ` +
+    `on last ${DEMO_DAY} (${num(GROUP.prevSameDay)}).`;
+
+  /* ---------- needs attention ---------------------------------------------- */
+  const b = GROUP.batchToday;
+  document.getElementById('attn').innerHTML = `
+    <div class="attn">
+      <div class="row-tight" style="gap:8px">
+        <b class="grow">Daily consumer batch</b>
+        ${pill(b.state)}
+      </div>
+      <div class="tiny muted" style="margin-top:4px">
+        <span class="id">${b.id}</span> — ${num(b.count)} simplified documents reported to the OTA in the
+        ${b.window} window, acknowledged at ${b.reportedAt}.
+      </div>
+      <div class="tiny dim" style="margin-top:4px">Ack <span class="id">${b.ack}</span> · <a class="link" href="batch.html">Open the daily batch →</a></div>
+    </div>
+
+    <div class="attn">
+      <div class="row-tight" style="gap:8px">
+        <b class="grow">Today’s exceptions</b>
+        <span class="chip warn num">${num(GROUP.todayFailed)}</span>
+      </div>
+      <div class="tiny muted" style="margin-top:4px">
+        ${num(GROUP.todayFailed)} documents failed and ${num(GROUP.todayPending)} are in flight through clearing.
+        Failures are corrected in the source data and reprocessed — nothing is silently dropped.
+      </div>
+      <div class="tiny dim" style="margin-top:4px"><a class="link" href="queue.html">Open the live pipeline →</a></div>
+    </div>
+
+    <div class="attn">
+      <div class="row-tight" style="gap:8px">
+        <b class="grow">Awaiting OTA confirmation</b>
+        <span class="chip warn num">${proposed.length}</span>
+      </div>
+      <div class="tiny muted" style="margin-top:4px">
+        ${proposed.map(s => s.title).join(' and ')} carry tax treatments the OTA has not settled.
+        The console shows Fawtara’s recommended reading, tagged “to confirm with OTA”.
+      </div>
+      <div class="tiny dim" style="margin-top:4px">
+        ${proposed.map(s => `<a class="link" href="${STREAM_HREF[s.id]}">${s.title} →</a>`).join(' &nbsp;·&nbsp; ')}
+      </div>
+    </div>`;
+</script>
+</body>
+</html>

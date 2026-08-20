@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapping Studio — Vodafone Oman E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+/* page-local only — nothing here is shared with other screens */
+#saveBar { display: none; }
+#saveBar.is-on { display: flex; }
+.map-row.edit { padding: 6px 14px; }
+.map-row.edit.ghead {
+  grid-template-columns: minmax(0,1fr) auto;
+  background: var(--bg-alt); align-items: center;
+  padding-top: 7px; padding-bottom: 7px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--accent-hi);
+}
+/* the group header is a real <button> so it is keyboard-operable */
+button.map-row.edit.ghead {
+  width: 100%; border: 0; border-bottom: 1px solid var(--line);
+  font-family: inherit; text-align: left; cursor: pointer;
+}
+button.map-row.edit.ghead:hover { background: var(--hover); }
+button.map-row.edit.ghead:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.map-row.edit.ghead .ghl { display: flex; align-items: center; gap: 7px; }
+.map-row.edit.ghead .gright { display: flex; align-items: center; gap: 10px; }
+.map-row.edit.ghead .gcount { color: var(--text-lo); letter-spacing: .04em; }
+.map-row.edit.ghead .gtoggle {
+  letter-spacing: .04em; color: var(--accent-hi);
+  border: 1px solid var(--line-hard); border-radius: 999px; padding: 1px 8px;
+}
+.gchev { display: inline-flex; transition: transform .15s var(--ease); color: var(--accent-hi); }
+.gchev svg { width: 12px; height: 12px; display: block; }
+.ghead.is-open .gchev { transform: rotate(90deg); }
+.derivedcell { padding-top: 7px; }
+.derivedcell .d1 { font-size: 13px; font-weight: 500; color: var(--text-mid); }
+.fbwrap { margin-top: 6px; }
+.fbwrap .flab {
+  font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--warn); font-weight: 700; display: block; margin-bottom: 3px;
+}
+.confirm { font-size: 12.5px; color: var(--ok); font-weight: 600; }
+.pane-h { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.xfdemo { font-family: var(--font-mono); font-size: 12px; white-space: pre-wrap; }
+#mapTable .map-row.is-hidden { display: none; }
+#srcJson, #outXml { max-height: 168px; overflow: auto; }
+/* filter tabs sit in the card head rather than on their own line */
+.card-head .tabs { margin: 0 0 -1px 10px; border-bottom: 0; align-self: flex-end; }
+.card-head .tab { padding-top: 4px; padding-bottom: 7px; }
+.card-body { padding: 13px 14px; }
+/* tighter vertical rhythm — this page carries five sections */
+.page-head { margin-bottom: 14px; }
+section + section { margin-top: 14px; }
+/* counters and the teaching note share one band instead of stacking */
+.headrow { display: grid; grid-template-columns: minmax(0,700px) minmax(0,1fr); gap: 12px; }
+.headrow #teachBox { display: flex; }
+.headrow #teachBox > * { flex: 1; margin: 0; }
+.hr { margin: 12px 0; }
+details.disc > summary {
+  list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12.5px; font-weight: 600; color: var(--accent-hi);
+  border: 1px solid var(--line-hard); border-radius: 999px; padding: 4px 12px;
+}
+details.disc > summary::-webkit-details-marker { display: none; }
+details.disc > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+details.disc[open] > summary { margin-bottom: 10px; }
+details.disc > summary .gchev { color: inherit; }
+details.disc[open] > summary .gchev { transform: rotate(90deg); }
+  .pane-scroll { max-height: 300px; overflow-y: auto; }
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="mapping"
+      data-step="hub-mapping"
+      data-crumbs="Reference / Mapping Studio"
+      data-hint="How Vodafone's billing fields are pointed at the PINT-OM standard fields — typed and chosen by an analyst, no code.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Mapping Studio</h1>
+          <span class="pill pill-ok"><i class="dot"></i><span id="profPill">Profile Vodafone/v3 published</span></span>
+          <span class="tag" id="erpTag">Billing system</span>
+        </div>
+        <p class="page-sub">One billing-system field is pointed at one standard field — that is all a mapping is.</p>
+      </div>
+      <div class="page-actions">
+        <select class="select select-sm" id="profSel" style="width:auto">
+          <option value="Vodafone/v3">Vodafone Oman — Vodafone/v3 (published)</option>
+        </select>
+        <button class="btn btn-sm btn-primary" id="pubBtn">Publish new version</button>
+        <span class="confirm" id="pubMsg"></span>
+      </div>
+    </div>
+
+    <div class="headrow mb12">
+      <div class="grid g3" id="tiles"></div>
+      <div id="teachBox"></div>
+    </div>
+
+    <section style="margin-top:0">
+      <div class="card card-tight">
+        <div class="card-head">
+          <h2>Field bindings — <span id="profCode">Vodafone/v3</span></h2>
+          <div class="tabs grow" id="tabs">
+            <button class="tab is-active" data-tab="all">All fields</button>
+            <button class="tab" data-tab="unresolved">Unresolved</button>
+            <button class="tab" data-tab="mandatory">Mandatory only</button>
+            <button class="tab" data-tab="derived">Derived</button>
+          </div>
+          <span class="small dim" id="profNote"></span>
+          <span class="pill pill-accent"><i class="dot"></i><span id="shown">0</span> shown</span>
+        </div>
+        <div id="mapTable"></div>
+        <div class="sticky-save" id="saveBar">
+          <span class="grow"><b id="dirtyCount">0 unsaved changes</b>
+            <span class="small dim" id="dirtyNote"></span></span>
+          <span class="confirm" id="saveMsg"></span>
+          <button class="btn btn-sm btn-ghost" id="discardBtn">Discard</button>
+          <button class="btn btn-sm btn-primary" id="saveBtn">Save draft</button>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card">
+        <div class="card-head">
+          <h2 class="grow">Live preview</h2>
+          <span class="small dim">Rebuilt every time a binding or transform changes</span>
+        </div>
+        <div class="card-body">
+          <div class="grid g2">
+            <div>
+              <div class="pane-h">
+                <div class="eyebrow">What the billing system sends</div>
+                <span class="tiny dim" id="srcCount"></span>
+              </div>
+              <div class="code pane-scroll" id="srcJson"></div>
+            </div>
+            <div>
+              <div class="pane-h">
+                <div class="eyebrow">What we build</div>
+                <span class="tiny dim" id="outCount"></span>
+              </div>
+              <div class="code code-lines pane-scroll" id="outXml"></div>
+            </div>
+          </div>
+          <div class="hr"></div>
+          <details class="disc">
+            <summary><span class="gchev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.6" stroke-linecap="round"
+              stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>Show the transforms applied
+              to the sample values</summary>
+            <div id="xfDemo"></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section id="gaps"></section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+/* ==========================================================================
+   Mapping Studio — every binding on this page is a live control.
+   Nothing below is a hard-coded figure: the tiles, the preview, the warning
+   and the counts are all derived from MAPPING / ERP_SCHEMA / TRANSFORMS.
+   ========================================================================== */
+
+const T = tenant('VOD');
+document.getElementById('erpTag').textContent = 'Billing system';
+
+/* --- code lists used by the transforms ------------------------------------ */
+const UNCL1001 = { STD: '380', F2: '380', F1: '380', G2: '381', L2: '381', RE: '380' };
+const UNECE20  = { EA: 'H87', PC: 'H87', KG: 'KGM', L: 'LTR', M: 'MTR', DR: 'DR', BOX: 'BX', MON: 'MON' };
+const COMPANY  = { 'VOD-OM': T.name };
+const DOC_UUID = INVOICES[0].uuid;
+const PART_SCHEME = T.peppol.split(':')[0];
+const PART_ID     = T.peppol.split(':')[1];
+
+/* values the Hub sets or derives itself, keyed by the standard field they land on */
+const DERIVED_CONST = {
+  'IBT-024':   'urn:peppol:pint:billing-1@om-1',
+  'IBT-118-1': 'VAT',
+  'BTOM-001':  'Standard',
+  'BTOM-019':  'services'
+};
+
+/* --- the transform engine — this really runs ------------------------------ */
+function applyTransform(value, xf) {
+  const start = value === null || value === undefined ? '' : String(value);
+  if (!xf) return start;
+  return xf.split('|').reduce(function (acc, raw) {
+    const t = raw.trim();
+    if (t === 'trim')  return acc.trim();
+    if (t === 'upper') return acc.toUpperCase();
+    if (t === 'lower') return acc.toLowerCase();
+    if (t === 'date:ISO8601') {
+      const d = acc.trim();
+      return /^\d{8}$/.test(d) ? d.slice(0, 4) + '-' + d.slice(4, 6) + '-' + d.slice(6, 8) : d;
+    }
+    if (t.indexOf('decimal:') === 0) {
+      const places = parseInt(t.split(':')[1], 10);
+      const n = parseFloat(acc.trim().replace(/,/g, ''));
+      return isNaN(n) ? acc : n.toFixed(places);
+    }
+    if (t === 'pct') { const n = parseFloat(acc.trim()); return isNaN(n) ? acc : String(n); }
+    if (t === 'iso:alpha2') return acc.trim().toUpperCase().slice(0, 2);
+    if (t.indexOf('prefix:') === 0) return t.slice(7) + acc.trim();
+    if (t === 'codelist:UNCL1001') return UNCL1001[acc.trim()] || acc.trim();
+    if (t === 'codelist:UNECE20')  return UNECE20[acc.trim()]  || acc.trim();
+    if (t === 'map:381') return /^(true|x|1|yes)$/i.test(acc.trim()) ? '381' : '380';
+    if (t === 'lookup:company') return COMPANY[acc.trim()] || acc.trim();
+    if (t === 'nullable') return acc.trim();
+    if (t === 'derive:uuidv5') return DOC_UUID;
+    if (t === 'derive:0248')   return PART_ID;
+    return acc;
+  }, start);
+}
+
+/* --- editable state, one entry per binding in MAPPING --------------------- */
+const ROWS = [];
+MAPPING.forEach(function (g, gi) {
+  g.rows.forEach(function (r, ri) {
+    const s = {
+      key: gi + '-' + ri, gi: gi, grp: g.grp,
+      std: r.std, stdName: r.stdName, req: r.req,
+      derived: r.derived === true,
+      constant: r.constant === true,
+      dnote: r.dnote || '',
+      startedUnresolved: r.ok === false,
+      note: r.note || '',
+      erp0: (r.erp && r.erp !== '—') ? r.erp : '',
+      xf0: r.xf || '',
+      fb0: r.fallback || ''
+    };
+    s.erp = s.erp0; s.xf = s.xf0; s.fb = s.fb0;
+    ROWS.push(s);
+  });
+});
+
+const TOTAL_IN_PROFILE = 47;                    /* fields in the Vodafone profile */
+const row = k => ROWS.find(s => s.key === k);
+const hasSource = s => s.derived || (s.erp || '').trim() !== '';
+const isDirty   = s => s.erp !== s.erp0 || s.xf !== s.xf0 || s.fb !== s.fb0;
+
+/* --- markup helpers ------------------------------------------------------- */
+function okSvg(good) {
+  return good
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.4" ' +
+      'stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2" ' +
+      'stroke-linecap="round" stroke-linejoin="round">' + ICO.alert + '</svg>';
+}
+
+function xfSelect(s) {
+  return '<select class="select" id="xf-' + s.key + '" aria-label="Transform for ' + s.std + '">' +
+    TRANSFORMS.map(function (t) {
+      return '<option value="' + t.v + '"' + (t.v === s.xf ? ' selected' : '') + '>' + t.n + '</option>';
+    }).join('') + '</select>';
+}
+
+function rowHtml(s) {
+  const good = hasSource(s);
+  const left = s.derived
+    ? '<div class="derivedcell"><div class="d1">' +
+        (s.constant ? 'Set by the Hub ' : 'Generated by the Hub ') +
+        '<span class="chip info">' + (s.constant ? 'constant' : 'derived') + '</span></div>' +
+        '<div class="map-note">' +
+          (s.dnote || 'No billing-system field is read for this value.') +
+        '</div></div>'
+    : combo('cb-' + s.key, s.erp, null, 'Search the billing-system fields…');
+
+  const fb = s.startedUnresolved
+    ? '<div class="fbwrap"><label class="flab" for="fb-' + s.key + '">Fallback value</label>' +
+      '<input class="input input-sm" id="fb-' + s.key + '" type="text" value="' + s.fb + '" ' +
+      'placeholder="What the Hub uses when the billing system has nothing"></div>' +
+      (s.note ? '<div class="field-help">' + s.note + '</div>' : '')
+    : '';
+
+  return '<div class="map-row edit' + (good ? '' : ' unmapped') + '" id="row-' + s.key + '" ' +
+      'data-key="' + s.key + '" data-req="' + s.req + '">' +
+      '<div class="map-field">' + left + fb + '</div>' +
+      mapArrow() +
+      '<div class="stdcell"><div class="s1">' + s.std + '</div><div class="s2">' + s.stdName + '</div></div>' +
+      '<div class="xfcell">' + xfSelect(s) + '</div>' +
+      '<div class="reqcell"><span class="chip req">' + s.req + '</span></div>' +
+      '<div class="okmark" id="ok-' + s.key + '">' + okSvg(good) + '</div>' +
+    '</div>';
+}
+
+/* --- which groups start open ----------------------------------------------
+   Document header and Buyer party are open on load: Buyer party holds the one
+   field this billing system cannot supply, so its fallback input is visible
+   without a click. The other three groups collapse to a header row and open on
+   click. Nothing is removed — it is folded away.
+   -------------------------------------------------------------------------- */
+const DEFAULT_OPEN = {};
+MAPPING.forEach(function (g, gi) {
+  DEFAULT_OPEN[gi] = /document header|buyer party/i.test(g.grp);
+});
+const open = Object.assign({}, DEFAULT_OPEN);
+
+const CHEV = '<span class="gchev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" ' +
+  'stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' +
+  '<path d="m9 5 7 7-7 7"/></svg></span>';
+
+/* --- build the table ------------------------------------------------------ */
+(function buildTable() {
+  let html = '<div class="map-row edit head">' +
+      '<div>Billing-system field</div><div></div><div>Standard invoice field</div>' +
+      '<div>Transform</div><div>Required</div><div></div>' +
+    '</div>';
+
+  MAPPING.forEach(function (g, gi) {
+    html += '<button type="button" class="map-row edit ghead" data-ghead="' + gi + '" ' +
+        'aria-expanded="' + (open[gi] ? 'true' : 'false') + '">' +
+        '<div class="ghl">' + CHEV + g.grp + '</div>' +
+        '<div class="gright"><span class="gcount">' + g.rows.length + ' fields</span>' +
+        '<span class="gtoggle">Show</span></div>' +
+      '</button>';
+    ROWS.filter(s => s.gi === gi).forEach(function (s) { html += rowHtml(s); });
+  });
+
+  document.getElementById('mapTable').innerHTML = html;
+})();
+
+/* a real button, so Enter and Space already work — no extra key handling */
+document.getElementById('mapTable').addEventListener('click', function (e) {
+  const h = e.target.closest('.map-row[data-ghead]');
+  if (!h) return;
+  open[h.dataset.ghead] = !open[h.dataset.ghead];
+  applyFilter();
+});
+
+/* --- wire every control --------------------------------------------------- */
+const ERP_OPTS = ERP_SCHEMA.map(s => ({ v: s.f, n: s.f, d: s.t + ' · e.g. ' + s.ex }));
+
+ROWS.forEach(function (s) {
+  if (!s.derived) {
+    comboBind('cb-' + s.key, ERP_OPTS, function (v) { s.erp = v; touch(s); });
+  }
+  const sel = document.getElementById('xf-' + s.key);
+  if (sel) sel.addEventListener('change', function () { s.xf = sel.value; touch(s); });
+  const fb = document.getElementById('fb-' + s.key);
+  if (fb) fb.addEventListener('input', function () { s.fb = fb.value; touch(s); });
+});
+
+function touch(s) {
+  const el = document.getElementById('row-' + s.key);
+  const good = hasSource(s);
+  el.classList.toggle('is-dirty', isDirty(s));
+  el.classList.toggle('unmapped', !good);
+  document.getElementById('ok-' + s.key).innerHTML = okSvg(good);
+  refresh();
+}
+
+/* --- tiles ---------------------------------------------------------------- */
+function renderTiles() {
+  const unresolved = ROWS.filter(s => !hasSource(s)).length;
+  const resolved   = TOTAL_IN_PROFILE - unresolved;
+  const xforms     = ROWS.filter(s => (s.xf || '') !== '').length;
+
+  document.getElementById('tiles').innerHTML = [
+    stat({
+      label: 'Bindings resolved',
+      value: resolved + '<span style="font-size:15px;color:var(--text-lo)"> / ' + TOTAL_IN_PROFILE + '</span>',
+      meta: unresolved === 0
+        ? 'Every field in the profile has a source'
+        : unresolved + (unresolved === 1 ? ' field has' : ' fields have') + ' no billing-system source',
+      tone: unresolved === 0 ? 'var(--ok)' : 'var(--warn)'
+    }),
+    stat({
+      label: 'Transformations applied',
+      value: String(xforms),
+      meta: 'Dates, code lists, decimals, look-ups',
+      tone: 'var(--info)'
+    }),
+    stat({
+      label: 'Needing a fallback',
+      value: String(unresolved),
+      meta: unresolved === 0 ? 'None' : 'Does not block submission',
+      tone: unresolved === 0 ? 'var(--ok)' : 'var(--warn)'
+    })
+  ].join('');
+}
+
+/* --- live preview -----------------------------------------------------------
+   Both panes are driven by the live bindings. Left is what the billing system
+   hands over in its own vocabulary — the distinct source fields currently bound.
+   Right is the UBL we build from them, assembled field by field through each
+   binding's transform. Change a binding or a transform and both panes rebuild. */
+
+/* the billing payload: distinct bound source fields, in mapping order */
+function srcJson() {
+  const seen = {}, picked = [];
+  ROWS.forEach(function (s) {
+    if (s.derived || !s.erp || seen[s.erp]) return;
+    const sc = ERP_SCHEMA.find(x => x.f === s.erp);
+    if (!sc) return;
+    seen[s.erp] = 1;
+    picked.push({ f: sc.f, ex: sc.ex });
+  });
+  document.getElementById('srcCount').textContent =
+    picked.length + ' fields read from your billing system';
+  if (!picked.length) return '{ }';
+  let w = 0;
+  picked.forEach(function (p) { w = Math.max(w, p.f.length); });
+  return '{\n' + picked.map(function (p, i) {
+    const key = '"' + p.f + '":';
+    const pad = new Array(Math.max(1, w + 4 - key.length) + 1).join(' ');
+    return '  ' + key + pad + '"' + p.ex + '"' + (i < picked.length - 1 ? ',' : '');
+  }).join('\n') + '\n}';
+}
+
+/* value of a binding after its transform, or null when there is no source */
+function val(s) {
+  if (!s) return null;
+  if (s.derived) {
+    const d = applyTransform('', s.xf);
+    return (d && d !== '') ? d : (DERIVED_CONST[s.std] || null);
+  }
+  if (!s.erp) return null;
+  const sc = ERP_SCHEMA.find(x => x.f === s.erp);
+  if (!sc) return null;
+  const v = applyTransform(sc.ex, s.xf);
+  return v === '' ? null : v;
+}
+
+/* --- the UBL we build ------------------------------------------------------
+   Each bound field is placed at a real UBL path. A path segment beginning with
+   '@' is an attribute on its parent element; amount elements carry currencyID. */
+const UBL_PATH = {
+  'BT-1':      ['cbc:ID'],
+  'BT-2':      ['cbc:IssueDate'],
+  'BT-3':      ['cbc:InvoiceTypeCode'],
+  'BT-5':      ['cbc:DocumentCurrencyCode'],
+  'BTOM-002':  ['cbc:UUID'],
+  'BTOM-001':  ['cbc:ProfileExecutionID'],
+  'IBT-024':   ['cbc:CustomizationID'],
+  'BT-27':     ['cac:AccountingSupplierParty', 'cac:Party', 'cac:PartyName', 'cbc:Name'],
+  'IBT-029':   ['cac:AccountingSupplierParty', 'cac:Party', 'cac:PartyLegalEntity', 'cbc:CompanyID'],
+  'BT-31':     ['cac:AccountingSupplierParty', 'cac:Party', 'cac:PartyTaxScheme', 'cbc:CompanyID'],
+  'BTOM-004':  ['cac:AccountingSupplierParty', 'cac:Party', 'cbc:EndpointID'],
+  'BT-37':     ['cac:AccountingSupplierParty', 'cac:Party', 'cac:PostalAddress', 'cbc:CityName'],
+  'BT-40':     ['cac:AccountingSupplierParty', 'cac:Party', 'cac:PostalAddress', 'cac:Country', 'cbc:IdentificationCode'],
+  'BT-46':     ['cac:AccountingCustomerParty', 'cac:Party', 'cac:PartyIdentification', 'cbc:ID'],
+  'BT-44':     ['cac:AccountingCustomerParty', 'cac:Party', 'cac:PartyName', 'cbc:Name'],
+  'BT-48':     ['cac:AccountingCustomerParty', 'cac:Party', 'cac:PartyTaxScheme', 'cbc:CompanyID'],
+  'BT-55':     ['cac:AccountingCustomerParty', 'cac:Party', 'cac:PostalAddress', 'cac:Country', 'cbc:IdentificationCode'],
+  'BT-50':     ['cac:AccountingCustomerParty', 'cac:Party', 'cac:PostalAddress', 'cbc:StreetName'],
+  'BT-109':    ['cac:LegalMonetaryTotal', 'cbc:LineExtensionAmount'],
+  'BT-110':    ['cac:TaxTotal', 'cbc:TaxAmount'],
+  'BT-112':    ['cac:LegalMonetaryTotal', 'cbc:TaxInclusiveAmount'],
+  'BT-115':    ['cac:LegalMonetaryTotal', 'cbc:PayableAmount'],
+  'BT-119':    ['cac:TaxTotal', 'cac:TaxSubtotal', 'cac:TaxCategory', 'cbc:Percent'],
+  'IBT-118-1': ['cac:TaxTotal', 'cac:TaxSubtotal', 'cac:TaxCategory', 'cac:TaxScheme', 'cbc:ID'],
+  'BT-155':    ['cac:InvoiceLine', 'cac:Item', 'cac:SellersItemIdentification', 'cbc:ID'],
+  'BT-153':    ['cac:InvoiceLine', 'cac:Item', 'cbc:Name'],
+  'BT-129':    ['cac:InvoiceLine', 'cbc:InvoicedQuantity'],
+  'BT-130':    ['cac:InvoiceLine', 'cbc:InvoicedQuantity', '@unitCode'],
+  'BT-146':    ['cac:InvoiceLine', 'cac:Price', 'cbc:PriceAmount'],
+  'BTOM-019':  ['cac:InvoiceLine', 'cac:Item', 'cac:CommodityClassification', 'cbc:ItemClassificationCode']
+};
+
+function outXml() {
+  const cur = 'OMR';
+  const tree = { kids: [], attrs: {}, text: null };
+
+  function node(path) {
+    let cursor = tree;
+    path.forEach(function (seg) {
+      let hit = cursor.kids.find(k => k.name === seg);
+      if (!hit) { hit = { name: seg, kids: [], attrs: {}, text: null }; cursor.kids.push(hit); }
+      cursor = hit;
+    });
+    return cursor;
+  }
+
+  ROWS.forEach(function (s) {
+    /* the credit-note flag rides on the invoice type code, not its own element */
+    if (s.erp === 'IsCancelled') return;
+    const path = UBL_PATH[s.std];
+    if (!path) return;
+    const v = val(s);
+    if (v === null) return;
+    const last = path[path.length - 1];
+    if (last.charAt(0) === '@') {
+      node(path.slice(0, -1)).attrs[last.slice(1)] = v;
+    } else {
+      const n = node(path);
+      n.text = v;
+      if (/Amount$/.test(last)) n.attrs.currencyID = cur;
+    }
+  });
+
+  const L = [];
+  L.push('<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"');
+  L.push('         xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"');
+  L.push('         xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">');
+  L.push('  <cbc:UBLVersionID>2.1</cbc:UBLVersionID>');
+
+  (function walk(n, depth) {
+    n.kids.forEach(function (k) {
+      const pad = new Array(depth * 2 + 1).join(' ');
+      let a = '';
+      Object.keys(k.attrs).forEach(function (key) { a += ' ' + key + '="' + k.attrs[key] + '"'; });
+      if (k.text !== null && !k.kids.length) {
+        L.push(pad + '<' + k.name + a + '>' + k.text + '</' + k.name + '>');
+      } else {
+        L.push(pad + '<' + k.name + a + '>');
+        walk(k, depth + 1);
+        L.push(pad + '</' + k.name + '>');
+      }
+    });
+  })(tree, 1);
+
+  L.push('</Invoice>');
+  return L.join('\n');
+}
+
+/* --- transform proof strip ------------------------------------------------ */
+const DEMO_KEYS = ['2-1', '0-1', '3-1'];
+function renderXfDemo() {
+  const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const rowsHtml = DEMO_KEYS.map(function (k) {
+    const s = row(k);
+    const sc = s.erp ? ERP_SCHEMA.find(x => x.f === s.erp) : null;
+    const raw = sc ? sc.ex : '(no source)';
+    const out = sc ? applyTransform(sc.ex, s.xf) : '—';
+    return '<tr><td class="num">' + (s.erp || '—') + '</td>' +
+      '<td class="xfdemo">"' + esc(raw) + '"</td>' +
+      '<td><span class="chip info">' + (s.xf || 'copy as-is') + '</span></td>' +
+      '<td class="xfdemo"><b>"' + esc(out) + '"</b></td>' +
+      '<td class="small dim">' + s.std + ' ' + s.stdName + '</td></tr>';
+  }).join('');
+  document.getElementById('xfDemo').innerHTML =
+    '<div class="table-wrap"><table class="tbl"><thead><tr>' +
+    '<th>Billing-system field</th><th>Value in the billing system</th><th>Transform</th><th>Value we write</th><th>Goes to</th>' +
+    '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div>';
+}
+
+/* --- the closing warning, derived from the same rows as the tiles --------- */
+function renderGaps() {
+  const bad = ROWS.filter(s => !hasSource(s));
+  if (!bad.length) {
+    document.getElementById('gaps').innerHTML = notice('ok',
+      '<b>Every field in this profile now has a billing-system source.</b>' +
+      '<div class="small muted mt4">Save the draft and publish a new version to put it into effect.</div>');
+    return;
+  }
+  const list = bad.map(function (s) {
+    const fb = (s.fb || '').trim() || 'no fallback set';
+    return '<li><b>' + s.std + ' ' + s.stdName + '</b> (' + s.req.toLowerCase() + ') — ' + fb + '.</li>';
+  }).join('');
+  document.getElementById('gaps').innerHTML = notice('warn',
+    '<b>' + (bad.length === 1 ? 'One' : bad.length) + ' of the ' + TOTAL_IN_PROFILE +
+    ' bindings cannot be read from this billing system. ' +
+    (bad.length === 1 ? 'It is' : 'They are') + ' already covered by a fallback.</b>' +
+    '<ul class="small muted mt4" style="margin:0;padding-left:16px">' + list + '</ul>' +
+    '<div class="small muted mt4">The fallback values above are editable in the table. ' +
+    'Nothing here stops an invoice being built, validated and sent.</div>');
+}
+
+/* --- filters -------------------------------------------------------------- */
+let currentTab = 'all';
+
+function matchesDerived(s) {
+  return s.derived;
+}
+
+function applyFilter() {
+  let shown = 0;
+  const matched = {};
+  ROWS.forEach(function (s) {
+    let match = true;
+    if (currentTab === 'unresolved') match = !hasSource(s);
+    else if (currentTab === 'mandatory') match = s.req === 'Mandatory';
+    else if (currentTab === 'derived') match = matchesDerived(s);
+    if (match) matched[s.gi] = (matched[s.gi] || 0) + 1;
+    const show = match && open[s.gi];
+    document.getElementById('row-' + s.key).classList.toggle('is-hidden', !show);
+    if (show) shown++;
+  });
+  document.querySelectorAll('#mapTable .map-row[data-ghead]').forEach(function (h) {
+    const gi = h.dataset.ghead, n = matched[gi] || 0, all = MAPPING[gi].rows.length;
+    h.classList.toggle('is-hidden', n === 0);
+    h.classList.toggle('is-open', !!open[gi]);
+    h.setAttribute('aria-expanded', open[gi] ? 'true' : 'false');
+    h.querySelector('.gcount').textContent =
+      (n === all ? all + ' fields' : n + ' of ' + all + ' fields');
+    h.querySelector('.gtoggle').textContent = open[gi] ? 'Hide' : 'Show';
+  });
+  document.getElementById('shown').textContent = shown;
+}
+
+document.getElementById('tabs').addEventListener('click', function (e) {
+  const b = e.target.closest('.tab');
+  if (!b) return;
+  this.querySelectorAll('.tab').forEach(t => t.classList.remove('is-active'));
+  b.classList.add('is-active');
+  currentTab = b.dataset.tab;
+  /* a filter opens every group that still has a match, so nothing hides behind
+     a collapsed header; returning to All restores the default fold */
+  Object.keys(open).forEach(function (k) {
+    open[k] = currentTab === 'all' ? DEFAULT_OPEN[k] : true;
+  });
+  applyFilter();
+});
+
+/* --- unsaved-changes bar -------------------------------------------------- */
+function renderSaveBar() {
+  const n = ROWS.filter(isDirty).length;
+  const bar = document.getElementById('saveBar');
+  bar.classList.toggle('is-on', n > 0);
+  document.getElementById('dirtyCount').textContent =
+    n + (n === 1 ? ' unsaved change' : ' unsaved changes');
+  document.getElementById('dirtyNote').textContent =
+    n ? '— nothing is live until the draft is saved and a new version is published' : '';
+}
+
+document.getElementById('discardBtn').addEventListener('click', function () {
+  ROWS.forEach(function (s) {
+    s.erp = s.erp0; s.xf = s.xf0; s.fb = s.fb0;
+    const cb = document.getElementById('cb-' + s.key);
+    if (cb) { cb.dataset.value = s.erp; cb.querySelector('.input').value = s.erp; cb.classList.remove('is-open'); }
+    const sel = document.getElementById('xf-' + s.key);
+    if (sel) sel.value = s.xf;
+    const fb = document.getElementById('fb-' + s.key);
+    if (fb) fb.value = s.fb;
+    const el = document.getElementById('row-' + s.key);
+    el.classList.remove('is-dirty');
+    el.classList.toggle('unmapped', !hasSource(s));
+    document.getElementById('ok-' + s.key).innerHTML = okSvg(hasSource(s));
+  });
+  document.getElementById('saveMsg').textContent = '';
+  refresh();
+});
+
+document.getElementById('saveBtn').addEventListener('click', function () {
+  const n = ROWS.filter(isDirty).length;
+  ROWS.forEach(function (s) {
+    s.erp0 = s.erp; s.xf0 = s.xf; s.fb0 = s.fb;
+    document.getElementById('row-' + s.key).classList.remove('is-dirty');
+  });
+  refresh();
+  const msg = document.getElementById('saveMsg');
+  msg.textContent = 'Draft saved — ' + n + (n === 1 ? ' change' : ' changes') + ' held for review';
+  document.getElementById('saveBar').classList.add('is-on');
+  setTimeout(function () { msg.textContent = ''; renderSaveBar(); }, 3200);
+});
+
+/* --- header actions ------------------------------------------------------- */
+document.getElementById('pubBtn').addEventListener('click', function () {
+  const m = document.getElementById('pubMsg');
+  m.textContent = 'Version queued for review — publishing is a controlled step in this prototype';
+  setTimeout(function () { m.textContent = ''; }, 3600);
+});
+
+document.getElementById('profSel').addEventListener('change', function () {
+  const v = this.value;
+  document.getElementById('profCode').textContent = v;
+  document.getElementById('profPill').textContent =
+    'Profile ' + v + (v === 'Vodafone/v3' ? ' published' : ' draft');
+});
+
+/* --- teaching note -------------------------------------------------------- */
+document.getElementById('teachBox').innerHTML = teach(
+  'Click a <b>Billing-system field</b> box and type to search the fields read from Vodafone’s ' +
+  'billing system; pick a different <b>Transform</b> and the preview rebuilds immediately. Groups ' +
+  'open and close — every binding is still there. Try switching the buyer name from ' +
+  '<span class="num">trim|upper</span> to <span class="num">trim</span> and watch the case change ' +
+  'in the UBL.');
+
+/* --- one place that redraws everything derived ---------------------------- */
+function refresh() {
+  renderTiles();
+  document.getElementById('srcJson').textContent = srcJson();
+  const built = outXml();
+  document.getElementById('outXml').innerHTML = xml(built);
+  document.getElementById('outCount').textContent =
+    'UBL 2.1 · ' + built.split('\n').length + ' lines';
+
+  renderXfDemo();
+  renderGaps();
+  renderSaveBar();
+  applyFilter();
+}
+
+refresh();
+</script>
+</body>
+</html>

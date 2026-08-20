@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-Invoice Status — Vodafone Oman billing system</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  .qr-panel { display:flex; align-items:center; justify-content:center; padding:6px 0 12px; }
+  .qr-box { padding:10px; background:#fff; border:1px solid var(--line-hard); border-radius:10px; line-height:0; }
+  .id-card { border:1px solid var(--line); border-radius:10px; padding:12px 13px; margin-bottom:10px; background:var(--bg-alt); }
+  .id-card:last-child { margin-bottom:0; }
+  .id-card .lbl { font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--text-mid); }
+  .id-card .big { font-size:16px; font-weight:700; margin:3px 0 4px; font-family:'IBM Plex Mono',monospace; }
+  .id-card .desc { font-size:12.5px; color:var(--text-mid); line-height:1.55; }
+</style>
+</head>
+<body class="surface-erp" data-surface="erp" data-nav="sync"
+      data-step="erp-sync"
+      data-crumbs="E-Invoicing / E-Invoice Status"
+      data-hint="The answer comes back to the same invoice: reference, status and QR, written onto the original billing record.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1 class="mono" style="font-size:20px">VOD-INV-2026-00417</h1>
+          <span class="pill pill-ok"><i class="dot"></i>Acknowledged</span>
+          <span class="tag">E-invoice status</span>
+        </div>
+        <p class="page-sub">Gulf Petrochem Industries LLC · 13,104.000 OMR — the result written back onto the original billing record.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm">Open invoice</button>
+        <button class="btn btn-sm btn-primary">Print with QR</button>
+      </div>
+    </div>
+
+    <div class="card mb16">
+      <div class="card-body">
+        <div id="closeStrip"></div>
+      </div>
+    </div>
+
+    <div class="split-wide">
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">E-invoice result — written back to invoice VOD-INV-2026-00417</h2>
+              <span class="tag">Read-only · from the Hub</span>
+            </div>
+            <div class="card-body" id="result"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">How it got here</h2>
+              <span class="small dim">8 of 8 steps · end to end 2 min 41 s</span>
+            </div>
+            <div class="card-body" id="timeline"></div>
+          </div>
+        </section>
+      </div>
+
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head"><h2 class="grow">QR information</h2></div>
+            <div class="card-body">
+              <div class="qr-panel"><div class="qr-box" id="qr"></div></div>
+              <p class="small dim" style="margin:0">Written back to the invoice and rendered on the customer copy by your billing system's
+                print format. The buyer scans it to verify the invoice against the Tax Authority.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Seller identity</h2></div>
+            <div class="card-body" id="identity"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Invoice</h2></div>
+            <div class="card-body" id="summary"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  const INV = INVOICES.find(i => i.no === 'VOD-INV-2026-00417');
+
+  /* ---- closing strip ---------------------------------------------------- */
+  document.getElementById('closeStrip').innerHTML = notice('ok',
+    '<b>The loop is closed.</b> Invoice VOD-INV-2026-00417 left your billing system as a normal receivable, was mapped, ' +
+    'validated and cleared to the OTA through Fawtara — and its reference, status and QR are now written back onto the ' +
+    'same invoice, on the same screen the finance team already uses.');
+
+  /* ---- written-back result --------------------------------------------- */
+  document.getElementById('result').innerHTML = kv([
+    ['E-invoice status', pill('acknowledged', 'Acknowledged')],
+    ['Document UUID', '<span class="mono" style="font-size:11px;word-break:break-all">' + INV.uuid + '</span>'],
+    ['ASP acknowledgement', '<span class="mono" style="font-size:11.5px">' + INV.ackNo + '</span>'],
+    ['Peppol reference', '<span class="mono" style="font-size:11.5px">' + INV.ref + '</span>'],
+    ['Reported to OTA', '<span class="mono" style="font-size:11.5px">' + ASP.otaRef + '</span>'],
+    ['QR information', 'Present <span class="dim">· rendered on the customer copy</span>']
+  ], true) +
+    '<p class="small dim" style="margin:12px 0 0">Every value above is held against this same invoice — there is no parallel system and no second place to look.</p>';
+
+  /* ---- processing timeline --------------------------------------------- */
+  document.getElementById('timeline').innerHTML = timeline(
+    SYNC_STEPS.map(s => ({ name: s.name, t: s.t, body: s.body, st: s.st }))
+  );
+
+  /* ---- seller identity -------------------------------------------------- */
+  document.getElementById('identity').innerHTML =
+    `<div class="id-card">
+      <div class="lbl">Seller identifier — IBT-029, scheme CR</div>
+      <div class="big">CR ${VOD.cr}</div>
+      <div class="desc">Vodafone Oman's Commercial Registration. It travels on the invoice as the seller identifier.</div>
+    </div>
+    <div class="id-card">
+      <div class="lbl">Seller VAT identifier — IBT-031</div>
+      <div class="big">${VOD.vatin}</div>
+      <div class="desc">The Omani VATIN. One entity, one registration — no VAT-group nuance.</div>
+    </div>
+    <div class="id-card">
+      <div class="lbl">Peppol participant — scheme 0248</div>
+      <div class="big">${VOD.peppol}</div>
+      <div class="desc">Vodafone's single Peppol participant — its endpoint, SMP entry and certificate.</div>
+    </div>`;
+
+  /* ---- invoice summary -------------------------------------------------- */
+  document.getElementById('summary').innerHTML = kv([
+    ['Buyer', CUSTOMERS[INV.cust].name],
+    ['Buyer VAT', '<span class="mono" style="font-size:11.5px">' + CUSTOMERS[INV.cust].vatin + '</span>'],
+    ['Customer PO', INV.po],
+    ['Line items', String(INV.lines)],
+    ['Net amount', '<span class="num">' + omr(INV.net) + '</span>'],
+    ['VAT (5%)', '<span class="num">' + omr(INV.vat) + '</span>'],
+    ['Total payable', '<span class="num" style="color:var(--accent-hi);font-weight:600">' + omr(INV.total) + ' OMR</span>']
+  ], true);
+
+  /* ---- QR code — deterministic pseudo-pattern, 21×21. Self-contained. --- */
+  (function () {
+    const N = 21, PX = 7;
+    const finder = (x, y) => {
+      let lx = null, ly = null;
+      if (x <= 7 && y <= 7)        { if (x === 7 || y === 7) return false; lx = x;      ly = y; }
+      else if (x >= 13 && y <= 7)  { if (x === 13 || y === 7) return false; lx = x - 14; ly = y; }
+      else if (x <= 7 && y >= 13)  { if (x === 7 || y === 13) return false; lx = x;      ly = y - 14; }
+      else return null;
+      const ring = (lx === 0 || lx === 6 || ly === 0 || ly === 6);
+      const core = (lx >= 2 && lx <= 4 && ly >= 2 && ly <= 4);
+      return ring || core;
+    };
+    let cells = '';
+    for (let y = 0; y < N; y++) {
+      for (let x = 0; x < N; x++) {
+        const f = finder(x, y);
+        let on;
+        if (f !== null) on = f;
+        else if (y === 6) on = (x % 2 === 0);
+        else if (x === 6) on = (y % 2 === 0);
+        else {
+          const h = (x * 37 + y * 61 + ((x * y) % 17) * 13 + (((x + 5) ^ (y + 3)) * 7)) % 100;
+          on = h < 48;
+        }
+        cells += `<i style="display:block;width:${PX}px;height:${PX}px;background:${on ? '#111820' : '#fff'}"></i>`;
+      }
+    }
+    document.getElementById('qr').innerHTML =
+      `<div style="display:grid;grid-template-columns:repeat(${N},${PX}px);line-height:0">${cells}</div>`;
+  })();
+</script>
+</body>
+</html>

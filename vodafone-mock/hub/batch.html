@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily B2C Batch — Vodafone Oman E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* ---- page-local to hub/batch.html. Do not move to app.css. ---- */
+  .why{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap}
+  .why .bignum{flex:none}
+  .why .bignum .n{font-family:var(--font-mono);font-size:44px;font-weight:600;line-height:1;color:var(--accent-hi)}
+  .why .bignum .u{font-size:12px;color:var(--text-lo);margin-top:4px}
+  .why .copy{flex:1 1 320px;min-width:280px}
+  .batchhead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .batchhead .bid{font-family:var(--font-mono);font-size:14px;font-weight:600}
+  .comp-row{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;padding:9px 0}
+  .comp-row + .comp-row{border-top:1px solid var(--line)}
+  .comp-row .k{font-size:13px;font-weight:500}
+  .comp-row .v{font-family:var(--font-mono);font-size:13px;font-weight:600;text-align:right}
+  .comp-row .barcell{grid-column:1 / -1}
+  .comp-row.neg .v{color:var(--warn)}
+  .chan{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;
+    font-size:12px;font-weight:500;border:1px solid var(--line);background:var(--bg-alt)}
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="batch"
+      data-step="hub-batch"
+      data-crumbs="Operations / Daily B2C Batch"
+      data-hint="Vodafone's consumer streams are reported to the OTA in one scheduled batch a day — not cleared per recharge.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Daily B2C Batch</h1>
+          <span id="statePill"></span>
+        </div>
+        <p class="page-sub" id="sub"></p>
+      </div>
+      <div class="page-actions">
+        <span class="tag" id="dateTag"></span>
+      </div>
+    </div>
+
+    <!-- WHY batch -->
+    <div class="card mb16">
+      <div class="card-body why">
+        <div class="bignum">
+          <div class="n" id="whyNum"></div>
+          <div class="u" id="whyUnit"></div>
+        </div>
+        <div class="copy" id="whyCopy"></div>
+      </div>
+    </div>
+
+    <div class="split-wide">
+      <!-- today's batch -->
+      <div>
+        <section style="margin-top:0">
+          <div class="section-head"><h2 class="grow">Today’s batch</h2><span class="tag" id="ackTag"></span></div>
+          <div class="card">
+            <div class="card-body">
+              <div class="batchhead">
+                <span class="bid" id="batchId"></span>
+                <span id="batchStatePill"></span>
+              </div>
+              <div id="batchKv"></div>
+              <div class="divider"></div>
+              <div class="row-tight" style="gap:8px;flex-wrap:wrap" id="channels"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- composition -->
+      <div>
+        <section style="margin-top:0">
+          <div class="section-head"><h2 class="grow">What’s in it</h2><span class="small dim" id="compNote"></span></div>
+          <div class="card">
+            <div class="card-body" id="composition"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- how the day flows -->
+    <section>
+      <div class="section-head"><h2 class="grow">How the day flows</h2><span class="small dim">Collected live · reported once</span></div>
+      <div class="card">
+        <div class="card-body" id="dayFlow"></div>
+      </div>
+    </section>
+
+    <!-- assumption -->
+    <section>
+      <div id="assumption"></div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  const B = GROUP.batchToday;   /* the daily batch that carries B2C */
+
+  document.getElementById('sub').textContent =
+    `${GROUP.name} — consumer simplified invoices, reported to the OTA in one overnight window. ${DEMO_DAY} ${DEMO_CLOCK}.`;
+  document.getElementById('dateTag').textContent = DEMO_DATE;
+  document.getElementById('statePill').outerHTML = pill('ok', 'Reported on time');
+
+  /* ---------- WHY batch ----------------------------------------------------- */
+  document.getElementById('whyNum').textContent  = num(B.count);
+  document.getElementById('whyUnit').textContent = 'consumer documents today';
+  document.getElementById('whyCopy').innerHTML = `
+    <div style="font-weight:600;font-size:15px;margin-bottom:6px">One batch a day, not one call per recharge</div>
+    <p class="small muted" style="margin:0 0 8px">
+      Telco consumer volume runs to hundreds of thousands of simplified invoices a day — postpaid bill runs plus
+      prepaid top-ups across retail, app, dealer and voucher channels. Clearing each one live, at the moment of
+      sale, would mean a separate OTA call for every recharge.
+    </p>
+    <p class="small muted" style="margin:0">
+      Instead the consumer streams are collected through the day and reported to the OTA in <b>one scheduled batch</b>
+      overnight, through the Hub. ${B2C_BATCH.note}
+    </p>`;
+
+  /* ---------- today's batch card ------------------------------------------- */
+  document.getElementById('batchId').textContent = B.id;
+  document.getElementById('batchStatePill').outerHTML = pill(B.state);
+  document.getElementById('ackTag').textContent = 'OTA acknowledged';
+  document.getElementById('batchKv').innerHTML = kv([
+    ['Submission window', B.window],
+    ['Reported at',       B.reportedAt],
+    ['Documents in batch', `<span class="num">${num(B.count)}</span>`],
+    ['State',             pill(B.state)],
+    ['Batch acknowledgement', `<span class="id">${B.ack}</span>`],
+    ['Source',            `${B2C_BATCH.system} · ${B2C_BATCH.module}`]
+  ]);
+  document.getElementById('channels').innerHTML =
+    `<span class="tiny dim" style="width:100%">Collected across ${B2C_BATCH.channels} channels:</span>` +
+    B2C_BATCH.streams.map(c => `<span class="chan">${c}</span>`).join('');
+
+  /* ---------- composition --------------------------------------------------- */
+  const scaleMax = Math.max.apply(null, B2C_BATCH.split.map(r => Math.abs(r.v)));
+  document.getElementById('compNote').textContent = `${num(B.count)} documents · today`;
+  document.getElementById('composition').innerHTML = B2C_BATCH.split.map(r => {
+    const neg  = r.v < 0;
+    const tone = neg ? 'var(--warn)' : 'var(--accent)';
+    const w    = Math.max(3, (Math.abs(r.v) / scaleMax) * 100);
+    return `<div class="comp-row ${neg ? 'neg' : ''}">
+      <span class="k">${r.k}</span>
+      <span class="v">${neg ? '−' + num(Math.abs(r.v)) : num(r.v)}</span>
+      <div class="barcell">${bar(w, tone)}</div>
+    </div>`;
+  }).join('') +
+    `<div class="mt12">${teach(`Adjustments and credit notes net against the day’s consumer invoices before the
+      batch is reported. Every line still carries its own document identity for per-document reconciliation.`)}</div>`;
+
+  /* ---------- how the day flows -------------------------------------------- */
+  document.getElementById('dayFlow').innerHTML = timeline([
+    { name: 'Collected through the day', t: '00:00 – 24:00 GST · live',
+      body: `Postpaid bill runs and prepaid recharges are recorded in ${B2C_BATCH.system} as they happen — across ${B2C_BATCH.channels} channels — and queued for the overnight batch.`,
+      st: 'ok' },
+    { name: 'One submission window', t: `${B.window}`,
+      body: `The whole consumer day is packaged into a single batch (${B.id}) and reported to the OTA through the Hub in one window — ${num(B.count)} simplified documents.`,
+      st: 'ok' },
+    { name: 'OTA acknowledges the batch', t: `${B.reportedAt}`,
+      body: `The accredited service provider confirms receipt of the batch. Batch acknowledgement ${B.ack}.`,
+      st: 'ok' },
+    { name: 'Per-document acks reconciled', t: 'through the morning',
+      body: 'Each document inside the batch carries its own identity, so per-document acknowledgements are reconciled back against the billing records — a held or rejected line is visible without re-reporting the whole batch.',
+      st: 'ok' }
+  ]);
+
+  /* ---------- assumption (amber, to confirm) ------------------------------- */
+  document.getElementById('assumption').innerHTML = notice('warn',
+    `<b>Assumption · to confirm</b><br>${B2C_BATCH.assumption}`);
+</script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document Inspector — Vodafone Oman E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="document"
+      data-step="hub-document"
+      data-crumbs="Reference / Document Inspector"
+      data-hint="The official e-invoice for VOD-INV-2026-00417 — the UBL XML, proven correct against PINT-OM before anything is sent.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1 class="mono" style="font-size:20px">VOD-INV-2026-00417</h1>
+          <span class="pill pill-ok"><i class="dot"></i>Validation passed</span>
+          <span class="tag">PINT-OM</span>
+        </div>
+        <p class="page-sub">Gulf Petrochem Industries LLC · 13,104.000 OMR — built and proved correct before anything was sent to the OTA.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm">Download XML</button>
+        <button class="btn btn-sm btn-primary">Re-validate</button>
+      </div>
+    </div>
+
+    <div class="card mb16">
+      <div class="card-body">
+        <div id="pipe"></div>
+        <p class="small dim mt12" style="margin-bottom:0">Two stages write this document down.
+        <b>Record</b> is step 5, before transmission: the XML and its processing evidence are stored first, so
+        there is evidence of what was sent whatever the ASP or the network does next. <b>Archive</b> is step 9 —
+        the long-term legal record, written once the acknowledgements are in.</p>
+      </div>
+    </div>
+
+    <div class="split-wide">
+      <div>
+
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">The official document — VOD-INV-2026-00417</h2>
+              <span class="tag">UBL 2.1</span>
+              <span class="tag">8.9 KB</span>
+            </div>
+            <div class="card-body">
+              <div class="table-wrap">
+                <div class="code code-lines mono" id="xmlBox" style="min-width:0"></div>
+              </div>
+              <div class="row wrap tiny dim mt12">
+                <span>Extract — the header, the seller identity and the totals.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card card-tight">
+            <div class="card-head">
+              <h2 class="grow">Checked against the Oman rules</h2>
+              <span class="pill pill-ok"><i class="dot"></i>Passed</span>
+            </div>
+            <div class="card-body">
+              <div style="padding:13px 16px;border-bottom:1px solid var(--line)">
+                <div class="row wrap" id="valCounts"></div>
+              </div>
+              <div style="padding:0 16px">
+                <div class="tabs" style="margin-bottom:0">
+                  <button class="tab is-active" id="tabAll"></button>
+                  <button class="tab" id="tabFail"></button>
+                  <button class="tab" id="tabWarn"></button>
+                </div>
+              </div>
+              <div id="valRules"></div>
+            </div>
+            <div class="card-foot">
+              <span class="small dim" id="ruleFoot"></span>
+              <button class="btn btn-sm right">Show all rules</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <div>
+
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Document summary</h2></div>
+            <div class="card-body" id="summary"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Seller identity (PINT-OM)</h2></div>
+            <div class="card-body" id="sellerBlock"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Identifiers</h2></div>
+            <div class="card-body" id="identifiers"></div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* ---- the tracked invoice ---------------------------------------------- */
+  const DOC   = INVOICES.find(d => d.no === 'VOD-INV-2026-00417');
+  const buyer = CUSTOMERS[DOC.cust];               /* Gulf Petrochem Industries LLC */
+
+  /* Vodafone is a single entity: one VATIN, one CR, one Peppol participant. */
+  const seller = { name: VOD.name, vatin: ASP.sellerVatin, cr: VOD.cr,
+                   endpoint: ASP.sender, peppol: VOD.peppol };
+
+  /* Validation is the current stage in this mid-point view. */
+  const CURRENT_STAGE = STAGES.indexOf('Validate');
+  const PIPE_TIMES = ['10:22:28', '10:22:28', '10:22:29', '10:22:31', '', '', '', '', ''];
+
+  const UBL_SOURCE = `<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
+         xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+         xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
+  <cbc:UBLVersionID>2.1</cbc:UBLVersionID>
+  <cbc:CustomizationID>urn:peppol:pint:billing-1@om-1</cbc:CustomizationID>
+  <cbc:ID>VOD-INV-2026-00417</cbc:ID>
+  <cbc:IssueDate>2026-08-20</cbc:IssueDate>
+  <cbc:DueDate>2026-09-19</cbc:DueDate>
+  <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
+  <cbc:DocumentCurrencyCode>OMR</cbc:DocumentCurrencyCode>
+  <cac:AccountingSupplierParty>
+    <cac:Party>
+      <!-- Peppol participant — scheme 0248 (Omani VATIN), one for the whole entity -->
+      <cbc:EndpointID schemeID="0248">OM1200087234</cbc:EndpointID>
+      <cac:PartyName><cbc:Name>Vodafone Oman</cbc:Name></cac:PartyName>
+      <!-- Seller VAT identifier (BT-31) -->
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>OM1200087234</cbc:CompanyID>
+        <cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <!-- Seller identifier — Commercial Registration (IBT-029, scheme CR) -->
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>Oman Future Telecommunications SAOC</cbc:RegistrationName>
+        <cbc:CompanyID schemeID="CR">1279001</cbc:CompanyID>
+      </cac:PartyLegalEntity>
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <cbc:EndpointID schemeID="0248">OM1100445566</cbc:EndpointID>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>Gulf Petrochem Industries LLC</cbc:RegistrationName>
+      </cac:PartyLegalEntity>
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="OMR">624.000</cbc:TaxAmount>
+  </cac:TaxTotal>
+  <cac:LegalMonetaryTotal>
+    <cbc:TaxExclusiveAmount currencyID="OMR">12480.000</cbc:TaxExclusiveAmount>
+    <cbc:TaxInclusiveAmount currencyID="OMR">13104.000</cbc:TaxInclusiveAmount>
+    <cbc:PayableAmount currencyID="OMR">13104.000</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+  <!-- … 5 invoice lines · dedicated internet & managed services … -->
+</Invoice>`;
+
+  /* ---- render ------------------------------------------------------------ */
+  document.getElementById('pipe').innerHTML = pipeline(CURRENT_STAGE, { times: PIPE_TIMES });
+  document.getElementById('xmlBox').innerHTML = xml(UBL_SOURCE);
+
+  const total = VALIDATION.passed + VALIDATION.failed + VALIDATION.warned;
+  document.getElementById('valCounts').innerHTML = [
+    pill('passed', VALIDATION.passed + ' passed'),
+    '<span class="pill pill-idle"><i class="dot"></i>' + VALIDATION.failed + ' failed</span>',
+    pill('warn', VALIDATION.warned + ' warnings')
+  ].join(' ');
+
+  document.getElementById('tabAll').textContent  = `All (${total})`;
+  document.getElementById('tabFail').textContent = `Failed (${VALIDATION.failed})`;
+  document.getElementById('tabWarn').textContent = `Warnings (${VALIDATION.warned})`;
+
+  document.getElementById('valRules').innerHTML = VALIDATION.rules.map(ruleRow).join('');
+  document.getElementById('ruleFoot').textContent =
+    `Showing ${VALIDATION.rules.length} of ${total} rules · ${VALIDATION.profile} · ran ${VALIDATION.ran}.`;
+
+  document.getElementById('summary').innerHTML = kv([
+    ['Invoice', '<span class="mono" style="font-size:12px">VOD-INV-2026-00417</span>'],
+    ['Customer', buyer.name],
+    ['Document type', 'Standard tax invoice · rate 5%'],
+    ['Net amount', '<span class="num">' + omr(DOC.net) + '</span>'],
+    ['VAT amount', '<span class="num">' + omr(DOC.vat) + '</span>'],
+    ['Total payable', '<span class="num" style="color:var(--accent-hi);font-weight:600">' + omr(DOC.total) + '</span>']
+  ]);
+
+  document.getElementById('sellerBlock').innerHTML = kv([
+    ['Legal name', VOD.legal],
+    ['Peppol EndpointID', '<span class="mono" style="font-size:11px">' + seller.endpoint + '</span>'],
+    ['VAT identifier (PartyTaxScheme)', '<span class="mono" style="font-size:11px">' + seller.vatin + '</span>'],
+    ['Seller identifier (PartyLegalEntity, CR)', '<span class="mono" style="font-size:11px">schemeID="CR" · ' + seller.cr + '</span>']
+  ], true);
+
+  document.getElementById('identifiers').innerHTML = kv([
+    ['Document UUID', '<span class="mono" style="font-size:11px;word-break:break-all;display:inline-block">' + DOC.uuid + '</span>'],
+    ['Peppol sender', '<span class="mono" style="font-size:11px">' + seller.peppol + '</span>'],
+    ['Peppol receiver', '<span class="mono" style="font-size:11px">0248:' + buyer.vatin + '</span>'],
+    ['Standard', 'UBL 2.1 · PINT-OM'],
+    ['Validated against', VALIDATION.profile]
+  ], true);
+</script>
+</body>
+</html>

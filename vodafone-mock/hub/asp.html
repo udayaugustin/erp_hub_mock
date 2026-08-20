@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASP Exchange — Vodafone Oman E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* page-local — ASP exchange only */
+  .mono-hl { font-family: var(--font-mono); font-size: 12.5px; }
+  /* the two document cards sit side by side; the acknowledged one is the wider */
+  .docpair { grid-template-columns: minmax(0,1.06fr) minmax(0,1fr); align-items: start; }
+  @media (max-width: 1100px) { .docpair { grid-template-columns: 1fr; } }
+  .card-body { padding: 15px 16px; }
+  .page-head { margin-bottom: 16px; }
+  /* keyboard-operable disclosure for the technical detail */
+  details.disc > summary {
+    list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12.5px; font-weight: 600; color: var(--accent-hi);
+    border: 1px solid var(--line-hard); border-radius: 999px; padding: 5px 13px;
+  }
+  details.disc > summary::-webkit-details-marker { display: none; }
+  details.disc > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  details.disc[open] > summary { margin-bottom: 12px; }
+  .chev { display: inline-flex; transition: transform .15s var(--ease); }
+  .chev svg { width: 12px; height: 12px; display: block; }
+  details.disc[open] > summary .chev { transform: rotate(90deg); }
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="asp"
+      data-step="hub-asp"
+      data-crumbs="Operations / ASP Exchange"
+      data-hint="How the accredited provider transmits and reports — the three acknowledgement legs that arrive on their own timelines.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>ASP Exchange</h1>
+          <span class="pill pill-ok"><i class="dot"></i>Connected</span>
+        </div>
+        <p class="page-sub" id="pageSub"></p>
+      </div>
+      <div class="page-actions">
+        <span class="small dim" id="provNote"></span>
+      </div>
+    </div>
+
+    <div class="section-head mt16">
+      <span class="eyebrow">Three separate legs — not one round trip</span>
+    </div>
+
+    <!-- one document with all three legs in, one still in flight, side by side -->
+    <div class="grid g2 mb16 docpair">
+      <div class="card">
+        <div class="card-head">
+          <h2 class="grow" id="legTitle"></h2>
+          <span class="pill pill-ok"><i class="dot"></i>All three received</span>
+        </div>
+        <div class="card-body">
+          <div id="legNote"></div>
+        </div>
+        <div style="border-top:1px solid var(--line)" id="legs"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2 class="grow" id="pendTitle"></h2>
+          <span class="pill pill-warn"><i class="dot"></i>Two legs still awaited</span>
+        </div>
+        <div class="card-body">
+          <div id="pendNote"></div>
+        </div>
+        <div style="border-top:1px solid var(--line)" id="legsPending"></div>
+        <div class="card-foot">
+          <span class="tiny dim grow" id="pendFoot"></span>
+          <button class="btn btn-sm btn-ghost" id="btnCheck">Check for acknowledgements</button>
+          <span class="tiny dim" id="checkNote" style="display:none"></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="model" class="mb12"></div>
+
+    <details class="disc">
+      <summary><span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.6" stroke-linecap="round"
+        stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>Show exchange details — connection
+        and this document on the wire</summary>
+      <div class="grid g2">
+        <div class="card">
+          <div class="card-head"><h2 class="grow">Connection</h2></div>
+          <div class="card-body" id="kvConn"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2 class="grow">This document on the wire</h2></div>
+          <div class="card-body" id="kvDoc"></div>
+          <div class="card-foot">
+            <span class="tiny dim">202 Accepted means the provider has taken custody of the document for
+              processing. It is not an outcome. The outcome arrives later, on the legs above.</span>
+          </div>
+        </div>
+      </div>
+    </details>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  const doc   = INVOICES.find(i => i.no === 'VOD-INV-2026-00417');
+  const pend  = INVOICES.find(i => i.no === 'VOD-INV-2026-00420');
+  const dTen  = tenant(doc.tenant), pTen = tenant(pend.tenant);
+  const buyer = CUSTOMERS[doc.cust];
+
+  document.getElementById('pageSub').innerHTML =
+    'Following one document — <span class="num">' + doc.no + '</span> from ' + dTen.short +
+    ' to ' + buyer.name + ' — from the moment it left the Hub.';
+  document.getElementById('provNote').textContent = ASP.provider;
+
+  /* ---- the three legs ---- */
+  document.getElementById('legTitle').innerHTML =
+    'Acknowledgements for <span class="num">' + doc.no + '</span>';
+
+  document.getElementById('legNote').innerHTML = notice('info',
+    `<strong>These are three independent legs, not a chain.</strong>
+     The provider's acceptance, the OTA's confirmation that the report was received, and the buyer's
+     provider confirming delivery all travel back separately. They can arrive in any order, minutes
+     or hours apart, and one of them failing does not mean the others did. The Hub holds a state for
+     each leg on every document rather than one overall answer, which is why it never waits on a
+     single synchronous reply from the provider.`);
+
+  document.getElementById('legs').innerHTML = LEGS.map(legRow).join('');
+
+  /* ---- a second document, still in flight ---- */
+  document.getElementById('pendTitle').innerHTML =
+    'Still in flight — <span class="num">' + pend.no + '</span>';
+
+  document.getElementById('pendNote').innerHTML = notice('warn',
+    `<strong>This is what the asynchronous model looks like in practice.</strong>
+     ${pTen.short} submitted this document at ${pend.created}. The provider accepted it almost at
+     once. The reporting acknowledgement and the delivery confirmation have not arrived yet. This is
+     normal, it is inside the reporting window, and nobody needs to do anything. The Hub records each
+     remaining leg when it lands, and raises an exception only if a leg is still missing when the
+     window closes.`);
+
+  document.getElementById('legsPending').innerHTML = LEGS_PENDING.map(legRow).join('');
+
+  const waiting = LEGS_PENDING.filter(l => l.st !== 'ok').length;
+  document.getElementById('pendFoot').textContent =
+    waiting + ' of ' + LEGS_PENDING.length + ' legs outstanding · awaiting ' + pend.awaiting +
+    ' · no action required';
+
+  document.getElementById('btnCheck').addEventListener('click', () => {
+    const n = document.getElementById('checkNote');
+    n.style.display = '';
+    n.textContent = 'Checked — ' + waiting +
+      ' legs still awaited. Acknowledgements are pushed by the provider as they arrive.';
+    setTimeout(() => { n.style.display = 'none'; }, 3600);
+  });
+
+  /* ---- exchange details ---- */
+  document.getElementById('kvConn').innerHTML = kv([
+    ['Provider and licence', ASP.provider],
+    ['Endpoint', '<span class="mono-hl">' + ASP.endpoint + '</span>'],
+    ['Authentication', ASP.auth],
+    ['Sender participant', '<span class="mono-hl">' + ASP.sender + '</span> · ' + dTen.short],
+    ['Seller VAT identifier', '<span class="mono-hl">' + ASP.sellerVatin + '</span>'],
+    ['Seller registration', '<span class="mono-hl">' + ASP.sellerCr + '</span>'],
+    ['Receiver participant', '<span class="mono-hl">' + ASP.receiver + '</span> · ' + buyer.name]
+  ]);
+
+  document.getElementById('kvDoc').innerHTML = kv([
+    ['Message id', '<span class="mono-hl">' + ASP.msgId + '</span>'],
+    ['Document type', ASP.docType],
+    ['Process', ASP.process],
+    ['Submitted', ASP.sentAt],
+    ['HTTP response', ASP.http + ' · ' + ASP.rtt + ' ms'],
+    ['Peppol reference', '<span class="mono-hl">' + ASP.ref + '</span>'],
+    ['Acknowledgement number', '<span class="mono-hl">' + ASP.ackNo + '</span>'],
+    ['OTA reference', '<span class="mono-hl">' + ASP.otaRef + '</span>']
+  ]);
+
+  /* ---- who does what, stated plainly ---- */
+  document.getElementById('model').innerHTML = teach(
+    `<strong>Who does what, precisely.</strong>
+     The service provider validates the document against the PINT-OM rules and may reject it. A
+     rejection at that point is the provider's, and it comes back before anything is reported or
+     delivered. The provider — not Fawtara, and not the Hub — reports the Tax Data Document to the
+     OTA; the Hub has no direct channel to the tax authority. The OTA acknowledges that a report was
+     received. It does not clear, approve or reject an invoice, and no invoice waits on it before
+     reaching the buyer.`);
+</script>
+</body>
+</html>
