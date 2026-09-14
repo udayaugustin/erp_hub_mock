@@ -139,7 +139,7 @@
   /* --- page-local detail not held in the shared dataset -------------------- */
   const DETAIL = {
     goLive: '12 Jan 2026',
-    endpoint: 'https://erp-cloud-340118.example.om/odata/billing-document-api',
+    endpoint: 'https://sage300.rasalhamra.example.om/api/v1.0/-/OE/OEInvoice',
     auth: 'OAuth 2.0 client credentials',
     poll: 'Every 60 s · only what changed',
     allowlist: 31,          /* fields the Hub is permitted to read */
@@ -200,8 +200,8 @@
   const CFG = [
     'company:       ' + T.code + '            # ' + T.name,
     'method:        1 — direct API',
-    'adapter:       enterprise-erp-cloud/odata-v4',
-    'endpoint:      https://erp-cloud-340118.example.om',
+    'adapter:       sage300-web-api/rest-json',
+    'endpoint:      https://sage300.rasalhamra.example.om',
     'auth:          oauth2_client_credentials',
     'secret_ref:    vault://nazm/prod/' + T.code + '/client_secret   # ●●●●●●',
     'read_every:    60s                # only changed documents',

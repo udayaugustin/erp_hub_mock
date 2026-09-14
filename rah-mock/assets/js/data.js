@@ -7,21 +7,26 @@
    operators in Oman. Five member entities below use REAL, publicly known
    names: Ras Al Hamra LLC (the flagship/parent), Middle East Consulting
    Engineering LLC, Operation Excellence LLC, Add Energy & Partner LLC and
-   Innovative Oil and Gas LLC. The remaining seven (RAH Equipment Trading,
-   RAH Environmental Services, RAH Manpower Services, RAH Projects &
-   Products, RAH Digital Transformation, RAH Carbon Solutions, RAH Water
-   Services) are ILLUSTRATIVE — plausible given the group's stated divisions
-   and public profile, but NOT confirmed legal entities. Flagged in
-   GAP-REGISTER.md. Everything attached to every entity is invented too:
-   volumes, failure counts, ERP versions, connection state, commercial
+   Innovative Oil and Gas LLC. All five are CONFIRMED to run Sage 300 —
+   confirmed directly by the client, not a guess. The remaining seven (RAH
+   Equipment Trading, RAH Environmental Services, RAH Manpower Services,
+   RAH Projects & Products, RAH Digital Transformation, RAH Carbon
+   Solutions, RAH Water Services) are ILLUSTRATIVE — plausible given the
+   group's stated divisions and public profile, but NOT confirmed legal
+   entities, and their ERPs are shown generically since they aren't
+   confirmed either. Flagged in GAP-REGISTER.md. Everything attached to
+   every entity beyond the ERP product name is invented too: volumes,
+   failure counts, ERP versions, connection state, commercial
    registrations, VAT numbers and onboarding status. Counterparties are
    fictional — see CUSTOMERS / SUPPLIERS.
 
-   THE STORY: one VAT Group, twelve legal entities, four different ERPs
-   (Enterprise ERP, Field Operations System, Finance Suite, Accounting
-   System). Every member invoices under the SAME shared group TRN — which is
-   exactly why a single central hub is the natural place to normalise,
-   validate and report to the OTA through one pipe.
+   THE STORY: one VAT Group, twelve legal entities, three different ERPs
+   (Sage 300 on the five real entities, the Field Operations System on
+   six illustrative field/site-based entities, and the Accounting System
+   on one illustrative equipment-trading entity). Every member invoices
+   under the SAME shared group TRN — which is exactly why a single central
+   hub is the natural place to normalise, validate and report to the OTA
+   through one pipe.
 
    IDENTITY (resolved from the PINT-OM Oman spec): the shared group TRN does
    NOT collapse the members into one identity. Each legal entity is its OWN
@@ -77,32 +82,32 @@ const TENANTS = [
   {
     id: 'RAH', code: 'RAH-001', name: 'Ras Al Hamra LLC', short: 'Ras Al Hamra LLC',
     sector: 'Corporate · Group Flagship', city: 'Muscat', vatin: GROUP_TRN, cr: '3108431', peppol: '0248:3108431',
-    erp: 'Enterprise ERP', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — billing document API',
+    erp: 'Sage 300', erpVer: '2025 PU1', method: 1, deploy: 'hub',
+    conn: 'Sage 300 Web API — O/E Invoice Entry',
     status: 'live', wave: 1, health: 'ok', mapped: 46, mapTotal: 47, sync: '1 min ago',
     today: 8, mtd: 96, failed: 3, pending: 3, success: 99.2, inbound: true, inToday: 6
   },
   {
     id: 'MEC', code: 'RAH-002', name: 'Middle East Consulting Engineering LLC', short: 'Middle East Consulting Engineering',
     sector: 'Engineering Consultancy', city: 'Muscat', vatin: GROUP_TRN, cr: '3144190', peppol: '0248:3144190',
-    erp: 'Enterprise ERP', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — billing document API',
+    erp: 'Sage 300', erpVer: '2025 PU1', method: 1, deploy: 'hub',
+    conn: 'Sage 300 Web API — O/E Invoice Entry',
     status: 'live', wave: 1, health: 'ok', mapped: 45, mapTotal: 47, sync: '7 min ago',
     today: 1, mtd: 12, failed: 0, pending: 0, success: 100, inbound: true, inToday: 2
   },
   {
     id: 'OPX', code: 'RAH-003', name: 'Operation Excellence LLC', short: 'Operation Excellence',
     sector: 'Project & Cost Management', city: 'Muscat', vatin: GROUP_TRN, cr: '3119884', peppol: '0248:3119884',
-    erp: 'Enterprise ERP', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — billing document API',
+    erp: 'Sage 300', erpVer: '2025 PU1', method: 1, deploy: 'hub',
+    conn: 'Sage 300 Web API — O/E Invoice Entry',
     status: 'live', wave: 1, health: 'ok', mapped: 45, mapTotal: 46, sync: '3 min ago',
     today: 9, mtd: 150, failed: 0, pending: 1, success: 99.5, inbound: true, inToday: 14
   },
   {
     id: 'ADE', code: 'RAH-004', name: 'Add Energy & Partner LLC', short: 'Add Energy & Partner',
     sector: 'Energy Consultancy', city: 'Muscat', vatin: GROUP_TRN, cr: '3222870', peppol: '0248:3222870',
-    erp: 'Enterprise ERP', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — billing document API',
+    erp: 'Sage 300', erpVer: '2025 PU1', method: 1, deploy: 'hub',
+    conn: 'Sage 300 Web API — O/E Invoice Entry',
     status: 'onboarding', wave: 3, health: 'warn', mapped: 20, mapTotal: 44, sync: '5 hr ago',
     today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0,
     silent: true, silentFor: '5 hr'
@@ -110,8 +115,8 @@ const TENANTS = [
   {
     id: 'IOG', code: 'RAH-005', name: 'Innovative Oil and Gas LLC', short: 'Innovative Oil and Gas',
     sector: 'Oil & Gas Services', city: 'Sohar', vatin: GROUP_TRN, cr: '3190552', peppol: '0248:3190552',
-    erp: 'Finance Suite', erpVer: '11J', method: 1, deploy: 'hub',
-    conn: 'Finance Suite REST — AR invoice',
+    erp: 'Sage 300', erpVer: '2024 PU3', method: 1, deploy: 'hub',
+    conn: 'Sage 300 Web API — A/R Invoice Entry',
     status: 'live', wave: 2, health: 'ok', mapped: 41, mapTotal: 44, sync: '12 min ago',
     today: 12, mtd: 95, failed: 1, pending: 2, success: 98.2, inbound: true, inToday: 5
   },
@@ -215,9 +220,9 @@ const GROUP = {
    on a live pilot ahead of it, then the remaining entities cut over.        */
 const WAVES = [
   { n: 1, name: 'Live pilot', window: 'Live since Jun 2026', entities: 5, live: 5, state: 'complete',
-    note: 'Enterprise ERP entities and RAH Manpower Services — the volume proof. Validates the model before the mandate.' },
+    note: 'Sage 300 entities and RAH Manpower Services — the volume proof. Validates the model before the mandate.' },
   { n: 2, name: 'Wave 2', window: 'Cutover Q4 2026', entities: 5, live: 5, state: 'active',
-    note: 'Field Operations System sites, Finance Suite and Accounting System. Mapping complete, running in parallel.' },
+    note: 'Field Operations System sites and the Accounting System entity. Mapping complete, running in parallel.' },
   { n: 3, name: 'Wave 3', window: 'Ahead of the Apr 2027 mandate', entities: 2, live: 0, state: 'planned',
     note: 'Newer and southern entities. ERP assessment under way.' }
 ];
@@ -336,8 +341,8 @@ const LEGS_PENDING = [
 
 /* --- outbound documents ----------------------------------------------------
    stage indexes into STAGES; state: ok | active | failed | held
-   The tracked invoice RAH-SINV-2026-00841 (Ras Al Hamra LLC, Enterprise ERP
-   Enterprise ERP) is the one followed end-to-end through the walkthrough.          */
+   The tracked invoice RAH-SINV-2026-00841 (Ras Al Hamra LLC, Sage 300
+   Sage 300) is the one followed end-to-end through the walkthrough.          */
 const INVOICES = [
   { no: 'RAH-SINV-2026-00841', tenant: 'RAH', cust: 0, net: 48200.000, vat: 2410.000, total: 50610.000,
     cur: 'OMR', type: 'Invoice', scen: 'B2B', stage: 8, state: 'ok', retry: 0, created: '18 Aug 09:14:02',
@@ -423,7 +428,7 @@ const ARCHIVE_ITEMS = [
   { item: 'Inbound original XML',               why: 'The preserved legal record, kept before the ERP draft is created.', size: '—' }
 ];
 
-/* --- ERP-side invoice list (screen 1 · Enterprise ERP, Ras Al Hamra LLC) -- */
+/* --- ERP-side invoice list (screen 1 · Sage 300, Ras Al Hamra LLC) -- */
 const ERP_INVOICES = [
   { no: 'RAH-SINV-2026-00841', cust: 'Muscat Bay Hospitality LLC', date: '18-08-2026', due: '17-09-2026',
     net: 48200.000, vat: 2410.000, total: 50610.000, docStatus: 'Posted', eStatus: 'Acknowledged',
@@ -449,7 +454,7 @@ const ERP_INVOICES = [
 ];
 
 /* --- mapping: what the ERP actually exposes --------------------------------
-   The source list an analyst picks from, drawn from the Enterprise ERP billing
+   The source list an analyst picks from, drawn from the Sage 300 billing
    document service. 386 fields are discovered; these are the billing ones.  */
 const ERP_SCHEMA = [
   { f: 'BillingDocument',            t: 'string',  ex: '9410000841' },
@@ -767,9 +772,9 @@ const EXCEPTIONS_PLATFORM = [
 /* --- ERP status sync steps (final screen) ---------------------------------- */
 const SYNC_STEPS = [
   { name: 'Invoice posted in the ERP', t: '18 Aug 09:14:02', st: 'ok',
-    body: 'Billing document RAH-SINV-2026-00841 posted by A. Al-Balushi in Enterprise ERP. Document status set to Posted.' },
+    body: 'Invoice RAH-SINV-2026-00841 posted by A. Al-Balushi in Sage 300. Document status set to Posted.' },
   { name: 'Collected by the Hub', t: '18 Aug 09:14:04', st: 'ok',
-    body: 'Method 1 — Direct API. The Hub called the billing document API. Raw payload 14.2 KB, field allowlist applied.' },
+    body: 'Method 1 — Direct API. The Hub called the Sage 300 Web API. Raw payload 14.2 KB, field allowlist applied.' },
   { name: 'Mapped, built and validated', t: '18 Aug 09:14:06', st: 'ok',
     body: 'Profile RAH/v3 applied. UBL 2.1 built. Oman CIUS Schematron passed — 148 rules, 2 warnings.' },
   { name: 'Archived', t: '18 Aug 09:14:06', st: 'ok',

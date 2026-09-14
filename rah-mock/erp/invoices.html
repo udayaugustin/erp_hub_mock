@@ -3,28 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Manage Billing Documents — Enterprise ERP · Ras Al Hamra Group</title>
+<title>O/E Invoices — Sage 300 · Ras Al Hamra Group</title>
 <link rel="stylesheet" href="../assets/css/app.css">
 <link rel="stylesheet" href="../assets/css/erp-a.css">
 </head>
-<!-- ERP surface: this is Ras Al Hamra LLC's own Enterprise ERP (a modern web ERP,
-     modern web theme), so it wears the enterprise-ERP shell, not the compliance-hub shell.
-     shell.js still injects the floating walkthrough step bar because
-     data-shell="off" + data-step are set. -->
+<!-- ERP surface: this is Ras Al Hamra LLC's own Sage 300 — confirmed by the
+     client, styled after Sage 300's classic desktop look (module tree,
+     toolbar, flat tabs, grid-lined tables). It wears the Sage 300 shell,
+     not the compliance-hub shell. shell.js still injects the floating
+     walkthrough step bar because data-shell="off" + data-step are set. -->
 <body class="erp-a" data-surface="erp" data-step="erp-invoices" data-shell="off">
 
-<!-- ===================== a modern web ERP shell bar ===================== -->
+<!-- ===================== Sage 300 title bar ===================== -->
 <div class="f-shell">
   <div class="f-shell-left">
     <button class="f-shell-btn" title="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></button>
     <div class="f-shell-logo">
       <span class="mark">R</span>
-      <span class="co">Ras Al Hamra Group</span>
+      <span class="co">Ras Al Hamra Group — Sage 300</span>
     </div>
   </div>
   <div class="f-shell-center">
-    <span class="t">Manage Billing Documents</span>
-    <span class="s">Company Code RAH1 · Ras Al Hamra LLC</span>
+    <span class="t">O/E Invoice Entry</span>
+    <span class="s">Company RAH1 · Ras Al Hamra LLC</span>
   </div>
   <div class="f-shell-right">
     <button class="f-shell-btn" title="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
@@ -34,45 +35,74 @@
   </div>
 </div>
 
-<div class="f-page">
+<div class="f-shell-body">
+
+  <!-- ===================== module tree navigation ===================== -->
+  <nav class="f-nav">
+    <div class="f-nav-db">RAH1 — Ras Al Hamra LLC</div>
+    <div class="f-nav-folder is-open"><span class="tw">▾</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>Order Entry</div>
+    <div class="f-nav-item is-dim"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/></svg>O/E Setup</div>
+    <div class="f-nav-item"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/></svg>Order Entry</div>
+    <div class="f-nav-item is-active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/></svg>Invoice Entry</div>
+    <div class="f-nav-item"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/></svg>Shipment Entry</div>
+    <div class="f-nav-folder"><span class="tw">▸</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>Accounts Receivable</div>
+    <div class="f-nav-folder"><span class="tw">▸</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>Accounts Payable</div>
+    <div class="f-nav-folder"><span class="tw">▸</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>General Ledger</div>
+    <div class="f-nav-folder"><span class="tw">▸</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>Inventory Control</div>
+    <div class="f-nav-folder"><span class="tw">▸</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>System Manager</div>
+  </nav>
+
+  <div class="f-main">
+
+  <!-- ===================== toolbar ===================== -->
+  <div class="f-toolbar">
+    <button class="f-tbtn" title="New"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>New</button>
+    <button class="f-tbtn" title="Open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20 6 9h14l-2 11z"/><path d="M6 9V6a2 2 0 0 1 2-2h4l2 2h4a2 2 0 0 1 2 2v1"/></svg>Open</button>
+    <button class="f-tbtn" title="Save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h8V4M8 14h8v6H8z"/></svg>Save</button>
+    <div class="f-tbsep"></div>
+    <button class="f-tbtn" title="Finder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Finder</button>
+    <button class="f-tbtn" title="Print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg>Print</button>
+  </div>
+
+  <div class="f-page">
 
   <div class="f-title-bar">
-    <span class="f-title">Billing Documents</span>
-    <span class="f-title-sub">Sales &amp; Distribution · Billing · Company Code RAH1</span>
+    <span class="f-title">O/E Invoices</span>
+    <span class="f-title-sub">Order Entry &middot; O/E Transactions &middot; Invoice Entry &middot; Company RAH1</span>
   </div>
 
   <!-- filter bar -->
   <div class="f-filterbar">
-    <div class="f-chip"><span class="k">Company Code</span><span class="v">RAH1</span></div>
-    <div class="f-chip"><span class="k">Billing Type</span><span class="v">F2, G2</span></div>
-    <div class="f-chip"><span class="k">Billing Date</span><span class="v">17.08.2026 – 18.08.2026</span></div>
+    <div class="f-chip"><span class="k">Company</span><span class="v">RAH1</span></div>
+    <div class="f-chip"><span class="k">Document Type</span><span class="v">Invoice, Credit Note</span></div>
+    <div class="f-chip"><span class="k">Invoice Date</span><span class="v">17.08.2026 – 18.08.2026</span></div>
     <div class="f-chip"><span class="k">Currency</span><span class="v">OMR</span></div>
     <span class="spacer"></span>
-    <span class="f-linkbtn">Adapt Filters</span>
+    <span class="f-linkbtn">Finder</span>
     <button class="f-go">Go</button>
   </div>
 
-  <!-- walkthrough hint, worn as a enterprise-ERP message strip -->
+  <!-- walkthrough hint, worn as a Sage 300 message strip -->
   <div class="f-strip info">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r=".6" fill="currentColor"/></svg>
-    <div>The e-invoicing Hub reads this list over the standard billing-document service (OData v4 — <span class="mono">billing document API</span>) — <b>nothing on this ERP app changes</b>. Billing document <b>RAH-SINV-2026-00841</b> was collected and acknowledged by the OTA.</div>
+    <div>The e-invoicing Hub reads this list over the Sage 300 Web API (<span class="mono">O/E Invoice Entry</span>) — <b>nothing in Sage 300 changes</b>. Invoice <b>RAH-SINV-2026-00841</b> was collected and acknowledged by the OTA.</div>
   </div>
 
   <!-- ===================== list report table ===================== -->
   <div class="f-card">
     <div class="f-card-head">
-      <h3>Billing Documents (7)</h3>
-      <span class="r">Standard <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" style="vertical-align:middle"><path d="m6 9 6 6 6-6"/></svg> · OMR · sorted by Billing Date</span>
+      <h3>O/E Invoices (7)</h3>
+      <span class="r">Sorted by Invoice Date &middot; OMR</span>
     </div>
     <div class="f-tablewrap">
       <table class="f-table">
         <thead>
           <tr>
             <th class="f-chkcol"></th>
-            <th>Billing Document</th>
+            <th>Invoice Number</th>
             <th>Type</th>
-            <th>Sold-To Party</th>
-            <th>Billing Date</th>
+            <th>Customer</th>
+            <th>Invoice Date</th>
             <th class="num">Net Value</th>
             <th class="num">Tax Amount</th>
             <th class="num">Total</th>
@@ -84,7 +114,7 @@
           <tr class="is-sel">
             <td class="f-chkcol"><span class="f-chk"></span></td>
             <td><a class="doc" href="sync.html">RAH-SINV-2026-00841</a></td>
-            <td>F2</td>
+            <td>Invoice</td>
             <td>Muscat Bay Hospitality LLC</td>
             <td>18.08.2026</td>
             <td class="num">48,200.000</td>
@@ -96,7 +126,7 @@
           <tr>
             <td class="f-chkcol"><span class="f-chk"></span></td>
             <td><a class="doc" href="sync.html">RAH-SINV-2026-00840</a></td>
-            <td>F2</td>
+            <td>Invoice</td>
             <td>Sohar Steel Rolling LLC</td>
             <td>18.08.2026</td>
             <td class="num">118,400.000</td>
@@ -108,7 +138,7 @@
           <tr>
             <td class="f-chkcol"><span class="f-chk"></span></td>
             <td><a class="doc" href="sync.html">RAH-SINV-2026-00842</a></td>
-            <td>F2</td>
+            <td>Invoice</td>
             <td>Salalah Port Services SAOC</td>
             <td>18.08.2026</td>
             <td class="num">7,480.000</td>
@@ -120,7 +150,7 @@
           <tr>
             <td class="f-chkcol"><span class="f-chk"></span></td>
             <td><a class="doc" href="sync.html">RAH-CRNT-2026-00218</a></td>
-            <td>G2</td>
+            <td>Credit Note</td>
             <td>Muscat Bay Hospitality LLC</td>
             <td>18.08.2026</td>
             <td class="num">−4,200.000</td>
@@ -132,7 +162,7 @@
           <tr>
             <td class="f-chkcol"><span class="f-chk"></span></td>
             <td><a class="doc" href="sync.html">RAH-SINV-2026-00843</a></td>
-            <td>F2</td>
+            <td>Invoice</td>
             <td>Nizwa Industrial Supplies LLC</td>
             <td>18.08.2026</td>
             <td class="num">33,150.000</td>
@@ -144,7 +174,7 @@
           <tr>
             <td class="f-chkcol"><span class="f-chk"></span></td>
             <td><a class="doc" href="sync.html">RAH-SINV-2026-00839</a></td>
-            <td>F2</td>
+            <td>Invoice</td>
             <td>Directorate General of Roads</td>
             <td>17.08.2026</td>
             <td class="num">51,200.000</td>
@@ -156,7 +186,7 @@
           <tr>
             <td class="f-chkcol"><span class="f-chk"></span></td>
             <td><a class="doc" href="sync.html">RAH-SINV-2026-00838</a></td>
-            <td>F2</td>
+            <td>Invoice</td>
             <td>Sohar Steel Rolling LLC</td>
             <td>17.08.2026</td>
             <td class="num">7,300.000</td>
@@ -170,12 +200,15 @@
     </div>
     <!-- footer / action bar -->
     <div class="f-footbar">
-      <span class="f-note">1 selected · <b>RAH-SINV-2026-00841</b> — Sold-To Party Muscat Bay Hospitality LLC</span>
+      <span class="f-note">1 selected · <b>RAH-SINV-2026-00841</b> — Customer Muscat Bay Hospitality LLC</span>
       <span class="spacer"></span>
       <button class="f-btn">Display QR</button>
       <button class="f-btn">Resend to OTA</button>
       <a class="f-btn pri" href="sync.html">Display E-Invoice Status</a>
     </div>
+  </div>
+
+  </div>
   </div>
 
 </div>

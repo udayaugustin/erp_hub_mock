@@ -3,27 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RAH-SINV-2026-00841 — Enterprise ERP · Ras Al Hamra Group</title>
+<title>RAH-SINV-2026-00841 — Sage 300 · Ras Al Hamra Group</title>
 <link rel="stylesheet" href="../assets/css/app.css">
 <link rel="stylesheet" href="../assets/css/erp-a.css">
 </head>
-<!-- ERP surface: the billing document object page back in Enterprise ERP (a modern web ERP,
-     modern web theme), showing the e-invoice status written back. enterprise-ERP shell;
-     floating walkthrough bar via shell.js (data-shell="off" + data-step). -->
+<!-- ERP surface: the invoice record back in Sage 300 — confirmed by the
+     client, styled after Sage 300's classic desktop look — showing the
+     e-invoice status written back. Sage 300 shell; floating walkthrough
+     bar via shell.js (data-shell="off" + data-step). -->
 <body class="erp-a" data-surface="erp" data-step="erp-sync" data-shell="off">
 
-<!-- ===================== a modern web ERP shell bar ===================== -->
+<!-- ===================== Sage 300 title bar ===================== -->
 <div class="f-shell">
   <div class="f-shell-left">
     <button class="f-shell-btn" title="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></button>
     <div class="f-shell-logo">
       <span class="mark">R</span>
-      <span class="co">Ras Al Hamra Group</span>
+      <span class="co">Ras Al Hamra Group — Sage 300</span>
     </div>
   </div>
   <div class="f-shell-center">
-    <span class="t">Billing Document</span>
-    <span class="s">Company Code RAH1 · Ras Al Hamra LLC</span>
+    <span class="t">O/E Invoice Entry</span>
+    <span class="s">Company RAH1 · Ras Al Hamra LLC</span>
   </div>
   <div class="f-shell-right">
     <button class="f-shell-btn" title="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
@@ -33,21 +34,50 @@
   </div>
 </div>
 
-<div class="f-page">
+<div class="f-shell-body">
+
+  <!-- ===================== module tree navigation ===================== -->
+  <nav class="f-nav">
+    <div class="f-nav-db">RAH1 — Ras Al Hamra LLC</div>
+    <div class="f-nav-folder is-open"><span class="tw">▾</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>Order Entry</div>
+    <div class="f-nav-item is-dim"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/></svg>O/E Setup</div>
+    <div class="f-nav-item"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/></svg>Order Entry</div>
+    <div class="f-nav-item is-active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/></svg>Invoice Entry</div>
+    <div class="f-nav-item"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/></svg>Shipment Entry</div>
+    <div class="f-nav-folder"><span class="tw">▸</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>Accounts Receivable</div>
+    <div class="f-nav-folder"><span class="tw">▸</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>Accounts Payable</div>
+    <div class="f-nav-folder"><span class="tw">▸</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>General Ledger</div>
+    <div class="f-nav-folder"><span class="tw">▸</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>Inventory Control</div>
+    <div class="f-nav-folder"><span class="tw">▸</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>System Manager</div>
+  </nav>
+
+  <div class="f-main">
+
+  <!-- ===================== toolbar ===================== -->
+  <div class="f-toolbar">
+    <button class="f-tbtn" title="New"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>New</button>
+    <button class="f-tbtn" title="Open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20 6 9h14l-2 11z"/><path d="M6 9V6a2 2 0 0 1 2-2h4l2 2h4a2 2 0 0 1 2 2v1"/></svg>Open</button>
+    <button class="f-tbtn" title="Save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h8V4M8 14h8v6H8z"/></svg>Save</button>
+    <div class="f-tbsep"></div>
+    <button class="f-tbtn" title="Finder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Finder</button>
+    <button class="f-tbtn" title="Print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg>Print</button>
+  </div>
+
+  <div class="f-page">
 
   <!-- ===================== object page header ===================== -->
   <div class="f-op-head">
     <div class="f-op-titlerow">
       <div>
         <div class="f-op-title">RAH-SINV-2026-00841</div>
-        <div class="f-op-sub">Muscat Bay Hospitality LLC · Billing Type F2 (Invoice)</div>
+        <div class="f-op-sub">Muscat Bay Hospitality LLC · Invoice</div>
       </div>
       <span class="f-status pos" style="font-size:15px">Acknowledged</span>
     </div>
     <div class="f-op-facts">
-      <div class="f-fact"><div class="k">Company Code</div><div class="v">RAH1</div></div>
-      <div class="f-fact"><div class="k">Sold-To Party</div><div class="v">Muscat Bay Hospitality LLC</div></div>
-      <div class="f-fact"><div class="k">Billing / Posting Date</div><div class="v">18.08.2026</div></div>
+      <div class="f-fact"><div class="k">Company</div><div class="v">RAH1</div></div>
+      <div class="f-fact"><div class="k">Customer</div><div class="v">Muscat Bay Hospitality LLC</div></div>
+      <div class="f-fact"><div class="k">Invoice Date</div><div class="v">18.08.2026</div></div>
       <div class="f-fact"><div class="k">Net Value</div><div class="v">48,200.000 OMR</div></div>
       <div class="f-fact"><div class="k">Tax Amount</div><div class="v">2,410.000 OMR</div></div>
       <div class="f-fact"><div class="k">Total</div><div class="v">50,610.000 OMR</div></div>
@@ -63,7 +93,7 @@
   <!-- scope boundary — read first -->
   <div class="f-strip err">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>
-    <div><b>Scope of work — the ERP-side write-back connector is built by the entity.</b> The Hub makes every field below available on its interface; reading them and updating this Enterprise ERP billing document is the work of Ras Al Hamra Group&rsquo;s own Enterprise ERP team. See <b>Scope of work</b> below.</div>
+    <div><b>Scope of work — the ERP-side write-back connector is built by the entity.</b> The Hub makes every field below available on its interface; reading them and updating this Sage 300 invoice is the work of Ras Al Hamra Group&rsquo;s own Sage 300 team. See <b>Scope of work</b> below.</div>
   </div>
 
   <!-- ===================== icon tab bar ===================== -->
@@ -79,21 +109,21 @@
 
       <!-- E-Invoice status: the written-back fields -->
       <div class="f-section first">
-        <h3>E-Invoice Status <span class="r"><span class="f-tag">Read-only · from the e-invoicing Hub</span></span></h3>
+        <h3>E-Invoice Status <span class="r"><span class="f-tag">Optional Fields · Read-only · from the e-invoicing Hub</span></span></h3>
         <div class="f-tablewrap">
           <table class="f-table" style="min-width:560px">
-            <thead><tr><th>Field</th><th>Value</th><th>Written At</th></tr></thead>
+            <thead><tr><th>Optional Field</th><th>Value</th><th>Written At</th></tr></thead>
             <tbody>
-              <tr><td>E-Invoice Status<div class="f-fieldname">YY1_EInvoiceStatus</div></td><td><span class="f-status pos">Acknowledged</span></td><td class="sub">18 Aug 09:16:43</td></tr>
-              <tr><td>Acknowledgement Number<div class="f-fieldname">YY1_EInvAckNumber</div></td><td class="mono">ASP-OM-2026-0818-44718</td><td class="sub">18 Aug 09:16:43</td></tr>
-              <tr><td>Peppol Reference<div class="f-fieldname">YY1_EInvPeppolRef</div></td><td class="mono">PEP-8842-2026</td><td class="sub">18 Aug 09:16:43</td></tr>
-              <tr><td>Reported to OTA<div class="f-fieldname">YY1_EInvOtaRef</div></td><td class="mono">OTA-RPT-2026-0818-94685</td><td class="sub">18 Aug 09:16:43</td></tr>
-              <tr><td>Document UUID<div class="f-fieldname">YY1_EInvUUID</div></td><td class="mono" style="word-break:break-all">b7f4c2e1-9a3d-5c8b-a1f6-2e7d4b9c0a35</td><td class="sub">18 Aug 09:16:43</td></tr>
-              <tr><td>QR Information<div class="f-fieldname">YY1_EInvQR</div></td><td>Present <span class="sub">· rendered on the customer copy</span></td><td class="sub">18 Aug 09:16:43</td></tr>
+              <tr><td>E-Invoice Status<div class="f-fieldname">EINVSTAT</div></td><td><span class="f-status pos">Acknowledged</span></td><td class="sub">18 Aug 09:16:43</td></tr>
+              <tr><td>Acknowledgement Number<div class="f-fieldname">EINVACK</div></td><td class="mono">ASP-OM-2026-0818-44718</td><td class="sub">18 Aug 09:16:43</td></tr>
+              <tr><td>Peppol Reference<div class="f-fieldname">EINVPEP</div></td><td class="mono">PEP-8842-2026</td><td class="sub">18 Aug 09:16:43</td></tr>
+              <tr><td>Reported to OTA<div class="f-fieldname">EINVOTA</div></td><td class="mono">OTA-RPT-2026-0818-94685</td><td class="sub">18 Aug 09:16:43</td></tr>
+              <tr><td>Document UUID<div class="f-fieldname">EINVUUID</div></td><td class="mono" style="word-break:break-all">b7f4c2e1-9a3d-5c8b-a1f6-2e7d4b9c0a35</td><td class="sub">18 Aug 09:16:43</td></tr>
+              <tr><td>QR Information<div class="f-fieldname">EINVQR</div></td><td>Present <span class="sub">· rendered on the customer copy</span></td><td class="sub">18 Aug 09:16:43</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="f-note" style="margin:12px 0 0">All of these are custom fields on this same Enterprise ERP billing document. There is no parallel system and no second place to look.</p>
+        <p class="f-note" style="margin:12px 0 0">All of these are Sage 300 Optional Fields on this same invoice record. There is no parallel system and no second place to look.</p>
       </div>
 
       <!-- Seller / e-invoice identity model -->
@@ -121,14 +151,14 @@
 
       <!-- Scope of work -->
       <div class="f-section scope">
-        <h3>Scope of Work — Enterprise ERP-side write-back</h3>
+        <h3>Scope of Work — Sage 300-side write-back</h3>
         <ul class="f-scopelist">
-          <li><span><b>The ERP-side write-back connector is built by the entity.</b> No ABAP development, CPI iFlow or Adobe/SmartForm print change on the Enterprise ERP side is part of the current proposal. What the Hub delivers ends at its interface.</span></li>
-          <li><span><b>The Enterprise ERP team collects the data and writes the record.</b> They call the Hub interface, take the UUID, status, acknowledgement number, Peppol reference and QR information, and perform the update on this billing document on their own release cycle.</span></li>
-          <li><span><b>Inbound supplier invoices are created as drafts.</b> When the Hub passes a supplier invoice to Enterprise ERP, the ERP team creates it as an unposted parked/draft document for a person to review. Nothing is posted automatically.</span></li>
-          <li><span><b>If Ras Al Hamra Group wants us to build it, it is quoted separately.</b> Scope, effort, timeline and cost for the Enterprise ERP-side work are estimated as a separate engagement.</span></li>
+          <li><span><b>The ERP-side write-back connector is built by the entity.</b> No Sage 300 SDK/Business Logic Object development or crystal-report print change on the Sage 300 side is part of the current proposal. What the Hub delivers ends at its interface.</span></li>
+          <li><span><b>The Sage 300 team collects the data and writes the record.</b> They call the Hub interface, take the UUID, status, acknowledgement number, Peppol reference and QR information, and set the Optional Fields on this invoice on their own release cycle.</span></li>
+          <li><span><b>Inbound supplier invoices are created as drafts.</b> When the Hub passes a supplier invoice to Sage 300, the entity's team creates it as an unposted A/P batch entry for a person to review. Nothing is posted automatically.</span></li>
+          <li><span><b>If Ras Al Hamra Group wants us to build it, it is quoted separately.</b> Scope, effort, timeline and cost for the Sage 300-side work are estimated as a separate engagement.</span></li>
         </ul>
-        <p class="f-note" style="margin:12px 0 0">Everything on this screen uses sample data to show what the finished result would look like on the Enterprise ERP record. It is not a working integration.</p>
+        <p class="f-note" style="margin:12px 0 0">Everything on this screen uses sample data to show what the finished result would look like on the Sage 300 record. It is not a working integration.</p>
       </div>
 
       <!-- Processing history -->
@@ -138,8 +168,8 @@
           <table class="f-table" style="min-width:620px">
             <thead><tr><th style="width:28px">#</th><th>Step</th><th>Time</th><th>Detail</th></tr></thead>
             <tbody>
-              <tr><td>1</td><td><b>Invoice posted in the ERP</b></td><td class="sub">09:14:02</td><td class="sub" style="white-space:normal">Billing document RAH-SINV-2026-00841 posted by A. Al-Balushi in Enterprise ERP. Document status set to Posted.</td></tr>
-              <tr><td>2</td><td><b>Collected by the Hub</b></td><td class="sub">09:14:04</td><td class="sub" style="white-space:normal">Method 1 — Direct API. The Hub called the billing document API. Raw payload 14.2 KB, field allowlist applied.</td></tr>
+              <tr><td>1</td><td><b>Invoice posted in the ERP</b></td><td class="sub">09:14:02</td><td class="sub" style="white-space:normal">Invoice RAH-SINV-2026-00841 posted by A. Al-Balushi in Sage 300. Document status set to Posted.</td></tr>
+              <tr><td>2</td><td><b>Collected by the Hub</b></td><td class="sub">09:14:04</td><td class="sub" style="white-space:normal">Method 1 — Direct API. The Hub called the Sage 300 Web API. Raw payload 14.2 KB, field allowlist applied.</td></tr>
               <tr><td>3</td><td><b>Mapped, built and validated</b></td><td class="sub">09:14:06</td><td class="sub" style="white-space:normal">Profile RAH/v3 applied. UBL 2.1 built. Oman CIUS Schematron passed — 148 rules, 2 warnings.</td></tr>
               <tr><td>4</td><td><b>Archived</b></td><td class="sub">09:14:06</td><td class="sub" style="white-space:normal">XML, validation report and audit trail written to the compliance archive before anything was transmitted.</td></tr>
               <tr><td>5</td><td><b>Transmitted to the ASP</b></td><td class="sub">09:14:07</td><td class="sub" style="white-space:normal">Accepted by the accredited provider in 372 ms. Peppol reference PEP-8842-2026.</td></tr>
@@ -161,7 +191,7 @@
         <div class="f-qr-panel">
           <div id="qr"></div>
           <div class="f-qr-side">
-            <p class="f-note">Written back to the invoice and rendered by the Enterprise ERP print format. The buyer can scan it to verify the invoice against the Tax Authority.</p>
+            <p class="f-note">Written back to the invoice and rendered by the Sage 300 print format. The buyer can scan it to verify the invoice against the Tax Authority.</p>
           </div>
         </div>
       </div>
@@ -175,8 +205,8 @@
       </div>
 
       <div class="f-section card">
-        <h3>Billing Document</h3>
-        <div class="f-formrow"><span class="k">Sold-To Party</span><span class="v">Muscat Bay Hospitality LLC</span></div>
+        <h3>Invoice</h3>
+        <div class="f-formrow"><span class="k">Customer</span><span class="v">Muscat Bay Hospitality LLC</span></div>
         <div class="f-formrow"><span class="k">Buyer VAT</span><span class="v mono">OM1100112233</span></div>
         <div class="f-formrow"><span class="k">Customer PO</span><span class="v">PO-88213</span></div>
         <div class="f-formrow"><span class="k">Line Items</span><span class="v">6</span></div>
@@ -192,16 +222,19 @@
     <div class="eyebrow">The end of the walkthrough</div>
     <h2>The loop is closed.</h2>
     <ol>
-      <li>The invoice left Enterprise ERP on its own, as a normal billing document.</li>
+      <li>The invoice left Sage 300 on its own, as a normal O/E invoice.</li>
       <li>It was mapped, built as UBL 2.1, validated against the Oman PINT-OM rules and archived.</li>
       <li>The Hub transmitted it to the accredited service provider, which reported it to the Oman Tax Authority and delivered it to the buyer.</li>
-      <li>Its UUID, status, acknowledgement, Peppol reference and QR are ready to be collected from the Hub and shown on this billing document — the same screen the finance team already uses.</li>
+      <li>Its UUID, status, acknowledgement, Peppol reference and QR are ready to be collected from the Hub and shown on this invoice — the same screen the finance team already uses.</li>
     </ol>
-    <p class="f-note" style="margin:10px 0 0"><b style="color:var(--f-neg)">Step 4 is the entity&rsquo;s Enterprise ERP team&rsquo;s work, not the Hub&rsquo;s.</b> The Hub&rsquo;s delivery ends where it publishes the data. Building the Enterprise ERP-side write-back connector is a separately scoped, separately costed piece of work.</p>
+    <p class="f-note" style="margin:10px 0 0"><b style="color:var(--f-neg)">Step 4 is the entity&rsquo;s Sage 300 team&rsquo;s work, not the Hub&rsquo;s.</b> The Hub&rsquo;s delivery ends where it publishes the data. Building the Sage 300-side write-back connector is a separately scoped, separately costed piece of work.</p>
     <div class="f-btnrow">
-      <a class="f-actbtn" href="invoices.html">↺ Start again from Enterprise ERP</a>
+      <a class="f-actbtn" href="invoices.html">↺ Start again from Sage 300</a>
       <a class="f-actbtn pri" href="../index.html">Screen map</a>
     </div>
+  </div>
+
+  </div>
   </div>
 
 </div>

@@ -12,7 +12,8 @@ gap register. Every one of them has to reach the OTA correctly. This is the one 
 does it."
 
 ## Act I — It starts in their systems
-1. **An invoice raised in the ERP** — a normal Enterprise ERP billing document, posted as usual.
+1. **An invoice raised in the ERP** — a normal Sage 300 O/E invoice, posted as usual. This
+   is the client's actual system, styled to match.
 2. **High-volume field billing** — RAH Manpower Services's site-desk and field-crew billing,
    batched to the Hub. The scale is the point: this is the Group's second invoice origin.
 3. **Sign in to the Hub** — the console the Group platform team uses.

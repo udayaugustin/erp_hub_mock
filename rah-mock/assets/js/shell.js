@@ -14,7 +14,7 @@
 /* THE canonical screen order. Everything else derives from this list.
    Six acts. Reorder here and the whole walkthrough reorders. */
 const ACTS = [
-  { n: 'I',   t: 'It starts in their systems',         d: 'Enterprise ERP for B2B, the Field Operations System for high-volume field billing' },
+  { n: 'I',   t: 'It starts in their systems',         d: 'Sage 300 for B2B, the Field Operations System for high-volume field billing' },
   { n: 'II',  t: 'The group, and the companies in it',  d: 'Twelve legal entities, one VAT Group, one console' },
   { n: 'III', t: 'Bringing a company on',               d: 'Configuration, not a new installation' },
   { n: 'IV',  t: 'One invoice, end to end',             d: 'Where it is, and proven correct before it is sent' },
@@ -25,7 +25,7 @@ const ACTS = [
 const WALKTHROUGH = [
   /* Act I */
   { id: 'erp-invoices',  act: 0, sfc: 'erp',    href: '../erp/invoices.html',
-    name: 'An invoice raised in the ERP',   blurb: 'A normal Enterprise ERP billing document, B2B, created and posted as usual.' },
+    name: 'An invoice raised in the ERP',   blurb: 'A normal Sage 300 O/E invoice, B2B, created and posted as usual.' },
   { id: 'erp-counter',   act: 0, sfc: 'erp',    href: '../erp/counter.html',
     name: 'High-volume field billing, from the Field Operations System', blurb: 'RAH Manpower Services’s site-desk and field-crew billing, batched to the Hub.' },
   /* hub/boundary.html is deliberately NOT in the walkthrough. The screen still
@@ -127,11 +127,11 @@ const NAV = {
 
 const BRAND = {
   hub:    { mark: 'R', name: 'Ras Al Hamra Group', sub: 'Central E-Invoicing Hub', who: 'RG', whoName: 'Group IT',      whoRole: 'Platform administrator' },
-  erp:    { mark: 'R', name: 'Ras Al Hamra LLC', sub: 'Enterprise ERP',        who: 'AB', whoName: 'A. Al-Balushi', whoRole: 'Accounts Receivable' },
+  erp:    { mark: 'R', name: 'Ras Al Hamra LLC', sub: 'Sage 300',        who: 'AB', whoName: 'A. Al-Balushi', whoRole: 'Accounts Receivable' },
   portal: { mark: 'R', name: 'Ras Al Hamra LLC', sub: 'Entity Portal',       who: 'NK', whoName: 'N. Al-Kindi',   whoRole: 'Finance — one company' }
 };
 
-const ENV = { hub: 'Central Hub', erp: 'Enterprise ERP', portal: 'One company' };
+const ENV = { hub: 'Central Hub', erp: 'Sage 300', portal: 'One company' };
 
 /* --- sidebar collapse ------------------------------------------------------
    Each of the 18 screens is a separate page load, so the collapsed state has

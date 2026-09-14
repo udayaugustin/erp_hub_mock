@@ -409,7 +409,7 @@ function srcJson() {
     picked.push({ f: f.s, ex: f.v });
   });
   document.getElementById('srcCount').textContent =
-    picked.length + ' fields read from Enterprise ERP';
+    picked.length + ' fields read from Sage 300';
   if (!picked.length) return '{ }';
   let w = 0;
   picked.forEach(function (p) { w = Math.max(w, p.f.length); });

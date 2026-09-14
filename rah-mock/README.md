@@ -17,18 +17,21 @@ full breakdown.
 
 Every member of the Ras Al Hamra Group VAT Group invoices under the *same* group TRN
 (illustrative). That is one filing identity — but twelve separate legal entities, spread
-across four different ERPs:
+across three different ERPs:
 
-- **Enterprise ERP** — Ras Al Hamra LLC, Middle East Consulting Engineering, Operation
-  Excellence, Add Energy & Partner.
-- **Finance Suite** — Innovative Oil and Gas LLC.
-- **Field Operations System** — six field/site-based entities, including the volume
-  driver **RAH Manpower Services LLC** (~66k simplified B2B invoices a month, across four
-  operator sites — technician secondment, PPE and small-tools billback, site consumables).
-- **Accounting System** — RAH Equipment Trading LLC.
+- **Sage 300** — the five real entities: Ras Al Hamra LLC, Middle East Consulting
+  Engineering, Operation Excellence, Add Energy & Partner, Innovative Oil and Gas.
+  Confirmed by the client — not a guess. The origin screens (`erp/invoices.html`,
+  `erp/sync.html`) are styled after Sage 300's classic desktop look: module tree,
+  toolbar, flat folder tabs, grid-lined tables.
+- **Field Operations System** — six illustrative field/site-based entities, including the
+  volume driver **RAH Manpower Services LLC** (~66k simplified B2B invoices a month,
+  across four operator sites — technician secondment, PPE and small-tools billback, site
+  consumables).
+- **Accounting System** — RAH Equipment Trading LLC (illustrative).
 
-One filing identity, many legal entities, several ERPs — which is exactly why a **central
-hub** is the natural normalization and reporting layer. The hub reads all four ERPs,
+One filing identity, many legal entities, three ERPs — which is exactly why a **central
+hub** is the natural normalization and reporting layer. The hub reads all three ERPs,
 produces one compliant PINT-OM document per invoice, and reports to the OTA through **one
 pipe** via the ASP, Fawtara X.
 
