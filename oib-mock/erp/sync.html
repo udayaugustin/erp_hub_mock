@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OIB-ADV-2026-00147 — Oracle Fusion Financials Cloud · Oman Investment Bank</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body class="surface-erp" data-surface="erp" data-nav="sync"
+      data-step="erp-sync"
+      data-crumbs="E-Invoicing / E-Invoice Status"
+      data-hint="The acknowledgement, Peppol reference and OTA reference land back on the original invoice in OIB&#8217;s own ERP. The loop is closed.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1 class="mono" style="font-size:20px" id="hInvNo"></h1>
+          <span class="pill pill-ok"><i class="dot"></i>Acknowledged</span>
+        </div>
+        <p class="page-sub" id="hSub"></p>
+      </div>
+    </div>
+
+    <div class="notice notice-ok mb16" id="okNotice"></div>
+
+    <div class="notice notice-warn mb16">
+      <b>Scope of work &mdash; the ERP-side write-back connector is built by OIB.</b> The Hub makes every field
+      below available on its interface; reading them and updating this Oracle Fusion Financials Cloud invoice is the
+      work of OIB's own finance systems team. Nothing here is a working integration.
+    </div>
+
+    <div class="split-wide">
+      <div>
+
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head"><h2 class="grow">E-Invoice Status <span class="tag" style="margin-left:auto">Read-only · from the Hub</span></h2></div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="tbl">
+                  <thead><tr><th>Field</th><th>Value</th><th>Written At</th></tr></thead>
+                  <tbody id="statusRows"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-foot">
+              <span class="small dim">All of these are custom fields on this same AR invoice. There is no parallel system and no second place to look.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Seller identity</h2></div>
+            <div class="card-body">
+              <div class="grid g3">
+                <div class="stat">
+                  <div class="stat-label">Seller identifier &middot; IBT-029, scheme CR</div>
+                  <div class="stat-value mono" id="idCr" style="font-size:19px"></div>
+                  <div class="stat-meta">OIB's own Commercial Registration.</div>
+                </div>
+                <div class="stat">
+                  <div class="stat-label">Seller VAT identifier &middot; IBT-031</div>
+                  <div class="stat-value mono" id="idVat" style="font-size:19px"></div>
+                  <div class="stat-meta">One entity, one VAT registration &mdash; no shared group VATIN here.</div>
+                </div>
+                <div class="stat">
+                  <div class="stat-label">Peppol participant</div>
+                  <div class="stat-value mono" id="idPeppol" style="font-size:19px"></div>
+                  <div class="stat-meta">Built from OIB's own CR under scheme 0248.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card card-tight">
+            <div class="card-head"><h2 class="grow">Processing log</h2></div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="tbl">
+                  <thead><tr><th style="width:28px">#</th><th>Step</th><th>Time</th></tr></thead>
+                  <tbody id="logRows"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <div>
+
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head"><h2 class="grow">QR Information</h2></div>
+            <div class="card-body" style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+              <div id="qr"></div>
+              <p class="small dim" style="flex:1;min-width:180px">Written back to the invoice and rendered on the customer copy.
+                The buyer can scan it to verify the invoice against the Tax Authority.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Compliance</h2></div>
+            <div class="card-body" id="compliance"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Invoice</h2></div>
+            <div class="card-body" id="invoiceKv"></div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <section>
+      <div class="card">
+        <div class="card-body">
+          <div class="eyebrow">The end of the walkthrough</div>
+          <h2 class="mt8">The loop is closed.</h2>
+          <ol style="margin:12px 0 0 20px;line-height:1.7;font-size:14px">
+            <li>The fee invoice left Oracle Fusion Financials Cloud on its own, as a normal AR invoice.</li>
+            <li>It was mapped, built as UBL 2.1, validated against the Oman PINT-OM rules and archived &mdash; before transmission.</li>
+            <li>The Hub transmitted it to the accredited service provider, which reported it to the Oman Tax Authority and delivered it to the buyer.</li>
+            <li>Its UUID, status, acknowledgement, Peppol reference and QR information are ready to be collected from the Hub and shown on this invoice &mdash; the same screen OIB's finance team already uses.</li>
+          </ol>
+          <p class="small dim mt12"><b style="color:var(--fail)">Building the ERP-side write-back connector is OIB's own team's work, not the Hub's.</b>
+            The Hub's delivery ends where it publishes the data.</p>
+          <div class="row wrap mt16" style="gap:8px">
+            <a class="btn" href="invoice.html">&#8635; Start again from the ERP</a>
+            <a class="btn btn-primary" href="../index.html">Screen map</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  document.getElementById('hInvNo').textContent = INVOICE.no;
+  document.getElementById('hSub').textContent = INVOICE.buyer + ' · Advisory & Arrangement Fee Invoice';
+
+  const ackLeg = LEGS[0], otaLeg = LEGS[1], delivLeg = LEGS[2];
+  document.getElementById('okNotice').innerHTML =
+    '<b>Transmitted to the service provider, reported to the Tax Authority, delivered to the buyer.</b> ' +
+    'Accepted by the accredited provider at ' + ackLeg.at.split(' ').slice(-1)[0] + ' under acknowledgement <b>' + ackLeg.ref + '</b>; ' +
+    'the provider reported it to the Oman Tax Authority (acknowledged ' + otaLeg.at.split(' ').slice(-1)[0] + '); ' +
+    'the buyer’s provider confirmed delivery at ' + delivLeg.at.split(' ').slice(-1)[0] + '. ' +
+    'The result was published on the interface shortly after — about 4 minutes after posting.';
+
+  const written = delivLeg.at.replace('19 Aug 2026 ', '') ;
+  document.getElementById('statusRows').innerHTML = [
+    ['E-Invoice Status', pill('acknowledged')],
+    ['Acknowledgement Number', '<span class="mono">' + ackLeg.ref + '</span>'],
+    ['Peppol Reference', '<span class="mono">' + PEPPOL_REF + '</span>'],
+    ['Reported to OTA', '<span class="mono">' + otaLeg.ref + '</span>'],
+    ['Document UUID', '<span class="mono" style="word-break:break-all">' + INVOICE.uuid + '</span>'],
+    ['QR Information', 'Present <span class="dim small">· rendered on the customer copy</span>']
+  ].map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td class="small dim nowrap">' + written + '</td></tr>').join('');
+
+  document.getElementById('idCr').textContent = 'CR ' + ENTITY.cr;
+  document.getElementById('idVat').textContent = ENTITY.vatin;
+  document.getElementById('idPeppol').textContent = ENTITY.peppol;
+
+  document.getElementById('logRows').innerHTML = LOG.map((l, i) =>
+    '<tr><td>' + (i + 1) + '</td><td>' + l.txt + '</td><td class="small dim nowrap">' + l.ts + '</td></tr>'
+  ).join('');
+
+  document.getElementById('compliance').innerHTML = kv([
+    ['Delivery state', '<span style="color:var(--ok)">Delivered</span>'],
+    ['Reported to OTA', otaLeg.at.split(' ').slice(-1)[0]],
+    ['Archived', 'Before transmission'],
+    ['Validation', VALIDATION.passed + ' passed · ' + VALIDATION.warned + ' warn']
+  ], true);
+
+  document.getElementById('invoiceKv').innerHTML = kv([
+    ['Bill-To Customer', INVOICE.buyer],
+    ['Buyer VAT', '<span class="mono">' + INVOICE.buyerVatin + '</span>'],
+    ['Customer PO', INVOICE.po],
+    ['Line Items', String(INVOICE.lines.length)],
+    ['Total', omr(INVOICE.total) + ' OMR']
+  ], true);
+
+  /* QR code — deterministic pseudo-pattern, 21×21 (version 1). Self-contained,
+     copied verbatim from the pattern used across the mocks in this repo. */
+  (function () {
+    const N = 21, PX = 7;
+    const finder = (x, y) => {
+      let lx = null, ly = null;
+      if (x <= 7 && y <= 7)        { if (x === 7 || y === 7) return false; lx = x;      ly = y; }
+      else if (x >= 13 && y <= 7)  { if (x === 13 || y === 7) return false; lx = x - 14; ly = y; }
+      else if (x <= 7 && y >= 13)  { if (x === 7 || y === 13) return false; lx = x;      ly = y - 14; }
+      else return null;
+      const ring = (lx === 0 || lx === 6 || ly === 0 || ly === 6);
+      const core = (lx >= 2 && lx <= 4 && ly >= 2 && ly <= 4);
+      return ring || core;
+    };
+    let cells = '';
+    for (let y = 0; y < N; y++) {
+      for (let x = 0; x < N; x++) {
+        const f = finder(x, y);
+        let on;
+        if (f !== null) on = f;
+        else if (y === 6) on = (x % 2 === 0);
+        else if (x === 6) on = (y % 2 === 0);
+        else {
+          const h = (x * 37 + y * 61 + ((x * y) % 17) * 13 + (((x + 5) ^ (y + 3)) * 7)) % 100;
+          on = h < 48;
+        }
+        cells += `<i style="display:block;width:${PX}px;height:${PX}px;background:${on ? '#111820' : '#fff'}"></i>`;
+      }
+    }
+    document.getElementById('qr').innerHTML =
+      `<div style="display:grid;grid-template-columns:repeat(${N},${PX}px);line-height:0;background:#fff;padding:10px;border:1px solid var(--line);border-radius:4px">${cells}</div>`;
+  })();
+</script>
+</body>
+</html>

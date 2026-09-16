@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fee Invoices — Oracle Fusion Financials Cloud · Oman Investment Bank</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<!-- ERP surface: this is OIB's own finance ERP (Oracle Fusion Financials
+     Cloud), deliberately unbranded — neutral graphite, same convention as
+     every other mock in this repo. It wears the plain hub-style shell
+     (sidebar/topbar via shell.js), not a fake Oracle skin, because the point
+     of this screen is that OIB's own system barely changes. -->
+<body class="surface-erp" data-surface="erp" data-nav="invoice"
+      data-step="erp-invoice"
+      data-crumbs="Accounts Receivable / Fee Invoices"
+      data-hint="This is a normal AR invoice in OIB&#8217;s own Oracle Fusion Financials Cloud. The Hub reads it over the standard API &#8212; nothing here changes.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1 style="font-size:20px">Fee Invoices</h1>
+          <span class="tag">Business Unit OIB1</span>
+        </div>
+        <p class="page-sub">Accounts Receivable &middot; Advisory &amp; Capital Markets fee billing &middot; Oman Investment Bank SAOC</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm">Export</button>
+        <button class="btn btn-sm btn-primary">Create Invoice</button>
+      </div>
+    </div>
+
+    <section style="margin-top:0">
+      <div class="card">
+        <div class="card-head">
+          <h2 class="grow">Receivables Invoices (4)</h2>
+          <span class="small dim">OMR &middot; sorted by Invoice Date</span>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Invoice Number</th>
+                <th>Bill-To Customer</th>
+                <th>Invoice Date</th>
+                <th class="r">Net Amount</th>
+                <th class="r">Tax Amount</th>
+                <th class="r">Total</th>
+                <th>Status</th>
+                <th>E-Invoice Status</th>
+              </tr>
+            </thead>
+            <tbody id="invRows"></tbody>
+          </table>
+        </div>
+        <div class="card-foot">
+          <span class="small dim" id="selNote"></span>
+          <a class="btn btn-sm btn-primary right" href="../hub/login.html">Open in E-Invoicing Hub</a>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="teach">
+        This mock follows one invoice, end to end: <b class="mono" id="teachNo"></b>, an advisory and arrangement fee
+        for a capital-markets engagement. The other rows exist only to make the list look like a real screen &mdash;
+        this walkthrough does not follow them.
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* A couple of undistinguished neighbour rows, so the list doesn't look
+     like it has exactly one invoice in it. Not part of the walkthrough. */
+  const OTHER_ROWS = [
+    { no: 'OIB-ADV-2026-00145', buyer: 'Barka Trading Enterprises SAOC', date: '17.08.2026', net: 21000.000, vat: 1050.000, total: 22050.000, status: 'Posted', e: 'ok' },
+    { no: 'OIB-ADV-2026-00146', buyer: 'Al Seeb Industrial Holding LLC', date: '18.08.2026', net: 9400.000,  vat: 470.000,  total: 9870.000,  status: 'Posted', e: 'ok' },
+    { no: 'OIB-ADV-2026-00148', buyer: 'Nakhal Capital Holding SAOC',    date: '19.08.2026', net: 3100.000,  vat: 155.000,  total: 3255.000,  status: 'Draft',  e: 'na' }
+  ];
+
+  function row(o) {
+    const eBadge = o.e === 'ok' ? pill('acknowledged') : o.e === 'na' ? '<span class="pill pill-idle"><i class="dot"></i>Not applicable</span>' : pill('submitted');
+    return `<tr>
+      <td class="id"><a class="link" href="sync.html">${o.no}</a></td>
+      <td>${o.buyer}</td>
+      <td class="nowrap">${o.date}</td>
+      <td class="r">${omr(o.net)}</td>
+      <td class="r">${omr(o.vat)}</td>
+      <td class="r">${omr(o.total)}</td>
+      <td>${o.status}</td>
+      <td>${eBadge}</td>
+    </tr>`;
+  }
+
+  const trackedRow = `<tr class="is-sel">
+    <td class="id"><a class="link" href="sync.html">${INVOICE.no}</a></td>
+    <td>${INVOICE.buyer}</td>
+    <td class="nowrap">${INVOICE.issueDate}</td>
+    <td class="r">${omr(INVOICE.net)}</td>
+    <td class="r">${omr(INVOICE.vat)}</td>
+    <td class="r">${omr(INVOICE.total)}</td>
+    <td>${INVOICE.status}</td>
+    <td>${pill('acknowledged')}</td>
+  </tr>`;
+
+  document.getElementById('invRows').innerHTML =
+    row(OTHER_ROWS[0]) + trackedRow + row(OTHER_ROWS[1]) + row(OTHER_ROWS[2]);
+
+  document.getElementById('selNote').innerHTML =
+    '1 selected &middot; <b>' + INVOICE.no + '</b> &mdash; Bill-To Customer ' + INVOICE.buyer;
+  document.getElementById('teachNo').textContent = INVOICE.no;
+</script>
+</body>
+</html>
