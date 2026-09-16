@@ -1,8 +1,11 @@
 # Zubair Corporation Central E-Invoicing Hub · guided walkthrough
 
 A navigable prototype of the **central e-invoicing hub** proposed for **The Zubair Corporation
-VAT Group** — one Oman VAT Group (TRN `OM1200094685`), twelve legal entities, four ERPs, and a
-single pipe to the OTA (Fawtara / PINT-OM) through an accredited service provider.
+VAT Group** — one Oman VAT Group (TRN `OM1200094685`), thirty-three legal entities across five ERP
+platforms, and a single pipe to the OTA (Fawtara / PINT-OM) through an accredited service provider.
+Twelve of the thirty-three are live or onboarding today and are followed end to end; the other
+twenty-one are the rest of the group's confirmed ERP inventory, staged for a later wave. See
+`ZUBAIR-REAL-ENTITIES.md` for the full roster and what's real vs invented.
 
 Built to be **walked through by a client stakeholder**, not studied by an engineer. Each screen
 makes one point and then stops.
@@ -19,11 +22,12 @@ To serve the whole tree instead (so the ERP, hub and portal surfaces resolve as 
 
 ## The story this mock tells
 
-**One VAT Group. Twelve issuers. One pipe to the OTA.**
+**One VAT Group. Thirty-three issuers. One pipe to the OTA.**
 
 Every member of the Zubair Corporation VAT Group invoices under the *same* group TRN
-`OM1200094685`. That is one filing identity — but twelve separate legal entities, spread across
-four different ERPs:
+`OM1200094685`. That is one filing identity — but thirty-three separate legal entities, spread
+across five ERP platforms. Twelve are already live or onboarding, and this walkthrough follows
+them end to end:
 
 - **SAP S/4HANA** — the lead entity, The Zubair Corporation LLC, plus three more (Al-Hilal
   Investment, Oman Computer Services, Zakher Education Property Dev).
@@ -32,16 +36,22 @@ four different ERPs:
 - **Orion 11J** — Zakher Building Solutions LLC.
 - **FOCUS X** — Oasis Logistics LLC.
 
-One filing identity, many legal entities, several ERPs — which is exactly why a **central hub**
-is the natural normalization and reporting layer. The hub reads all four ERPs, produces one
-compliant PINT-OM document per invoice, and reports to the OTA through **one pipe** via the ASP,
-while keeping a per-entity compliance view over all twelve.
+The other twenty-one — five ARA Petroleum companies on legacy SAP ECC, Zubair Electric, two water
+companies, the Holding company and its investment/property entities, and two more Autoline
+dealerships — are real names and real ERP platforms from the group's confirmed inventory, staged
+as Wave 3 on the Companies screen but not yet wired into invoices or mapping. One, Zubair
+Furnishing LLC, is under liquidation and explicitly excluded from onboarding.
 
-The identity twist that makes this a hub case rather than twelve separate installs: although the
-group TRN is shared, **each entity is its own Peppol participant, distinguished on the invoice by
-its own Commercial Registration (CR)** — not by the VAT number. Registering, onboarding, routing
-and monitoring twelve participants (twelve CRs, twelve endpoints, twelve certificates) under one
-VAT-group return is the hub's whole reason to exist. See `ZUBAIR-QUESTIONS.md` Q1.
+One filing identity, many legal entities, several ERPs — which is exactly why a **central hub**
+is the natural normalization and reporting layer. The hub reads every ERP, produces one compliant
+PINT-OM document per invoice, and reports to the OTA through **one pipe** via the ASP, while
+keeping a per-entity compliance view over all thirty-three.
+
+The identity twist that makes this a hub case rather than thirty-three separate installs: although
+the group TRN is shared, **each entity is its own Peppol participant, distinguished on the invoice
+by its own Commercial Registration (CR)** — not by the VAT number. Registering, onboarding,
+routing and monitoring thirty-three participants (thirty-three CRs, endpoints and certificates)
+under one VAT-group return is the hub's whole reason to exist. See `ZUBAIR-QUESTIONS.md` Q1.
 
 ## How it is meant to be used
 
@@ -61,7 +71,7 @@ at. It can be dismissed with the × if you would rather narrate it yourself.
 | 2 | ERP — Counter & Service Sales (Autoline 8.39) | The group's second invoice origin — General Automotive's high-volume B2C counter and service sales, collected by Autoline and reported to the OTA in batches through the same Hub |
 | | **II — The group, and the entities in it** | |
 | 3 | Hub — Sign in | The group platform team logs in |
-| 4 | Hub — Group Dashboard | All twelve entities, including any that have gone quiet |
+| 4 | Hub — Group Dashboard | All thirty-three entities, including any that have gone quiet |
 | 5 | Hub — Entities | How each connects, which ERP, which wave |
 | 6 | Hub — Entity detail | What that entity supplied, its own CR, the shared group VATIN |
 | | **III — Bringing an entity on** | |
@@ -134,9 +144,10 @@ And several things it is emphatic about, which the prototype must get right:
 - **Method 1 — Direct API**, **Method 2 — On-site agent**, **Method 3 — Secure file transfer**.
   Not "Tier 1/2/3". Not "File drop".
 - **Entity** or **company**, not "tenant", in anything a viewer reads.
-- **One VAT Group, twelve legal entities.** The group TRN `OM1200094685` is a shared *data field*;
-  the **CR (IBT-029, scheme `CR`) distinguishes the twelve members** as the seller identifier, with
-  the shared VATIN (IBT-031) as the VAT identifier. Never merge the twelve into one identity.
+- **One VAT Group, thirty-three legal entities** (twelve live/onboarding, twenty-one staged for
+  Wave 3, one excluded). The group TRN `OM1200094685` is a shared *data field*; the **CR (IBT-029,
+  scheme `CR`) distinguishes each member** as the seller identifier, with the shared VATIN
+  (IBT-031) as the VAT identifier. Never merge the members into one identity.
 - **Batch B2C.** General Automotive's ~66k/month simplified invoices are reported to the OTA in
   **batches from Autoline**, not cleared live at the point of sale. This is flagged as an
   *Assumption · to confirm with Zubair* on the relevant screen.
@@ -154,7 +165,7 @@ And several things it is emphatic about, which the prototype must get right:
     index.html              the six acts and eighteen steps — the entry point
     GAP-REGISTER.md         audit of the prototype against the proposal
     assets/css/app.css      design system: tokens for the three surfaces, every component
-    assets/js/data.js       the demonstration dataset (12 entities, one tracked invoice)
+    assets/js/data.js       the demonstration dataset (33 entities, one tracked invoice)
     assets/js/ui.js         component helpers that return HTML strings
     assets/js/shell.js      ACTS + WALKTHROUGH order, sidebar, toolbar, hints, step nav
     erp/ hub/ portal/       the screens
@@ -179,13 +190,16 @@ single screen.
 ## The data
 
 `assets/js/data.js` holds an illustrative dataset for the **Zubair Corporation VAT Group** —
-twelve legal entities, all sharing VATIN `OM1200094685`, each with its own CR. Shapes are real:
-VATIN `OM` + 10 digits, Peppol participant scheme `0248` over the entity's CR, OMR to three
+thirty-three legal entities, all sharing VATIN `OM1200094685`, each with its own CR. Shapes are
+real: VATIN `OM` + 10 digits, Peppol participant scheme `0248` over the entity's CR, OMR to three
 decimals, 5% standard VAT, and real PINT-OM business-term and rule identifiers.
 
-The twelve entities are **real Zubair Corporation companies** — see `ZUBAIR-REAL-ENTITIES.md` for
-the roster and its provenance — so the group recognises itself on screen. They span four ERPs and
-six sectors (Automotive, Logistics, IT, Real Estate, Education, Investment).
+All thirty-three are **real Zubair Corporation companies**, each with its **real ERP platform** —
+see `ZUBAIR-REAL-ENTITIES.md` for the roster and its provenance — so the group recognises itself on
+screen. Twelve are wired end to end (invoices, mapping, queue); the other twenty-one appear on the
+Companies screen as Wave 3, not yet started. They span five ERP platforms (SAP S/4HANA, SAP ECC
+legacy, Autoline 8.39, Orion 11J, FOCUS/FOCUS X) and sectors from Oil & Gas to Automotive, Water,
+Electrical, Real Estate, Education and Investment.
 
 The demo clock is **Tuesday 18 August 2026, 10:42 GST**. The day matters: the Omani working week
 runs Sunday to Thursday, so a busy weekday has to fall inside it.

@@ -56,7 +56,8 @@ const PILL_MAP = {
   error:       ['fail', 'Error'],
   reprocessed: ['info', 'Reprocessed'],  submitted:   ['info', 'Submitted'],
   'self-hosted': ['warn', 'Self-hosted'], invited:    ['idle', 'Invited'],
-  held:        ['fail', 'Held'],         silent:      ['fail', 'No documents']
+  held:        ['fail', 'Held'],         silent:      ['fail', 'No documents'],
+  'not-started': ['idle', 'Not started'], excluded:   ['idle', 'Excluded']
 };
 function pill(key, label) {
   const m = PILL_MAP[String(key).toLowerCase()] || ['idle', key];

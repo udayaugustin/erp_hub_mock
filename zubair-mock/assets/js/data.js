@@ -160,26 +160,166 @@ const TENANTS = [
     conn: 'Autoline API — invoice extract',
     status: 'live', wave: 2, health: 'ok', mapped: 44, mapTotal: 46, sync: '8 min ago',
     today: 205, mtd: 2650, failed: 2, pending: 5, success: 99.4, inbound: true, inToday: 12
-  }
+  },
+
+  /* --- Wave 3: the rest of the group's real ERP inventory ------------------
+     Twenty-one more real Zubair Group entities, confirmed against the client's
+     ERP inventory ("Entity Level" sheet). Names and ERP platforms are real;
+     CR numbers, volumes and onboarding state remain invented placeholders,
+     same convention as the twelve above. None has started onboarding — ERP
+     assessment is under way — except Zubair Furnishing LLC, which is under
+     liquidation and is explicitly excluded from this rollout.              */
+  { id: 'ARP',  code: 'ZUB-013', name: 'ARA Petroleum LLC', short: 'ARA Petroleum',
+    sector: 'Oil & Gas', city: 'Muscat', vatin: GROUP_TRN, cr: '1200011', peppol: '0248:1200011',
+    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
+    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0,
+    note: 'One of five ARA Petroleum companies still on legacy SAP ECC — ERP inventory confirmed, connection not yet assessed.' },
+  { id: 'AP44', code: 'ZUB-014', name: 'ARA Petroleum Oman B44 Limited', short: 'ARA Petroleum B44',
+    sector: 'Oil & Gas', city: 'Muscat', vatin: GROUP_TRN, cr: '1200012', peppol: '0248:1200012',
+    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
+    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'AP31', code: 'ZUB-015', name: 'ARA Petroleum Oman B31 Limited', short: 'ARA Petroleum B31',
+    sector: 'Oil & Gas', city: 'Muscat', vatin: GROUP_TRN, cr: '1200013', peppol: '0248:1200013',
+    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
+    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'APEP', code: 'ZUB-016', name: 'ARA Petroleum Exploration and Production LLC', short: 'ARA Petroleum E&P',
+    sector: 'Oil & Gas', city: 'Muscat', vatin: GROUP_TRN, cr: '1200014', peppol: '0248:1200014',
+    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
+    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'ANR',  code: 'ZUB-017', name: 'ARA Natural Resources LLC', short: 'ARA Natural Resources',
+    sector: 'Oil & Gas', city: 'Muscat', vatin: GROUP_TRN, cr: '1200015', peppol: '0248:1200015',
+    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
+    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'OOI',  code: 'ZUB-018', name: 'Oman Oil Industry Supplies and Services Co. LLC', short: 'Oman Oil Industry Supplies',
+    sector: 'Oil & Gas Services', city: 'Muscat', vatin: GROUP_TRN, cr: '1200016', peppol: '0248:1200016',
+    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
+    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'ZOG',  code: 'ZUB-019', name: 'Zubair Oil & Gas LLC', short: 'Zubair Oil & Gas',
+    sector: 'Oil & Gas', city: 'Muscat', vatin: GROUP_TRN, cr: '1200017', peppol: '0248:1200017',
+    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
+    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'MCA',  code: 'ZUB-020', name: 'Muscat Commercial Agencies LLC', short: 'Muscat Commercial Agencies',
+    sector: 'Trading', city: 'Muscat', vatin: GROUP_TRN, cr: '1200018', peppol: '0248:1200018',
+    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
+    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'OCI',  code: 'ZUB-021', name: 'Oman Chemicals Industry Company LLC', short: 'Oman Chemicals Industry',
+    sector: 'Chemicals', city: 'Muscat', vatin: GROUP_TRN, cr: '1200019', peppol: '0248:1200019',
+    erp: 'FOCUS', erpVer: 'Focus 9', method: 1, deploy: 'hub',
+    conn: 'FOCUS REST — sales invoice',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'BIG',  code: 'ZUB-022', name: 'Business International Group LLC', short: 'Business International Group',
+    sector: 'Corporate', city: 'Muscat', vatin: GROUP_TRN, cr: '1200020', peppol: '0248:1200020',
+    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
+    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'ZEL',  code: 'ZUB-023', name: 'Zubair Electric LLC', short: 'Zubair Electric',
+    sector: 'Electrical', city: 'Muscat', vatin: GROUP_TRN, cr: '1200021', peppol: '0248:1200021',
+    erp: 'Orion 11J', erpVer: '11J', method: 1, deploy: 'hub',
+    conn: 'Orion 11J REST — AR invoice',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 44, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'FTS',  code: 'ZUB-024', name: 'Federal Transformers & Switchgears LLC', short: 'Federal Transformers & Switchgears',
+    sector: 'Electrical', city: 'Muscat', vatin: GROUP_TRN, cr: '1200022', peppol: '0248:1200022',
+    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
+    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'TZH',  code: 'ZUB-025', name: 'The Zubair Holding Company SAOC', short: 'Zubair Holding',
+    sector: 'Holding', city: 'Muscat', vatin: GROUP_TRN, cr: '1200023', peppol: '0248:1200023',
+    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
+    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'INM',  code: 'ZUB-026', name: 'Inma Property Development LLC', short: 'Inma Property Development',
+    sector: 'Real Estate', city: 'Muscat', vatin: GROUP_TRN, cr: '1200024', peppol: '0248:1200024',
+    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
+    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'MAZ',  code: 'ZUB-027', name: 'Mohammed Al Zubair Ali', short: 'Mohammed Al Zubair Ali',
+    sector: 'Individual establishment', city: 'Muscat', vatin: GROUP_TRN, cr: '1200025', peppol: '0248:1200025',
+    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
+    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0,
+    note: 'An individual establishment, not an LLC — filing under the same VAT Group TRN as its own Peppol participant.' },
+  { id: 'FMI',  code: 'ZUB-028', name: 'First Modern Investment SPC', short: 'First Modern Investment',
+    sector: 'Investment', city: 'Muscat', vatin: GROUP_TRN, cr: '1200026', peppol: '0248:1200026',
+    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
+    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'OWC',  code: 'ZUB-029', name: 'Oasis Water Co SAOC', short: 'Oasis Water',
+    sector: 'Water & Utilities', city: 'Muscat', vatin: GROUP_TRN, cr: '1200027', peppol: '0248:1200027',
+    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
+    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'AMW',  code: 'ZUB-030', name: 'Al Muzn Water Co', short: 'Al Muzn Water',
+    sector: 'Water & Utilities', city: 'Muscat', vatin: GROUP_TRN, cr: '1200028', peppol: '0248:1200028',
+    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
+    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'ZFU',  code: 'ZUB-031', name: 'Zubair Furnishing LLC', short: 'Zubair Furnishing (in liquidation)',
+    sector: 'Furnishing', city: 'Muscat', vatin: GROUP_TRN, cr: '1200029', peppol: '0248:1200029',
+    erp: 'Orion 11J', erpVer: '11J', method: 1, deploy: 'hub',
+    conn: 'Not applicable — under liquidation',
+    status: 'excluded', wave: 3, health: 'warn', mapped: 0, mapTotal: 0, sync: 'Excluded',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0,
+    note: 'Under liquidation. Listed in the group’s ERP inventory but explicitly excluded from this rollout — a future wave, not this one.' },
+  { id: 'ATR',  code: 'ZUB-032', name: 'Autoline Trading', short: 'Autoline Trading',
+    sector: 'Automotive', city: 'Muscat', vatin: GROUP_TRN, cr: '1200030', peppol: '0248:1200030',
+    erp: 'Autoline 8.39', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
+    conn: 'Autoline API — invoice extract',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 46, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
+  { id: 'SAS',  code: 'ZUB-033', name: 'Sohar Automotive SPC', short: 'Sohar Automotive',
+    sector: 'Automotive', city: 'Sohar', vatin: GROUP_TRN, cr: '1200031', peppol: '0248:1200031',
+    erp: 'Autoline 8.39', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
+    conn: 'Autoline API — invoice extract',
+    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 46, sync: 'Not yet connected',
+    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 }
 ];
 
 /* --- group roll-up ---------------------------------------------------------
-   One VAT Group, twelve legal entities, one shared TRN. Every figure here
-   is the Hub's own observation across the twelve — there are no self-hosted
-   members in this group, so the Hub sees everything.                        */
+   One VAT Group, thirty-three legal entities, one shared TRN. Every figure
+   here is the Hub's own observation across the thirty-three — there are no
+   self-hosted members in this group, so the Hub sees everything. Twelve are
+   live or onboarding (the original pilot + Wave 2); the other twenty-one are
+   the rest of the group's confirmed ERP inventory, not yet started, except
+   Zubair Furnishing LLC, which is excluded (under liquidation).             */
 const GROUP = {
   name: 'The Zubair Corporation VAT Group',
   trn: GROUP_TRN,
-  entities: 12,
+  entities: 33,
 
-  /* deployment — all twelve run through the Hub */
-  hubEntities: 12, selfHosted: 0, splitIndicative: false,
+  /* deployment — all thirty-three run through the Hub */
+  hubEntities: 33, selfHosted: 0, splitIndicative: false,
 
-  /* onboarding state across all twelve */
-  live: 10, onboarding: 2, notStarted: 0,
+  /* onboarding state across all thirty-three */
+  live: 10, onboarding: 2, notStarted: 20, excluded: 1,
 
-  /* connection method — all API-capable; two still in ERP assessment */
-  m1: 10, m2: 0, m3: 0, pendingAssessment: 2,
+  /* connection method — all API-capable; twenty-three still in ERP assessment */
+  m1: 10, m2: 0, m3: 0, pendingAssessment: 22,
 
   /* today, across all twelve entities */
   todayTotal: 3650, todaySuccess: 3563, todayFailed: 25, todayPending: 62,
@@ -206,8 +346,8 @@ const WAVES = [
     note: 'SAP S/4HANA corporate entities and General Automotive — the volume proof. Validates the model before the mandate.' },
   { n: 2, name: 'Wave 2', window: 'Cutover Q4 2026', entities: 5, live: 5, state: 'active',
     note: 'Autoline dealerships, Orion and FOCUS X. Mapping complete, running in parallel.' },
-  { n: 3, name: 'Wave 3', window: 'Ahead of the Apr 2027 mandate', entities: 2, live: 0, state: 'planned',
-    note: 'Low-volume and southern entities. ERP assessment under way.' }
+  { n: 3, name: 'Wave 3', window: 'Ahead of the Apr 2027 mandate', entities: 23, live: 0, state: 'planned',
+    note: 'Low-volume and southern entities, plus the rest of the group’s confirmed ERP inventory: five ARA Petroleum companies on legacy SAP ECC, Zubair Electric, the two water companies, the Holding company and its investment/property/individual entities, and two more Autoline dealerships. ERP assessment under way. Zubair Furnishing LLC is under liquidation and is excluded from onboarding.' }
 ];
 
 /* --- the second origin: high-volume B2C from Autoline ----------------------
