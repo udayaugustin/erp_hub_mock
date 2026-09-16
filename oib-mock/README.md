@@ -1,183 +1,220 @@
-# Oman Investment Bank E-Invoicing Hub · guided walkthrough
+# Oman Investment Bank Central E-Invoicing Hub · guided walkthrough
 
-A navigable prototype of a **central e-invoicing hub**, sized to **Oman Investment Bank (OIB)** —
-a single legal entity, not a multi-company group. This is the thinnest possible vertical slice:
-one outbound invoice, one direction, start to finish. It is a **sibling** to `zubair-mock/`,
-`hub-mock/` and `rah-mock/` in this repo, not a variant of them — it is fully self-contained and
-does not reference their files.
+A navigable prototype of the **central e-invoicing hub** proposed for **the Oman Investment
+Bank Group VAT Group** — one Oman VAT Group (TRN `OM1200094685`), twelve group entities, four
+ERPs, and a single pipe to the OTA (Fawtara / PINT-OM) through an accredited service provider.
+
+**Only one thing about this mock is real: Oman Investment Bank (OIB) itself** — a government-owned
+corporate and investment bank, launched February 2024, regulated by the Central Bank of Oman (CBO)
+and the Financial Services Authority (FSA). OIB does not actually operate as a multi-entity VAT
+Group; the twelve-entity group structure below is invented for this demonstration, in the same
+spirit as a template roster, so the walkthrough's shape (twelve entities, four ERPs, one shared
+VAT filing) can be shown against OIB's own brand. See `OIB-REAL-ENTITIES.md` for exactly what's
+real and what's invented.
 
 Built to be **walked through by a client stakeholder**, not studied by an engineer. Each screen
 makes one point and then stops.
 
 ## Run it
 
-This mock references its own sibling assets by relative path (`../assets/...`), so it needs to be
-served over HTTP, not opened as a bare `file://` — browsers vary in what they allow for local
-script includes and font requests under `file://`, and a static server sidesteps that entirely.
+Open `index.html` in a browser. No build step, no server, no dependencies.
 
-From the repo root:
+    open index.html
 
-    python3 -m http.server 8080
-    # then open http://localhost:8080/oib-mock/
+To serve the whole tree instead (so the ERP, hub and portal surfaces resolve as siblings):
+
+    python3 -m http.server 8080   # then open http://localhost:8080/oib-mock/
 
 ## The story this mock tells
 
-**One bank. One invoice. One pipe to the OTA.**
+**One VAT Group. Twelve issuers. One pipe to the OTA.**
 
-Oman Investment Bank issues an advisory and arrangement fee invoice for a capital-markets
-engagement from its own finance ERP. The invoice is collected by a central hub, mapped into the
-government's standard format (PINT-OM), proven correct against the validation rules, transmitted
-through an accredited service provider (ASP), and reported to the Oman Tax Authority (OTA). The
-acknowledgement, Peppol reference and OTA reference land back on the original ERP record, closing
-the loop.
+Every member of the Oman Investment Bank Group VAT Group invoices under the *same* group TRN
+`OM1200094685`. That is one filing identity — but twelve separate group entities, spread across
+four different ERPs:
 
-Unlike `zubair-mock/` (thirty-three legal entities sharing one VAT Group registration) or
-`rah-mock/`, **OIB is one legal entity with one Commercial Registration and one VAT registration.**
-There is no VAT-group story here, no roster of member companies, no "CR distinguishes many entities
-sharing one VATIN" narrative. The Document Inspector screen says this explicitly rather than
-forcing the multi-entity framing onto a bank that doesn't have it.
+- **Enterprise ERP** — the lead entity, Oman Investment Bank SAOC, plus three more (OIB Asset
+  Management, OIB Capital Markets, OIB Research & Advisory).
+- **High-Volume Billing** — six branch/merchant-services entities, including the volume giant
+  **OIB Digital Payments LLC** (~66k simplified B2C fee invoices a month).
+- **Finance Suite** — OIB Trade Finance Services LLC.
+- **Accounting System** — OIB Custody & Fund Services LLC.
+
+One filing identity, many group entities, several ERPs — which is exactly why a **central hub**
+is the natural normalization and reporting layer. The hub reads all four ERPs, produces one
+compliant PINT-OM document per invoice, and reports to the OTA through **one pipe** via the ASP,
+while keeping a per-entity compliance view over all twelve.
+
+The identity twist that makes this a hub case rather than twelve separate installs: although the
+group TRN is shared, **each entity is its own Peppol participant, distinguished on the invoice by
+its own Commercial Registration (CR)** — not by the VAT number. Registering, onboarding, routing
+and monitoring twelve participants (twelve CRs, twelve endpoints, twelve certificates) under one
+VAT-group return is the hub's whole reason to exist.
 
 ## How it is meant to be used
 
-`index.html` lists the five steps in one act. Press **Start the walkthrough** and then use the
-**Next** button in the top-right of every screen — or the **← →** arrow keys. The step navigation
-repeats at the foot of each page, naming what comes next.
+`index.html` lists the eighteen steps in six acts. Press **Start the walkthrough** and then use
+the **Next** button in the top-right of every screen — or the **← →** arrow keys. The step
+navigation repeats at the foot of each page, naming what comes next.
 
 Every screen carries a one-line **hint strip** under the toolbar saying what the viewer is looking
 at. It can be dismissed with the × if you would rather narrate it yourself.
 
-## The five steps
+## The eighteen steps
 
 | # | Screen | The one point it makes |
 |---|---|---|
-| 1 | ERP — Fee Invoices (Oracle Fusion Financials Cloud) | The fee invoice starts in OIB's own finance ERP, which barely changes |
-| 2 | Hub — Sign in | OIB's finance operations team logs in |
-| 3 | Hub — Document Tracker | One invoice, tracked through the nine stages |
-| 4 | Hub — Document Inspector | The XML — OIB's own CR as seller ID, OIB's own VATIN as VAT ID — proven correct before anything is sent |
-| 5 | ERP — E-Invoice Status | The acknowledgement, Peppol reference and OTA reference land back on the original invoice |
+| | **I — It starts in their system** | |
+| 1 | ERP — Sales Invoices (Enterprise ERP) | The invoice starts in the entity's own Enterprise ERP, which barely changes |
+| 2 | ERP — Branch & Merchant Services (High-Volume Billing) | The group's second invoice origin — OIB Digital Payments's high-volume B2C branch and fee-service sales, collected by High-Volume Billing and reported to the OTA in batches through the same Hub |
+| | **II — The group, and the entities in it** | |
+| 3 | Hub — Sign in | The group platform team logs in |
+| 4 | Hub — Group Dashboard | All twelve entities, including any that have gone quiet |
+| 5 | Hub — Entities | How each connects, which ERP, which wave |
+| 6 | Hub — Entity detail | What that entity supplied, its own CR, the shared group VATIN |
+| | **III — Bringing an entity on** | |
+| 7 | Hub — Onboard an Entity | Choose the connection method, enter details, test it live |
+| 8 | Hub — Mapping Studio | Their ERP fields pointed at the standard ones — typed and chosen |
+| | **IV — One invoice, end to end** | |
+| 9 | Hub — Processing Queue | Where every document is, across the nine stages |
+| 10 | Hub — Document Inspector | The XML — CR as seller ID, shared VATIN as VAT ID — proven correct before anything is sent |
+| | **V — The other direction, and the record** | |
+| 11 | Hub — Inbound Documents | Supplier invoices routed, archived, landed as drafts |
+| 12 | Hub — Inbound Routing | Each supplier e-invoice matched to the right entity by its Peppol participant (`0248:<CR>`) and CR — never by the shared VAT number — then landed as a draft in that entity's ERP |
+| 13 | Hub — Processing History | Both directions, and what the archive holds |
+| 14 | Hub — Reports | VAT summaries per entity, reporting completeness, exception ageing |
+| | **VI — What each entity sees** | |
+| 15 | Hub — Users & Access | How each entity gets its own login, and who administers it |
+| 16 | Portal — Sign in | A single entity has its own login |
+| 17 | Portal — Overview | It sees only its own data; the other eleven are invisible |
+| 18 | ERP — Status Sync | The acknowledgement lands back on the original invoice |
 
 ## The tracked invoice
 
-Screens 1, 4 and 5 follow one document end to end, so the walkthrough closes a loop:
+Screens 1, 10, 17 and 18 follow one document end to end, so the walkthrough closes a loop:
 
-**`OIB-ADV-2026-00147`** — an advisory & arrangement fee invoice for a Sukuk issuance programme
-engagement, issued by **Oman Investment Bank SAOC** (CR `1245678`, VATIN `OM1300456789`, Peppol
-`0248:1245678`) to the fictional client **Nakhal Capital Holding SAOC**. Three lines, PO
-`NCH-CM-2026-004`, dated 19.08.2026. Net **85,000.000**, VAT **4,250.000**, total **89,250.000
-OMR**. Status: Posted / Acknowledged. ACK `ASP-OM-2026-0819-58204`, Peppol ref `PEP-7734-2026`,
-OTA ref `OTA-RPT-2026-0819-90142`.
+**`OIB-SINV-2026-00841`** — issued by the lead entity **Oman Investment Bank SAOC** (CR `1008431`,
+shared VATIN `OM1200094685`, Peppol `0248:1008431`) to **Muscat Bay Hospitality LLC**. Six lines,
+PO-88213, dated 18-08-2026. Net **48,200.000**, VAT **2,410.000**, total **50,610.000 OMR**.
+Status: Posted / Acknowledged. ACK `ASP-OM-2026-0818-44718`, Peppol ref `PEP-8842-2026`, OTA ref
+`OTA-RPT-2026-0818-94685`.
 
-## Two surfaces, two colours
+## Three surfaces, three colours
 
-Both light. The colour tells the viewer which system they are in without anyone having to say it.
-There is no third (portal) surface in this slice — one legal entity means there is no "other
-company" to keep isolated from, so a client portal has nothing to demonstrate here.
+All light. The colour tells the viewer which system they are in without anyone having to say it.
 
 | Surface | Colour | Screens | Reads as |
 |---|---|---|---|
-| **ERP** | Neutral graphite | 1, 5 | *OIB's own finance ERP — deliberately unbranded* |
-| **Hub** | OIB navy `#12395B` + orange `#E8762E` | 2–4 | *The central platform being proposed* |
+| **ERP** | Neutral graphite | 1, 2, 18 | *Their existing systems — Enterprise ERP and High-Volume Billing — deliberately unbranded* |
+| **Hub** | OIB navy `#12395B` + OIB amber `#E8762E` | 3–15 | *The central platform we are building, in OIB's own brand colours* |
+| **Portal** | Footer green `#143331` | 16–17 | *One entity's own workspace* |
 
-Headings are set in Barlow Semi Condensed (standing in for a DIN-style display face); body text is
-Inter; and IBM Plex Mono carries every identifier, amount and XML fragment — the same type system
-as the other mocks in this repo, so the family reads consistently across all of them.
+Headings are set in **Bahnschrift**, a Windows-only DIN, with **Barlow Semi Condensed** standing
+in as the closest webfont; body text is Inter/Archivo; and IBM Plex Mono carries every identifier,
+amount and XML fragment.
 
-The ERP surface is styled with the same neutral-graphite tokens used across every mock in this
-repo — no fake Oracle skin, just the plain hub-style shell with OIB's own content. The point is
-that the bank's own system barely changes.
+The ERP surface is the one deliberate exception — it stays neutral grey and is styled to read as
+the entity's own system: **Enterprise ERP** on screens 1 and 18, and **High-Volume Billing** on
+screen 2, the group's second invoice origin (OIB Digital Payments's B2C branch sales). The point
+of all three is that the entity's existing system barely changes. If it wore the group brand it
+would look like something we built.
 
-## What is real / What is invented
+The hub co-brands with **Fawtara X** (the ASP mark) in its footer — the compliant document and the
+report to the OTA leave through that provider, not the hub itself.
 
-**Real:**
-
-- Oman Investment Bank (OIB) is a real, single legal entity — Oman's dedicated corporate
-  investment bank, owned by the Government of Oman, headquartered in Muscat, launched February
-  2024.
-- It is licensed and regulated by the Central Bank of Oman (CBO) and the Financial Services
-  Authority (FSA), and is enrolled in the Insurance Fund for Deposit Protection.
-- It is a wholesale/corporate investment bank — advisory & capital markets, transaction banking &
-  trade finance, research/insights — **not** a retail bank and **not** a group of subsidiary
-  companies. This is the critical difference from `zubair-mock/`: there is no multi-entity VAT
-  Group here, because OIB doesn't have one.
-- Source: [oib.om](https://oib.om) and [oib.om/who-we-are](https://oib.om/who-we-are).
-
-**Invented — none of it is a statement about how OIB actually operates:**
-
-- The finance ERP: **Oracle Fusion Financials Cloud** (release 24C), a plausible cloud ERP a
-  modern bank might run for its own AR/AP, distinct from a core banking platform (e.g. Temenos
-  T24) that handles customer accounts and loans rather than the bank's own invoicing. Connected
-  via **Method 1 — Direct API**, the same convention as every other mock in this repo.
-- OIB's own Commercial Registration (`1245678`) and VATIN (`OM1300456789`).
-- The counterparty, **Nakhal Capital Holding SAOC**, is a fictional company — deliberately *not*
-  any real, disclosed OIB client or transaction.
-- The tracked invoice, its lines, amounts, timestamps, ASP acknowledgement, Peppol reference and
-  OTA reference are all illustrative.
-- Peppol participant scheme `0248` over OIB's CR, OMR to three decimals, 5% standard VAT — real
-  shapes, invented values, same convention as the other mocks in this repo.
-
-The demo clock is **Wednesday 19 August 2026, 11:20 GST**. The day matters: the Omani working week
-runs Sunday to Thursday, so a busy weekday has to fall inside it.
+Entity isolation is shown rather than asserted: the portal is visibly simpler than the console,
+and it contains no reference to any other entity.
 
 ## What the prototype must agree with
 
-Same rules as `zubair-mock/` — see that mock's README for the full audit history. In short, this
-mock avoids:
+The proposal is the source of truth, and it will be open in the room. Several things it
+**deliberately leaves open** must never be stated here:
 
-- Tier 1/2/3 language — it says **Method 1 — Direct API**.
-- "Tenant" — it says **entity** or **company**.
-- Any retention period, WORM claim, named data centre, or data-residency claim.
-- A fixed connector count, or "all connected" language.
-- The claim that the OTA clears or rejects invoices — the **ASP** validates and may reject, and
-  the ASP (not the Hub) reports the Tax Data Document to the OTA.
-- One synchronous round trip — outcomes are asynchronous, on **three separate legs**.
-- Archive appearing after transmission — it is **stage 5, before transmission**.
-- "Appendix D" / "Base64 TLV" (Saudi ZATCA vocabulary) — this mock only ever says **"QR
-  information."**
-- Any commercial figure, rate, effort estimate or SLA response time.
+- **No retention period, no WORM claim, no named data centre.** Retention is reserved until
+  solution design. Say "agreed during solution design".
+- **No data-residency claim.**
+- **No fixed number of connectors**, and no list of ERPs described as "all connected". Connector
+  scope is confirmed after the ERP inventory.
+- **No commercial figure, rate, effort estimate or SLA response time.**
+
+And several things it is emphatic about, which the prototype must get right:
+
+- **Method 1 — Direct API**, **Method 2 — On-site agent**, **Method 3 — Secure file transfer**.
+  Not "Tier 1/2/3". Not "File drop".
+- **Entity** or **company**, not "tenant", in anything a viewer reads.
+- **One VAT Group, twelve group entities.** The group TRN `OM1200094685` is a shared *data field*;
+  the **CR (IBT-029, scheme `CR`) distinguishes the twelve members** as the seller identifier, with
+  the shared VATIN (IBT-031) as the VAT identifier. Never merge the twelve into one identity.
+- **Batch B2C.** OIB Digital Payments's ~66k/month simplified fee invoices are reported to the OTA
+  in **batches from High-Volume Billing**, not cleared live at the point of sale. This is flagged
+  as an *Assumption · to confirm with the group* on the relevant screen.
+- **The OTA does not clear or reject invoices.** The ASP validates and may reject, and the ASP —
+  not the hub — reports the Tax Data Document to the OTA.
+- **Outcomes are asynchronous on three separate legs.** Never one synchronous round trip.
+- **Archive is stage 5, before transmission**, not after.
+- **Inbound drafts are never auto-posted.**
+- **"QR information"** only. "Appendix D" and "Base64 TLV" are Saudi ZATCA and are banned.
+
+`GAP-REGISTER.md` records the audit history behind these rules.
 
 ## Structure
 
-    index.html              the one act and five steps — the entry point
-    README.md               this file
-    assets/css/app.css      design system: tokens for the two surfaces, every component used here
-    assets/js/data.js       the demonstration dataset — one entity, one invoice
-    assets/js/ui.js         component helpers that return HTML strings (trimmed to what these
-                             five screens use)
+    index.html              the six acts and eighteen steps — the entry point
+    GAP-REGISTER.md         audit of the prototype against the proposal
+    OIB-REAL-ENTITIES.md    what's real about OIB, and what's invented about the group roster
+    assets/css/app.css      design system: tokens for the three surfaces, every component
+    assets/js/data.js       the demonstration dataset (12 entities, one tracked invoice)
+    assets/js/ui.js         component helpers that return HTML strings
     assets/js/shell.js      ACTS + WALKTHROUGH order, sidebar, toolbar, hints, step nav
-    erp/ hub/                the screens (no portal/ — see "Two surfaces" above)
+    erp/ hub/ portal/       the screens
 
 **`WALKTHROUGH` in `shell.js` is the single source of truth for screen order.** Previous/Next, the
-step counter, the footer labels and `index.html` all derive from it.
+step counter, the footer labels and `index.html` all derive from it. Reorder that array and the
+whole walkthrough reorders.
 
 Pages are plain HTML. Shared chrome is injected at runtime, driven by attributes on `<body>`:
 
 ```html
-<body class="surface-hub" data-surface="hub" data-nav="tracker"
-      data-step="hub-tracker"
-      data-crumbs="Operations / Document Tracker"
+<body class="surface-hub" data-surface="hub" data-nav="queue"
+      data-step="hub-queue"
+      data-crumbs="Operations / Processing Queue"
       data-hint="One sentence saying what the viewer is looking at.">
 ```
 
-## A future wave would need to add
+To add a screen: copy a page, set those attributes, add an entry to `WALKTHROUGH` and to `NAV`.
+Page-specific CSS lives in a local `<style>` block; `app.css` is shared and should not grow for a
+single screen.
 
-This slice deliberately stops at one entity and one direction. A second wave, if OIB wanted the
-full hub story demonstrated, would need:
+## The data
 
-- **An inbound/AP flow** — supplier invoices arriving, routed and landed as drafts, the same
-  pattern `zubair-mock/hub/inbound.html` and `hub/routing.html` show for a multi-entity group.
-- **A real multi-entity story, if one exists** — this slice assumes OIB is genuinely one legal
-  entity for e-invoicing purposes. If OIB in fact operates separate business units or subsidiaries
-  that issue invoices under their own CRs, that roster would need confirming before a multi-entity
-  dashboard, onboarding wizard or mapping studio would make sense to build.
-- **A client-facing portal**, if OIB's counterparties are expected to have their own login — not
-  needed for this internal, single-entity slice.
-- **Volume and monitoring screens** (a group dashboard, processing queue, reports) — meaningful
-  once there is more than one tracked document to monitor.
+`assets/js/data.js` holds an illustrative dataset for **the Oman Investment Bank Group** —
+twelve group entities, all sharing VATIN `OM1200094685`, each with its own CR. Shapes are real:
+VATIN `OM` + 10 digits, Peppol participant scheme `0248` over the entity's CR, OMR to three
+decimals, 5% standard VAT, and real PINT-OM business-term and rule identifiers.
+
+The twelve entities are **invented business units of a fictional Oman Investment Bank Group** —
+see `OIB-REAL-ENTITIES.md` for exactly what's real (the OIB parent, its government ownership,
+Feb-2024 launch and CBO/FSA regulation) versus invented (everything about the twelve-entity group
+structure). They span four ERPs and eight illustrative sectors: Corporate & Investment Banking,
+Asset Management, Capital Markets, Research & Advisory, Trade Finance, Fund & Custody Services,
+Treasury Operations and Payments & Merchant Services.
+
+The demo clock is **Tuesday 18 August 2026, 10:42 GST**. The day matters: the Omani working week
+runs Sunday to Thursday, so a busy weekday has to fall inside it.
+
+> **Only Oman Investment Bank's name, government ownership, February 2024 launch and CBO/FSA
+> regulation are real.** The multi-entity group structure, all subsidiary names, CR/VAT numbers,
+> ERPs, volumes and the tracked invoice are invented for this demonstration — OIB does not
+> actually operate as a multi-entity VAT Group. Counterparties, people and email addresses
+> (`@oibgroup.example`) are fictional on purpose.
 
 ## Notes for presenting
 
 - Every number on screen is derived from `data.js` or computed in the page. Totals reconcile with
-  the rows above them, and the same figure does not disagree with itself across screens.
-- Screens 3 and 4 follow the same invoice through consecutive stages. Screens 1, 4 and 5 all show
-  `OIB-ADV-2026-00147`, so the walkthrough closes a loop on one document.
+  the rows above them, and the same figure does not disagree with itself across two screens.
+- Screens 9 and 10 follow the same invoice through consecutive stages. Screens 1, 17 and 18 all
+  show `OIB-SINV-2026-00841`, so the walkthrough closes a loop on one document.
+- The mapping screen is genuinely operable. Changing a transform recomputes the preview —
+  switching the buyer name from `trim|upper` to `trim` visibly changes its case. That interaction
+  is the point of the screen.
 - Verified at 1440px. Narrower viewports have breakpoints but have not been checked.

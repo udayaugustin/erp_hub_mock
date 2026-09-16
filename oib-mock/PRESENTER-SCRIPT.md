@@ -1,4 +1,4 @@
-# Presenter script — Zubair Corporation Central E-Invoicing Hub walkthrough
+# Presenter script — Oman Investment Bank Central E-Invoicing Hub walkthrough
 
 A word-for-word script for demonstrating the prototype to the client.
 
@@ -60,12 +60,12 @@ Three habits that matter more than the words:
 
 # Act I — It starts in their system
 
-## Screen 1 · Sales Invoices *(their ERP — SAP S/4HANA)*
+## Screen 1 · Sales Invoices *(their ERP — Enterprise ERP)*
 
 **The one point:** their people keep working exactly as they do today.
 
-> **“This is an entity’s own ERP. This is The Zubair Corporation LLC, and this is their
-> SAP S/4HANA sales invoice list. Nothing on this screen changes.”**
+> **“This is an entity’s own ERP. This is Oman Investment Bank SAOC, and this is their
+> Enterprise ERP sales invoice list. Nothing on this screen changes.”**
 
 > **“The user creates the invoice as normal. They post it as normal. They do not log in
 > anywhere else, and they do not learn a new system.”**
@@ -79,12 +79,12 @@ Three habits that matter more than the words:
 
 ---
 
-## Screen 2 · Counter & service sales *(their other ERP — Autoline 8.39)*
+## Screen 2 · Counter & service sales *(their other ERP — High-Volume Billing)*
 
 **The one point:** the same group has a second invoice origin, and it looks nothing like the first.
 
-> **“This is a second entity, in a completely different system. This is General Automotive
-> Company, and this is their Autoline dealer system — the counter and the service desk.”**
+> **“This is a second entity, in a completely different system. This is OIB Digital Payments
+> Company, and this is their High-Volume Billing dealer system — the counter and the service desk.”**
 
 > **“The first screen was one large business invoice. This is the opposite. Thousands of
 > small counter and service invoices, to walk-in customers, every day. Same VAT Group, the
@@ -92,7 +92,7 @@ Three habits that matter more than the words:
 
 *(point at the batch note on screen)*
 
-> **“These simplified B2C invoices are collected by Autoline and reported to the tax
+> **“These simplified B2C invoices are collected by High-Volume Billing and reported to the tax
 > authority in batches, through the same Hub — not one at a time at the counter. We have
 > flagged that batch handling as an assumption to confirm with you.”**
 
@@ -122,8 +122,8 @@ Three habits that matter more than the words:
 
 **The one point:** one screen answers “is the whole VAT Group compliant today?”
 
-> **“This is the group view. Thirty-three entities, on one screen — all filing under one
-> VAT Group TRN.”**
+> **“This is the group view. Twelve entities, on one screen — all filing under one VAT
+> Group TRN.”**
 
 *(pause — let them look)*
 
@@ -135,8 +135,8 @@ Three habits that matter more than the words:
 > it has gone silent. An entity that stops reporting is a compliance risk, and silence is
 > easy to miss. The system watches for it and tells you.”**
 
-> **“Without this, somebody has to remember to check thirty-three entities every day. On
-> one shared VAT return, one silent entity is your whole group’s problem.”**
+> **“Without this, somebody has to remember to check twelve entities every day. On one
+> shared VAT return, one silent entity is your whole group’s problem.”**
 
 *(do — click **Next**)*
 
@@ -149,7 +149,7 @@ Three habits that matter more than the words:
 > **“Every entity in the VAT Group is listed here. This is where you see how mixed the
 > estate is.”**
 
-> **“Four ERPs. SAP S/4HANA, Autoline, Orion, and FOCUS. Different connection details.
+> **“Four ERPs. Enterprise ERP, High-Volume Billing, Finance Suite, and Accounting System. Different connection details.
 > Different rollout waves. One group return.”**
 
 > **“The hub does not require anybody to change their ERP. It connects to what is already
@@ -167,16 +167,15 @@ Three habits that matter more than the words:
 
 *(point at the two identifiers on the seller block)*
 
-> **“Look at these two numbers. The VAT number, `OM1200094685`, is shared — all
-> thirty-three entities in the group file under it. But the Commercial Registration below
-> it is this entity’s own.”**
+> **“Look at these two numbers. The VAT number, `OM1200094685`, is shared — all twelve
+> entities file under it. But the Commercial Registration below it is this entity’s own.”**
 
 *(pause)*
 
 > **“That is the heart of the group case. On Peppol and on the invoice, each entity is
 > identified by its own Commercial Registration. The shared VAT number is a data field.
-> So thirty-three companies, thirty-three registrations, thirty-three endpoints — but one
-> VAT return. That is exactly what a central hub is for.”**
+> So twelve companies, twelve registrations, twelve endpoints — but one VAT return. That
+> is exactly what a central hub is for.”**
 
 > **“Everything else on this page is settings. No code was written for this entity.”**
 
@@ -194,10 +193,10 @@ Three habits that matter more than the words:
 
 Say the three methods slowly. One line each:
 
-> **“Method one. Direct connection, for a modern ERP with an interface — like SAP
-> S/4HANA over its BAPI and integration layer.”**
+> **“Method one. Direct connection, for a modern ERP with an interface — like Enterprise ERP
+> Enterprise ERP over its BAPI and integration layer.”**
 > **“Method two. A small agent installed on their side, for an older on-premise system
-> behind a firewall — like an Autoline dealer server.”**
+> behind a firewall — like an High-Volume Billing dealer server.”**
 > **“Method three. Secure file transfer, for a system with no interface at all.”**
 
 > **“The method is chosen for each entity after we look at its ERP. We do not assume.”**
@@ -214,7 +213,7 @@ Say the three methods slowly. One line each:
 
 **The one point:** the hardest technical work is done by an analyst, not a developer.
 
-> **“Every ERP calls its fields something different. Autoline, S/4HANA, Orion and FOCUS
+> **“Every ERP calls its fields something different. High-Volume Billing, Enterprise ERP, Finance Suite and Accounting System
 > all name things their own way. The tax rules require one exact format. This screen is
 > where the two are joined.”**
 
@@ -245,7 +244,7 @@ Say the three methods slowly. One line each:
 **The one point:** you always know where every document is.
 
 > **“Every document being processed right now, and the stage it has reached — across all
-> twelve live entities and all four ERPs.”**
+> twelve entities and all four ERPs.”**
 
 > **“There are nine stages. I want to point out two of them.”**
 
@@ -261,8 +260,8 @@ Say the three methods slowly. One line each:
 
 *(point at the per-entity lanes)*
 
-> **“And each entity has its own lane. General Automotive’s batch of simplified invoices
-> from Autoline never delays anyone else. One entity’s problem never delays another.”**
+> **“And each entity has its own lane. OIB Digital Payments’s batch of simplified invoices
+> from High-Volume Billing never delays anyone else. One entity’s problem never delays another.”**
 
 *(do — click **Next**)*
 
@@ -293,8 +292,8 @@ Say the three methods slowly. One line each:
 
 > **“So far we followed an invoice going out. Supplier invoices also arrive.”**
 
-> **“The document arrives, we identify which of the thirty-three entities it belongs to,
-> we validate it, and we archive the original.”**
+> **“The document arrives, we identify which of the twelve entities it belongs to, we
+> validate it, and we archive the original.”**
 
 > **“Then it is delivered into that entity’s ERP as a **draft**.”**
 
@@ -309,11 +308,11 @@ Say the three methods slowly. One line each:
 
 ## Screen 12 · Inbound Routing — **the addressing point**
 
-**The one point:** thirty-three entities share one VAT number, so the VAT number cannot be the address.
+**The one point:** twelve entities share one VAT number, so the VAT number cannot be the address.
 
-> **“A supplier invoice has arrived for the group. The question is which of the
-> thirty-three entities it is for. And here is the trap — all thirty-three share the one
-> VAT number, so the VAT number cannot be the address.”**
+> **“A supplier invoice has arrived for the group. The question is which of the twelve
+> entities it is for. And here is the trap — all twelve share the one VAT number, so the
+> VAT number cannot be the address.”**
 
 *(point at the participant and CR on the routing row)*
 
@@ -351,9 +350,8 @@ Say the three methods slowly. One line each:
 
 > **“VAT summaries. Reporting completeness. How long exceptions have been open.”**
 
-> **“The point of this screen is that the compliance data is in one place, for all
-> thirty-three entities, rolled up to the one VAT Group return — and it can be
-> exported.”**
+> **“The point of this screen is that the compliance data is in one place, for all twelve
+> entities, rolled up to the one VAT Group return — and it can be exported.”**
 
 *(do — click **Next**)*
 
@@ -388,7 +386,7 @@ Say the three methods slowly. One line each:
 
 **The one point:** strict separation. This is usually the moment that convinces people.
 
-> **“This is The Zubair Corporation LLC’s own portal.”**
+> **“This is Oman Investment Bank SAOC’s own portal.”**
 
 *(pause)*
 
@@ -408,8 +406,8 @@ Say the three methods slowly. One line each:
 **This is the most important screen commercially. Do not rush it. Read the red box
 before you say anything else.**
 
-> **“This is the last screen. It is the same invoice we started with, in the same SAP
-> S/4HANA. It is invoice `ZCL-SINV-2026-00841`.”**
+> **“This is the last screen. It is the same invoice we started with, in the same Enterprise ERP
+> Enterprise ERP. It is invoice `OIB-SINV-2026-00841`.”**
 
 *(do — point at the red box, and pause)*
 
@@ -444,8 +442,8 @@ Say these four lines slowly. This is the part you must not soften:
 > **“Three things I would like you to remember.”**
 
 > **“One. Your people keep working in their own system.”**
-> **“Two. The compliance work is solved once, centrally, for all thirty-three entities and
-> four ERPs — not thirty-three times, and not once per ERP.”**
+> **“Two. The compliance work is solved once, centrally, for all twelve entities and four
+> ERPs — not twelve times, and not once per ERP.”**
 > **“Three. Each entity sees only its own data, even under one shared VAT number.”**
 
 > **“Please remember this was a prototype with invented numbers. What is real is the
@@ -465,17 +463,16 @@ Keep the answers short. A short answer sounds certain.
 
 **“We all share one VAT number. How does the tax authority tell the entities apart?”**
 > **“By each entity’s own Commercial Registration. On the invoice and on Peppol, the CR
-> is the seller identity; the shared VAT number is a data field. Thirty-three
-> registrations, one return. We can walk you through the exact business terms if
-> useful.”**
+> is the seller identity; the shared VAT number is a data field. Twelve registrations,
+> one return. We can walk you through the exact business terms if useful.”**
 
 **“Do our entities have to change their ERP?”**
 > **“No. We connect to what is already there. That is why there are three connection
 > methods, and why the hub reads all four of your ERPs.”**
 
-**“What about the huge volume of counter sales in the dealerships?”**
-> **“Those simplified invoices are reported to the tax authority in batches from Autoline,
-> not one at a time at the counter. We have flagged that as an assumption to confirm with
+**“What about the huge volume of branch and merchant fee invoices?”**
+> **“Those simplified invoices are reported to the tax authority in batches from High-Volume Billing,
+> not one at a time at the branch counter. We have flagged that as an assumption to confirm with
 > you against the Oman simplified-invoice rules.”**
 
 **“What happens if the network or the provider is down?”**
@@ -530,10 +527,10 @@ Silence usually means they are reading. Let it run. If it lasts more than a few 
 
 If your time is cut short, show four screens only:
 
-1. **Group Dashboard** — “Thirty-three entities, one VAT return, one screen. And it tells
-   you when an entity goes silent.”
+1. **Group Dashboard** — “Twelve entities, one VAT return, one screen. And it tells you
+   when an entity goes silent.”
 2. **Entity detail** — “Shared VAT number, but each entity’s own Commercial Registration
-   is the identity. That is why one hub, not thirty-three installs.”
+   is the identity. That is why one hub, not twelve installs.”
 3. **Entity portal** — “Each entity sees only its own data.”
 4. **The last ERP screen** — read the red scope box.
 

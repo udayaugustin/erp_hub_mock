@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Document Inspector — Oman Investment Bank E-Invoicing Hub</title>
+<title>Document Inspector — OIB Group Central E-Invoicing Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,8 +11,8 @@
 </head>
 <body class="surface-hub" data-surface="hub" data-nav="document"
       data-step="hub-document"
-      data-crumbs="Operations / Document Inspector"
-      data-hint="The Hub turns OIB&#8217;s own invoice into the official PINT-OM format, then checks it against the government rules. Nothing is sent until it passes.">
+      data-crumbs="Configuration / Document Inspector"
+      data-hint="The Hub turns the invoice into the official format, then checks it against every government rule. Nothing is sent until it passes.">
 
 <main class="main">
   <div class="page">
@@ -20,11 +20,11 @@
     <div class="page-head">
       <div class="grow">
         <div class="page-title">
-          <h1 class="mono" style="font-size:20px" id="hInvNo"></h1>
+          <h1 class="mono" style="font-size:20px">OIB-SINV-2026-00841</h1>
           <span class="pill pill-ok"><i class="dot"></i>Validation passed</span>
           <span class="tag">PINT-OM</span>
         </div>
-        <p class="page-sub" id="hSub"></p>
+        <p class="page-sub">Oman Investment Bank SAOC · 50,610.000 OMR — built and proved correct inside the Hub.</p>
       </div>
       <div class="page-actions">
         <button class="btn btn-sm">Download XML</button>
@@ -32,10 +32,14 @@
       </div>
     </div>
 
-    <div class="teach mb16">
-      Oman Investment Bank is one legal entity with one Commercial Registration and one VAT registration &mdash;
-      unlike the multi-entity mocks in this repo, there is no shared group VATIN distinguished by per-member CRs here.
-      This screen simply shows how OIB's own invoice becomes a compliant PINT-OM document.
+    <div class="card mb16">
+      <div class="card-body">
+        <div id="pipe"></div>
+        <p class="small dim mt12" style="margin-bottom:0">Two stages write this document down.
+        <b>Record</b> is step 5, before transmission: the XML and its processing evidence are stored first, so
+        there is evidence of what was sent whatever the ASP or the network does next. <b>Archive</b> is step 9 —
+        the long-term legal record, written once the acknowledgements are in.</p>
+      </div>
     </div>
 
     <div class="split-wide">
@@ -46,12 +50,12 @@
             <div class="card-head">
               <h2 class="grow">The official document the Hub built</h2>
               <span class="tag">UBL 2.1</span>
-              <span class="tag">6.4 KB</span>
+              <span class="tag">8.9 KB</span>
             </div>
             <div class="card-body">
               <div class="code code-lines" id="xmlBox"></div>
               <div class="row wrap tiny dim mt12">
-                <span>Extract &mdash; the header, the seller and the totals.</span>
+                <span>Extract — the header, the seller and the totals.</span>
               </div>
             </div>
           </div>
@@ -69,15 +73,15 @@
               </div>
               <div style="padding:0 16px">
                 <div class="tabs" style="margin-bottom:0">
-                  <button class="tab is-active">All (129)</button>
+                  <button class="tab is-active">All (150)</button>
                   <button class="tab">Failed (0)</button>
-                  <button class="tab">Warnings (1)</button>
+                  <button class="tab">Warnings (2)</button>
                 </div>
               </div>
               <div id="valRules"></div>
             </div>
             <div class="card-foot">
-              <span class="small dim">Showing 7 of 129 rules.</span>
+              <span class="small dim">Showing 4 of 150 rules.</span>
               <button class="btn btn-sm right">Show all rules</button>
             </div>
           </div>
@@ -111,9 +115,23 @@
 <script src="../assets/js/ui.js"></script>
 <script src="../assets/js/shell.js"></script>
 <script>
-  document.getElementById('hInvNo').textContent = INVOICE.no;
-  document.getElementById('hSub').textContent =
-    ENTITY.name + ' · ' + omr(INVOICE.total) + ' OMR — built and proved correct inside the Hub.';
+  /* ---- page-local detail (not in data.js) -------------------------------- */
+  const DOC = {
+    no: 'OIB-SINV-2026-00841',
+    entityId: 'OIB',
+    buyer: CUSTOMERS[0].name,
+    buyerVatin: CUSTOMERS[0].vatin,
+    lines: 6,
+    net: 48200.000, vat: 2410.000, total: 50610.000,
+    ruleCount: 150
+  };
+
+  /* one entry per stage in STAGES (8). Validation is the current stage. */
+  const CURRENT_STAGE = STAGES.indexOf('Validate');
+  const PIPE_TIMES = [
+    '10:22:28', '10:22:28', '10:22:29', '10:22:31',
+    '', '', '', ''
+  ];
 
   const UBL_SOURCE = `<?xml version="1.0" encoding="UTF-8"?>
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
@@ -121,37 +139,39 @@
          xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
   <cbc:UBLVersionID>2.1</cbc:UBLVersionID>
   <cbc:CustomizationID>urn:peppol:pint:billing-1@om-1</cbc:CustomizationID>
-  <cbc:ID>${INVOICE.no}</cbc:ID>
-  <cbc:IssueDate>2026-08-19</cbc:IssueDate>
-  <cbc:DueDate>2026-09-18</cbc:DueDate>
+  <cbc:ID>OIB-SINV-2026-00841</cbc:ID>
+  <cbc:IssueDate>2026-08-18</cbc:IssueDate>
+  <cbc:DueDate>2026-09-17</cbc:DueDate>
   <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
   <cbc:DocumentCurrencyCode>OMR</cbc:DocumentCurrencyCode>
   <cac:AccountingSupplierParty>
     <cac:Party>
-      <!-- OIB's own Peppol participant, built from its own CR -->
-      <cbc:EndpointID schemeID="0248">${ENTITY.cr}</cbc:EndpointID>
-      <cac:PartyName><cbc:Name>${ENTITY.name}</cbc:Name></cac:PartyName>
-      <!-- Seller VAT identifier (IBT-031) — OIB's own VATIN, one entity, one registration -->
+      <!-- Per-entity Peppol participant (CR-based) — its own endpoint -->
+      <cbc:EndpointID schemeID="0248">1008431</cbc:EndpointID>
+      <cac:PartyName><cbc:Name>Oman Investment Bank SAOC</cbc:Name></cac:PartyName>
+      <!-- Shared VAT Group registration (IBT-031) — same for all 12 members -->
       <cac:PartyTaxScheme>
-        <cbc:CompanyID>${ENTITY.vatin}</cbc:CompanyID>
+        <cbc:CompanyID>OM1200094685</cbc:CompanyID>
         <cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme>
       </cac:PartyTaxScheme>
-      <!-- Seller identifier (IBT-029, scheme CR) — OIB's own Commercial Registration -->
+      <!-- Own Commercial Registration (IBT-029, scheme CR) — distinguishes the entity -->
       <cac:PartyLegalEntity>
-        <cbc:RegistrationName>${ENTITY.name}</cbc:RegistrationName>
-        <cbc:CompanyID schemeID="CR">${ENTITY.cr}</cbc:CompanyID>
+        <cbc:RegistrationName>Oman Investment Bank SAOC</cbc:RegistrationName>
+        <cbc:CompanyID schemeID="CR">1008431</cbc:CompanyID>
       </cac:PartyLegalEntity>
     </cac:Party>
   </cac:AccountingSupplierParty>
   <cac:LegalMonetaryTotal>
-    <cbc:TaxExclusiveAmount currencyID="OMR">${INVOICE.net.toFixed(3)}</cbc:TaxExclusiveAmount>
-    <cbc:TaxInclusiveAmount currencyID="OMR">${INVOICE.total.toFixed(3)}</cbc:TaxInclusiveAmount>
-    <cbc:PayableAmount currencyID="OMR">${INVOICE.total.toFixed(3)}</cbc:PayableAmount>
+    <cbc:TaxExclusiveAmount currencyID="OMR">48200.000</cbc:TaxExclusiveAmount>
+    <cbc:TaxInclusiveAmount currencyID="OMR">50610.000</cbc:TaxInclusiveAmount>
+    <cbc:PayableAmount currencyID="OMR">50610.000</cbc:PayableAmount>
   </cac:LegalMonetaryTotal>
-  <!-- … 3 invoice lines … -->
+  <!-- … 56 more lines … -->
 </Invoice>`;
 
   /* ---- render ------------------------------------------------------------ */
+  document.getElementById('pipe').innerHTML = pipeline(CURRENT_STAGE, { times: PIPE_TIMES });
+
   document.getElementById('xmlBox').innerHTML = xml(UBL_SOURCE);
 
   document.getElementById('valCounts').innerHTML = [
@@ -160,21 +180,23 @@
     pill('warn', VALIDATION.warned + ' warnings')
   ].join(' ');
 
-  document.getElementById('valRules').innerHTML = VALIDATION.rules.map(ruleRow).join('');
+  const SHOWN_RULES = [1, 4, 6, 7].map(i => VALIDATION.rules[i]).filter(Boolean);
+  document.getElementById('valRules').innerHTML = SHOWN_RULES.map(ruleRow).join('');
 
+  const t = tenant(DOC.entityId);
   document.getElementById('summary').innerHTML = kv([
-    ['Entity', ENTITY.name],
-    ['Buyer', INVOICE.buyer],
-    ['Document type', 'Invoice · standard rate ' + INVOICE.vatRate + '%'],
-    ['Net amount', '<span class="num">' + omr(INVOICE.net) + '</span>'],
-    ['VAT amount', '<span class="num">' + omr(INVOICE.vat) + '</span>'],
-    ['Total payable', '<span class="num" style="color:var(--accent-hi);font-weight:600">' + omr(INVOICE.total) + '</span>']
+    ['Company', tenantChip(DOC.entityId)],
+    ['Buyer', DOC.buyer],
+    ['Document type', 'Invoice · standard rate 5%'],
+    ['Net amount', '<span class="num">' + omr(DOC.net) + '</span>'],
+    ['VAT amount', '<span class="num">' + omr(DOC.vat) + '</span>'],
+    ['Total payable', '<span class="num" style="color:var(--accent-hi);font-weight:600">' + omr(DOC.total) + '</span>']
   ]);
 
   document.getElementById('identifiers').innerHTML = kv([
-    ['Document UUID', '<span class="mono" style="font-size:11px;word-break:break-all;display:inline-block">' + INVOICE.uuid + '</span>'],
-    ['Peppol sender', '<span class="mono" style="font-size:11px">' + ENTITY.peppol + '</span>'],
-    ['Peppol receiver', '<span class="mono" style="font-size:11px">0248:' + INVOICE.buyerVatin + '</span>'],
+    ['Document UUID', '<span class="mono" style="font-size:11px;word-break:break-all;display:inline-block">b7f4c2e1-9a3d-5c8b-a1f6-2e7d4b9c0a35</span>'],
+    ['Peppol sender', '<span class="mono" style="font-size:11px">' + t.peppol + '</span>'],
+    ['Peppol receiver', '<span class="mono" style="font-size:11px">0248:' + DOC.buyerVatin + '</span>'],
     ['Standard', 'UBL 2.1 · PINT-OM'],
     ['Validated against', VALIDATION.profile]
   ], true);

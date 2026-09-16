@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Oman Investment Bank E-Invoicing Hub · guided walkthrough</title>
+<title>OIB Group Central E-Invoicing Hub · guided walkthrough</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -14,11 +14,11 @@
   .hero { padding: 62px 0 4px; position: relative; }
   .hero h1 {
     font-family: var(--font-display); font-weight: 600;
-    font-size: clamp(32px, 5vw, 54px); line-height: 1.08;
-    letter-spacing: 0; max-width: 19ch; margin-top: 24px;
+    font-size: clamp(36px, 5.4vw, 60px); line-height: 1.04;
+    letter-spacing: 0; max-width: 17ch; margin-top: 24px;
   }
-  .hero h1 em { font-style: normal; font-weight: 700; color: var(--amber-ink); }
-  .lede { font-size: 15.5px; color: var(--text-mid); max-width: 62ch; margin-top: 18px; line-height: 1.62; }
+  .hero h1 em { font-style: normal; font-weight: 700; color: var(--gold-ink); }
+  .lede { font-size: 15.5px; color: var(--text-mid); max-width: 60ch; margin-top: 18px; line-height: 1.62; }
 
   .flow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 28px; }
   .flow-item {
@@ -34,6 +34,7 @@
     display: flex; align-items: baseline; gap: 12px;
     margin: 34px 0 11px; padding-bottom: 9px; border-bottom: 1px solid var(--line);
   }
+  /* roman numerals in a condensed face need tracking or II/III merge */
   .act-n { font-family: var(--font-display); font-weight: 600; font-size: 26px; letter-spacing: .06em; color: var(--accent); line-height: 1; min-width: 38px; }
   .act-t { font-size: 15.5px; font-weight: 600; }
   .act-d { font-size: 12.5px; color: var(--text-lo); margin-left: auto; }
@@ -56,78 +57,75 @@
   .step .b { font-size: 12.5px; color: var(--text-mid); margin-top: 2px; }
   .step .go { flex: none; color: var(--accent); font-size: 15px; opacity: 0; transition: opacity .16s var(--ease); }
   .step:hover .go { opacity: 1; }
+  .step .isnew {
+    flex: none; font-size: 9px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+    padding: 2px 6px; border-radius: 20px; color: var(--ok);
+    border: 1px solid color-mix(in srgb, var(--ok) 32%, transparent);
+    background: color-mix(in srgb, var(--ok) 9%, transparent);
+  }
 
   .badge {
     flex: none; font-size: 9.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
     padding: 2.5px 8px; border-radius: 20px; border: 1px solid;
   }
-  .badge.erp { color: #4C5A6B; border-color: rgba(76,90,107,.32); background: rgba(76,90,107,.07); }
-  .badge.hub { color: #12395B; border-color: rgba(18,57,91,.32); background: rgba(18,57,91,.07); }
-
-  .scopebox {
-    margin-top: 30px; padding: 16px 18px; border-radius: var(--r-lg);
-    border: 1px solid var(--line); background: var(--surface);
-  }
-  .scopebox h3 { font-size: 14px; }
-  .scopebox ul { margin: 10px 0 0 18px; font-size: 13.5px; color: var(--text-mid); line-height: 1.7; }
+  /* one per surface, matching the surface tokens in app.css */
+  .badge.erp    { color: #4C5A6B; border-color: rgba(76,90,107,.32);  background: rgba(76,90,107,.07); }
+  .badge.hub    { color: #12395B; border-color: rgba(18,57,91,.32);  background: rgba(18,57,91,.07); }
+  .badge.portal { color: #1A5C55; border-color: rgba(26,92,85,.32);   background: rgba(26,92,85,.07); }
 
   @media (max-width: 720px) {
     .wrap { padding: 0 20px; }
-    .act-d, .step .b { display: none; }
+    .act-d, .step .b, .step .isnew { display: none; }
   }
 </style>
 </head>
 <body class="surface-hub" data-shell="off">
 
 <header class="wrap hero">
-  <div class="row-tight">
-    <span class="brand-mark" style="width:30px;height:30px;font-size:18px">O</span>
-    <span class="stack">
-      <span class="brand-name" style="font-size:15px">Oman Investment Bank</span>
-      <span class="brand-sub">E-Invoicing Hub</span>
-    </span>
+  <div class="brandrow">
+    <div class="row-tight">
+      <span class="brand-mark" style="width:30px;height:30px;font-size:18px">O</span>
+      <span class="stack">
+        <span class="brand-name" style="font-size:15px">OIB Group</span>
+        <span class="brand-sub">Central E-Invoicing Hub</span>
+      </span>
+    </div>
+
+    <!-- Fawtara X powers the platform. Styles live in app.css, shared with
+         hub/login.html so the mark matches there. -->
+    <div class="cobrand">
+      <span class="cobrand-k">Powered by</span>
+      <img src="assets/img/fawtara-x.png" alt="Fawtara X">
+    </div>
   </div>
 
-  <h1>One fee invoice.<br>One bank.<br><em>Start to finish.</em></h1>
+  <h1>Twelve companies.<br>One VAT Group.<br>One way to <em>comply</em>.</h1>
 
-  <p class="lede">A five-step walkthrough in one short act. Oman Investment Bank issues an advisory and arrangement
-    fee invoice for a capital-markets engagement in its own finance ERP. It is collected by the central Hub, built
-    into a compliant PINT-OM document, proven correct against the government rules, transmitted through an
-    accredited service provider (ASP), and reported to the Oman Tax Authority. The acknowledgement, Peppol
-    reference and OTA reference land back on the original invoice. One entity, one invoice, one direction &mdash;
-    the thinnest possible vertical slice.</p>
+  <p class="lede">An eighteen-step walkthrough in six short acts. An invoice leaves a company's ERP —
+    Enterprise ERP, High-Volume Billing, Finance Suite or Accounting System — becomes a compliant e-invoice, is transmitted and reported,
+    and comes back with its acknowledgement. Twelve legal entities file under one shared VAT Group
+    number, each its own Peppol participant, through one pipe to the OTA. Supplier invoices arrive
+    the other way and land as drafts nobody posted for you. Every company sees only itself.</p>
 
   <div class="row wrap mt24" style="gap:9px;padding:0">
-    <a class="btn btn-primary btn-lg" href="erp/invoice.html">Start the walkthrough &rarr;</a>
-    <span class="small dim" style="margin-left:6px">Roughly 3 minutes &middot; use Next, or the &larr; &rarr; arrow keys</span>
+    <a class="btn btn-primary btn-lg" href="erp/invoices.html">Start the walkthrough →</a>
+    <span class="small dim" style="margin-left:6px">Roughly 10 minutes · use Next, or the ← → arrow keys</span>
   </div>
 
   <div class="flow">
-    <div class="flow-item" style="--tone:#4C5A6B"><div class="n">Starts in</div><div class="v">Oracle Fusion Financials Cloud</div></div>
-    <div class="flow-item" style="--tone:#12395B"><div class="n">Handled by</div><div class="v">The E-Invoicing Hub</div></div>
-    <div class="flow-item" style="--tone:#E8762E"><div class="n">Reported via</div><div class="v">An accredited service provider (ASP)</div></div>
+    <div class="flow-item" style="--tone:#4C5A6B"><div class="n">Starts in</div><div class="v">Enterprise ERP · High-Volume Billing · Finance Suite · Accounting System</div></div>
+    <div class="flow-item" style="--tone:#12395B"><div class="n">Handled by</div><div class="v">The Central Hub</div></div>
+    <div class="flow-item" style="--tone:#E8762E"><div class="n">Reported via</div><div class="v">The accredited provider (ASP)</div></div>
     <div class="flow-item" style="--tone:#4C5A6B"><div class="n">Ends in</div><div class="v">The same ERP invoice</div></div>
   </div>
 </header>
 
 <main class="wrap acts" id="acts"></main>
 
-<div class="wrap" style="padding-bottom:36px">
-  <div class="scopebox">
-    <h3>What this slice shows &mdash; and doesn't</h3>
-    <ul>
-      <li>One legal entity (Oman Investment Bank), one outbound invoice, one direction. No inbound/AP flow, no multi-entity dashboard,
-        no onboarding wizard, no mapping studio, no customer portal &mdash; all out of scope for this slice.</li>
-      <li>Oman Investment Bank itself, its regulators and its 2024 launch are real. Its finance ERP, CR, VATIN, the
-        counterparty and every figure and reference number are invented for this demonstration. See <a href="README.md" style="color:var(--accent-hi);font-weight:600">README.md</a>.</li>
-    </ul>
-  </div>
-</div>
-
 <div class="wrap" style="padding-bottom:70px">
   <p class="tiny dim" style="text-align:center">
-    Demonstration prototype &middot; Oman Investment Bank is a real institution, everything else is illustrative<br>
-    Built against the Oman Tax Authority e-invoicing programme &middot; Peppol PINT-OM
+    Demonstration prototype · illustrative companies in one VAT Group, invented counterparties, illustrative figures<br>
+    Built against the Oman Tax Authority e-invoicing programme · Peppol PINT-OM
   </p>
 </div>
 
@@ -136,9 +134,10 @@
 <script src="assets/js/shell.js"></script>
 <script>
 /* The step list is derived from WALKTHROUGH and ACTS in shell.js, so this
-   page can never drift out of order with the walkthrough itself. Page hrefs
-   there are written for pages one folder deep; strip the ../ here. */
-const LABEL = { erp: 'OIB’s ERP', hub: 'Central Hub' };
+   page can never drift out of order with the walkthrough itself.
+   Page hrefs there are written for pages one folder deep; strip the ../ here. */
+const LABEL = { erp: 'Their ERP', hub: 'Central Hub', portal: 'One company' };
+const NEW_IN_V3 = ['hub-onboard', 'hub-users', 'hub-inbound', 'hub-reports'];
 
 document.getElementById('acts').innerHTML = ACTS.map((act, ai) => {
   const steps = WALKTHROUGH
@@ -156,8 +155,9 @@ document.getElementById('acts').innerHTML = ACTS.map((act, ai) => {
         <span class="t">${o.s.name}</span>
         <div class="b">${o.s.blurb}</div>
       </span>
+      ${NEW_IN_V3.includes(o.s.id) ? '<span class="isnew">New</span>' : ''}
       <span class="badge ${o.s.sfc}">${LABEL[o.s.sfc]}</span>
-      <span class="go">&rarr;</span>
+      <span class="go">→</span>
     </a>`).join('');
 }).join('');
 
