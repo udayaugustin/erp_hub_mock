@@ -3,27 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ZCL-SINV-2026-00841 — SAP S/4HANA · The Zubair Corporation</title>
+<title>OIB-SINV-2026-00841 — Enterprise ERP · OIB Group</title>
 <link rel="stylesheet" href="../assets/css/app.css">
-<link rel="stylesheet" href="../assets/css/fiori.css">
+<link rel="stylesheet" href="../assets/css/erp-a.css">
 </head>
-<!-- ERP surface: the billing document object page back in SAP S/4HANA (SAP Fiori,
-     Horizon theme), showing the e-invoice status written back. Fiori shell;
+<!-- ERP surface: the billing document object page back in Enterprise ERP (a modern web ERP,
+     modern web theme), showing the e-invoice status written back. enterprise-ERP shell;
      floating walkthrough bar via shell.js (data-shell="off" + data-step). -->
-<body class="fiori" data-surface="erp" data-step="erp-sync" data-shell="off">
+<body class="erp-a" data-surface="erp" data-step="erp-sync" data-shell="off">
 
-<!-- ===================== SAP Fiori shell bar ===================== -->
+<!-- ===================== a modern web ERP shell bar ===================== -->
 <div class="f-shell">
   <div class="f-shell-left">
     <button class="f-shell-btn" title="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></button>
     <div class="f-shell-logo">
-      <span class="mark">Z</span>
-      <span class="co">The Zubair Corporation</span>
+      <span class="mark">O</span>
+      <span class="co">OIB Group</span>
     </div>
   </div>
   <div class="f-shell-center">
     <span class="t">Billing Document</span>
-    <span class="s">Company Code ZUB1 · The Zubair Corporation LLC</span>
+    <span class="s">Company Code GRP1 · Oman Investment Bank SAOC</span>
   </div>
   <div class="f-shell-right">
     <button class="f-shell-btn" title="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
@@ -39,13 +39,13 @@
   <div class="f-op-head">
     <div class="f-op-titlerow">
       <div>
-        <div class="f-op-title">ZCL-SINV-2026-00841</div>
+        <div class="f-op-title">OIB-SINV-2026-00841</div>
         <div class="f-op-sub">Muscat Bay Hospitality LLC · Billing Type F2 (Invoice)</div>
       </div>
       <span class="f-status pos" style="font-size:15px">Acknowledged</span>
     </div>
     <div class="f-op-facts">
-      <div class="f-fact"><div class="k">Company Code</div><div class="v">ZUB1</div></div>
+      <div class="f-fact"><div class="k">Company Code</div><div class="v">GRP1</div></div>
       <div class="f-fact"><div class="k">Sold-To Party</div><div class="v">Muscat Bay Hospitality LLC</div></div>
       <div class="f-fact"><div class="k">Billing / Posting Date</div><div class="v">18.08.2026</div></div>
       <div class="f-fact"><div class="k">Net Value</div><div class="v">48,200.000 OMR</div></div>
@@ -63,7 +63,7 @@
   <!-- scope boundary — read first -->
   <div class="f-strip err">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>
-    <div><b>Scope of work — the ERP-side write-back connector is built by the entity.</b> The Hub makes every field below available on its interface; reading them and updating this SAP billing document is the work of The Zubair Corporation&rsquo;s own SAP team. See <b>Scope of work</b> below.</div>
+    <div><b>Scope of work — the ERP-side write-back connector is built by the entity.</b> The Hub makes every field below available on its interface; reading them and updating this Enterprise ERP billing document is the work of OIB Group&rsquo;s own Enterprise ERP team. See <b>Scope of work</b> below.</div>
   </div>
 
   <!-- ===================== icon tab bar ===================== -->
@@ -93,7 +93,7 @@
             </tbody>
           </table>
         </div>
-        <p class="f-note" style="margin:12px 0 0">All of these are custom fields on this same SAP billing document. There is no parallel system and no second place to look.</p>
+        <p class="f-note" style="margin:12px 0 0">All of these are custom fields on this same Enterprise ERP billing document. There is no parallel system and no second place to look.</p>
       </div>
 
       <!-- Seller / e-invoice identity model -->
@@ -103,12 +103,12 @@
           <div class="f-id-card">
             <div class="lbl">Seller Identifier — IBT-029, scheme CR</div>
             <div class="big">CR 1008431</div>
-            <div class="desc">The entity&rsquo;s own Commercial Registration. This is what distinguishes The Zubair Corporation LLC from the other members of the group.</div>
+            <div class="desc">The entity&rsquo;s own Commercial Registration. This is what distinguishes Oman Investment Bank SAOC from the other eleven members of the group.</div>
           </div>
           <div class="f-id-card">
             <div class="lbl">Seller VAT Identifier — IBT-031 (group)</div>
             <div class="big">OM1200094685</div>
-            <div class="desc">The shared VAT Group TRN — the same value for all thirty-three entities. A data field, not the routing address.</div>
+            <div class="desc">The shared VAT Group TRN — the same value for all twelve entities. A data field, not the routing address.</div>
           </div>
           <div class="f-id-card">
             <div class="lbl">Peppol Participant — per entity</div>
@@ -116,19 +116,19 @@
             <div class="desc">Each entity is its own Peppol participant, built from its own CR under scheme 0248 — its own endpoint, SMP entry and certificate.</div>
           </div>
         </div>
-        <p class="f-note" style="margin:12px 0 0">One shared VAT number, thirty-three legal entities — each its own CR and its own participant. That is exactly why one central hub, filing under the one group TRN, is the natural place to normalise and report.</p>
+        <p class="f-note" style="margin:12px 0 0">One shared VAT number, twelve legal entities — each its own CR and its own participant. That is exactly why one central hub, filing under the one group TRN, is the natural place to normalise and report.</p>
       </div>
 
       <!-- Scope of work -->
       <div class="f-section scope">
-        <h3>Scope of Work — SAP-side write-back</h3>
+        <h3>Scope of Work — Enterprise ERP-side write-back</h3>
         <ul class="f-scopelist">
-          <li><span><b>The ERP-side write-back connector is built by the entity.</b> No ABAP development, CPI iFlow or Adobe/SmartForm print change on the SAP side is part of the current proposal. What the Hub delivers ends at its interface.</span></li>
-          <li><span><b>The SAP team collects the data and writes the record.</b> They call the Hub interface, take the UUID, status, acknowledgement number, Peppol reference and QR information, and perform the update on this billing document on their own release cycle.</span></li>
-          <li><span><b>Inbound supplier invoices are created as drafts.</b> When the Hub passes a supplier invoice to SAP, the ERP team creates it as an unposted parked/draft document for a person to review. Nothing is posted automatically.</span></li>
-          <li><span><b>If The Zubair Corporation wants us to build it, it is quoted separately.</b> Scope, effort, timeline and cost for the SAP-side work are estimated as a separate engagement.</span></li>
+          <li><span><b>The ERP-side write-back connector is built by the entity.</b> No ABAP development, CPI iFlow or Adobe/SmartForm print change on the Enterprise ERP side is part of the current proposal. What the Hub delivers ends at its interface.</span></li>
+          <li><span><b>The Enterprise ERP team collects the data and writes the record.</b> They call the Hub interface, take the UUID, status, acknowledgement number, Peppol reference and QR information, and perform the update on this billing document on their own release cycle.</span></li>
+          <li><span><b>Inbound supplier invoices are created as drafts.</b> When the Hub passes a supplier invoice to Enterprise ERP, the ERP team creates it as an unposted parked/draft document for a person to review. Nothing is posted automatically.</span></li>
+          <li><span><b>If OIB Group wants us to build it, it is quoted separately.</b> Scope, effort, timeline and cost for the Enterprise ERP-side work are estimated as a separate engagement.</span></li>
         </ul>
-        <p class="f-note" style="margin:12px 0 0">Everything on this screen uses sample data to show what the finished result would look like on the SAP record. It is not a working integration.</p>
+        <p class="f-note" style="margin:12px 0 0">Everything on this screen uses sample data to show what the finished result would look like on the Enterprise ERP record. It is not a working integration.</p>
       </div>
 
       <!-- Processing history -->
@@ -138,9 +138,9 @@
           <table class="f-table" style="min-width:620px">
             <thead><tr><th style="width:28px">#</th><th>Step</th><th>Time</th><th>Detail</th></tr></thead>
             <tbody>
-              <tr><td>1</td><td><b>Invoice posted in the ERP</b></td><td class="sub">09:14:02</td><td class="sub" style="white-space:normal">Billing document ZCL-SINV-2026-00841 posted by A. Al-Balushi in SAP S/4HANA. Document status set to Posted.</td></tr>
-              <tr><td>2</td><td><b>Collected by the Hub</b></td><td class="sub">09:14:04</td><td class="sub" style="white-space:normal">Method 1 — Direct API. The Hub called the SAP billing document service (BAPI / CPI). Raw payload 14.2 KB, field allowlist applied.</td></tr>
-              <tr><td>3</td><td><b>Mapped, built and validated</b></td><td class="sub">09:14:06</td><td class="sub" style="white-space:normal">Profile ZCL/v3 applied. UBL 2.1 built. Oman CIUS Schematron passed — 148 rules, 2 warnings.</td></tr>
+              <tr><td>1</td><td><b>Invoice posted in the ERP</b></td><td class="sub">09:14:02</td><td class="sub" style="white-space:normal">Billing document OIB-SINV-2026-00841 posted by A. Al-Balushi in Enterprise ERP. Document status set to Posted.</td></tr>
+              <tr><td>2</td><td><b>Collected by the Hub</b></td><td class="sub">09:14:04</td><td class="sub" style="white-space:normal">Method 1 — Direct API. The Hub called the billing document API. Raw payload 14.2 KB, field allowlist applied.</td></tr>
+              <tr><td>3</td><td><b>Mapped, built and validated</b></td><td class="sub">09:14:06</td><td class="sub" style="white-space:normal">Profile OIB/v3 applied. UBL 2.1 built. Oman CIUS Schematron passed — 148 rules, 2 warnings.</td></tr>
               <tr><td>4</td><td><b>Archived</b></td><td class="sub">09:14:06</td><td class="sub" style="white-space:normal">XML, validation report and audit trail written to the compliance archive before anything was transmitted.</td></tr>
               <tr><td>5</td><td><b>Transmitted to the ASP</b></td><td class="sub">09:14:07</td><td class="sub" style="white-space:normal">Accepted by the accredited provider in 372 ms. Peppol reference PEP-8842-2026.</td></tr>
               <tr><td>6</td><td><b>Outcomes tracked on three legs</b></td><td class="sub">09:16:41</td><td class="sub" style="white-space:normal">ASP accepted 09:14:07 · reported to the Tax Authority 09:15:52 · buyer delivery 09:16:41.</td></tr>
@@ -161,7 +161,7 @@
         <div class="f-qr-panel">
           <div id="qr"></div>
           <div class="f-qr-side">
-            <p class="f-note">Written back to the invoice and rendered by the SAP print format. The buyer can scan it to verify the invoice against the Tax Authority.</p>
+            <p class="f-note">Written back to the invoice and rendered by the Enterprise ERP print format. The buyer can scan it to verify the invoice against the Tax Authority.</p>
           </div>
         </div>
       </div>
@@ -192,14 +192,14 @@
     <div class="eyebrow">The end of the walkthrough</div>
     <h2>The loop is closed.</h2>
     <ol>
-      <li>The invoice left SAP S/4HANA on its own, as a normal billing document.</li>
+      <li>The invoice left Enterprise ERP on its own, as a normal billing document.</li>
       <li>It was mapped, built as UBL 2.1, validated against the Oman PINT-OM rules and archived.</li>
       <li>The Hub transmitted it to the accredited service provider, which reported it to the Oman Tax Authority and delivered it to the buyer.</li>
       <li>Its UUID, status, acknowledgement, Peppol reference and QR are ready to be collected from the Hub and shown on this billing document — the same screen the finance team already uses.</li>
     </ol>
-    <p class="f-note" style="margin:10px 0 0"><b style="color:var(--f-neg)">Step 4 is the entity&rsquo;s SAP team&rsquo;s work, not the Hub&rsquo;s.</b> The Hub&rsquo;s delivery ends where it publishes the data. Building the SAP-side write-back connector is a separately scoped, separately costed piece of work.</p>
+    <p class="f-note" style="margin:10px 0 0"><b style="color:var(--f-neg)">Step 4 is the entity&rsquo;s Enterprise ERP team&rsquo;s work, not the Hub&rsquo;s.</b> The Hub&rsquo;s delivery ends where it publishes the data. Building the Enterprise ERP-side write-back connector is a separately scoped, separately costed piece of work.</p>
     <div class="f-btnrow">
-      <a class="f-actbtn" href="invoices.html">↺ Start again from SAP</a>
+      <a class="f-actbtn" href="invoices.html">↺ Start again from Enterprise ERP</a>
       <a class="f-actbtn pri" href="../index.html">Screen map</a>
     </div>
   </div>

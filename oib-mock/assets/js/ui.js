@@ -1,5 +1,5 @@
 /* ==========================================================================
-   The Zubair Corporation — Central E-Invoicing Hub — shared UI component helpers
+   OIB Group — Central E-Invoicing Hub — shared UI component helpers
    Every function returns an HTML string. Pages compose them.
    ========================================================================== */
 
@@ -56,8 +56,7 @@ const PILL_MAP = {
   error:       ['fail', 'Error'],
   reprocessed: ['info', 'Reprocessed'],  submitted:   ['info', 'Submitted'],
   'self-hosted': ['warn', 'Self-hosted'], invited:    ['idle', 'Invited'],
-  held:        ['fail', 'Held'],         silent:      ['fail', 'No documents'],
-  'not-started': ['idle', 'Not started'], excluded:   ['idle', 'Excluded']
+  held:        ['fail', 'Held'],         silent:      ['fail', 'No documents']
 };
 function pill(key, label) {
   const m = PILL_MAP[String(key).toLowerCase()] || ['idle', key];

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Users &amp; Access — Zubair Central E-Invoicing Hub</title>
+<title>Users &amp; Access — OIB Group Central E-Invoicing Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -38,7 +38,7 @@
 <body class="surface-hub" data-surface="hub" data-nav="users"
       data-step="hub-users"
       data-crumbs="Configuration / Users &amp; Access"
-      data-hint="How each company is given its own login — and why the central team never sets or sees a password.">
+      data-hint="How each of the twelve companies is given its own login — and why the central team never sets or sees a password.">
 
 <main class="main">
   <div class="page">
@@ -79,7 +79,7 @@
           <div class="invite-bar">
             <div>
               <input class="input input-sm" id="inv-email" type="text" autocomplete="off"
-                     placeholder="name@zubaircorp.com">
+                     placeholder="name@oibgroup.example">
               <div class="field-help" id="inv-help">They set their own password and second factor on first sign-in.</div>
               <div class="field-err" id="inv-err" style="display:none"></div>
             </div>
@@ -132,8 +132,8 @@
 <script src="../assets/js/shell.js"></script>
 <script>
 (function () {
-  var ENT = tenant('ZCL');
-  var users = ENTITY_USERS.filter(function (u) { return u.who === 'ZCL'; }).slice();
+  var ENT = tenant('OIB');
+  var users = ENTITY_USERS.filter(function (u) { return u.who === 'OIB'; }).slice();
 
   /* ---- page sub ---------------------------------------------------------- */
   document.getElementById('page-sub').innerHTML =
@@ -277,7 +277,7 @@
       : (local.charAt(0).toUpperCase() + local.slice(1));
 
     var role = sel.value;
-    users.unshift({ name: name, email: v, role: role, state: 'invited', last: 'Invited just now', who: 'ZCL' });
+    users.unshift({ name: name, email: v, role: role, state: 'invited', last: 'Invited just now', who: 'OIB' });
     paint(v);
 
     ok.innerHTML = notice('ok',

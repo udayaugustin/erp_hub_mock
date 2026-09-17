@@ -1,11 +1,16 @@
-# Zubair Corporation Central E-Invoicing Hub · guided walkthrough
+# Oman Investment Bank Central E-Invoicing Hub · guided walkthrough
 
-A navigable prototype of the **central e-invoicing hub** proposed for **The Zubair Corporation
-VAT Group** — one Oman VAT Group (TRN `OM1200094685`), thirty-three legal entities across five ERP
-platforms, and a single pipe to the OTA (Fawtara / PINT-OM) through an accredited service provider.
-Twelve of the thirty-three are live or onboarding today and are followed end to end; the other
-twenty-one are the rest of the group's confirmed ERP inventory, staged for a later wave. See
-`ZUBAIR-REAL-ENTITIES.md` for the full roster and what's real vs invented.
+A navigable prototype of the **central e-invoicing hub** proposed for **the Oman Investment
+Bank Group VAT Group** — one Oman VAT Group (TRN `OM1200094685`), twelve group entities, four
+ERPs, and a single pipe to the OTA (Fawtara / PINT-OM) through an accredited service provider.
+
+**Only one thing about this mock is real: Oman Investment Bank (OIB) itself** — a government-owned
+corporate and investment bank, launched February 2024, regulated by the Central Bank of Oman (CBO)
+and the Financial Services Authority (FSA). OIB does not actually operate as a multi-entity VAT
+Group; the twelve-entity group structure below is invented for this demonstration, in the same
+spirit as a template roster, so the walkthrough's shape (twelve entities, four ERPs, one shared
+VAT filing) can be shown against OIB's own brand. See `OIB-REAL-ENTITIES.md` for exactly what's
+real and what's invented.
 
 Built to be **walked through by a client stakeholder**, not studied by an engineer. Each screen
 makes one point and then stops.
@@ -18,40 +23,33 @@ Open `index.html` in a browser. No build step, no server, no dependencies.
 
 To serve the whole tree instead (so the ERP, hub and portal surfaces resolve as siblings):
 
-    python3 -m http.server 8080   # then open http://localhost:8080/zubair-mock/
+    python3 -m http.server 8080   # then open http://localhost:8080/oib-mock/
 
 ## The story this mock tells
 
-**One VAT Group. Thirty-three issuers. One pipe to the OTA.**
+**One VAT Group. Twelve issuers. One pipe to the OTA.**
 
-Every member of the Zubair Corporation VAT Group invoices under the *same* group TRN
-`OM1200094685`. That is one filing identity — but thirty-three separate legal entities, spread
-across five ERP platforms. Twelve are already live or onboarding, and this walkthrough follows
-them end to end:
+Every member of the Oman Investment Bank Group VAT Group invoices under the *same* group TRN
+`OM1200094685`. That is one filing identity — but twelve separate group entities, spread across
+four different ERPs:
 
-- **SAP S/4HANA** — the lead entity, The Zubair Corporation LLC, plus three more (Al-Hilal
-  Investment, Oman Computer Services, Zakher Education Property Dev).
-- **Autoline 8.39** — six automotive entities, including the volume giant **General Automotive
-  Company LLC** (~66k simplified B2C invoices a month).
-- **Orion 11J** — Zakher Building Solutions LLC.
-- **FOCUS X** — Oasis Logistics LLC.
+- **Enterprise ERP** — the lead entity, Oman Investment Bank SAOC, plus three more (OIB Asset
+  Management, OIB Capital Markets, OIB Research & Advisory).
+- **High-Volume Billing** — six branch/merchant-services entities, including the volume giant
+  **OIB Digital Payments LLC** (~66k simplified B2C fee invoices a month).
+- **Finance Suite** — OIB Trade Finance Services LLC.
+- **Accounting System** — OIB Custody & Fund Services LLC.
 
-The other twenty-one — five ARA Petroleum companies on legacy SAP ECC, Zubair Electric, two water
-companies, the Holding company and its investment/property entities, and two more Autoline
-dealerships — are real names and real ERP platforms from the group's confirmed inventory, staged
-as Wave 3 on the Companies screen but not yet wired into invoices or mapping. One, Zubair
-Furnishing LLC, is under liquidation and explicitly excluded from onboarding.
+One filing identity, many group entities, several ERPs — which is exactly why a **central hub**
+is the natural normalization and reporting layer. The hub reads all four ERPs, produces one
+compliant PINT-OM document per invoice, and reports to the OTA through **one pipe** via the ASP,
+while keeping a per-entity compliance view over all twelve.
 
-One filing identity, many legal entities, several ERPs — which is exactly why a **central hub**
-is the natural normalization and reporting layer. The hub reads every ERP, produces one compliant
-PINT-OM document per invoice, and reports to the OTA through **one pipe** via the ASP, while
-keeping a per-entity compliance view over all thirty-three.
-
-The identity twist that makes this a hub case rather than thirty-three separate installs: although
-the group TRN is shared, **each entity is its own Peppol participant, distinguished on the invoice
-by its own Commercial Registration (CR)** — not by the VAT number. Registering, onboarding,
-routing and monitoring thirty-three participants (thirty-three CRs, endpoints and certificates)
-under one VAT-group return is the hub's whole reason to exist. See `ZUBAIR-QUESTIONS.md` Q1.
+The identity twist that makes this a hub case rather than twelve separate installs: although the
+group TRN is shared, **each entity is its own Peppol participant, distinguished on the invoice by
+its own Commercial Registration (CR)** — not by the VAT number. Registering, onboarding, routing
+and monitoring twelve participants (twelve CRs, twelve endpoints, twelve certificates) under one
+VAT-group return is the hub's whole reason to exist.
 
 ## How it is meant to be used
 
@@ -67,11 +65,11 @@ at. It can be dismissed with the × if you would rather narrate it yourself.
 | # | Screen | The one point it makes |
 |---|---|---|
 | | **I — It starts in their system** | |
-| 1 | ERP — Sales Invoices (SAP S/4HANA) | The invoice starts in the entity's own S/4HANA, which barely changes |
-| 2 | ERP — Counter & Service Sales (Autoline 8.39) | The group's second invoice origin — General Automotive's high-volume B2C counter and service sales, collected by Autoline and reported to the OTA in batches through the same Hub |
+| 1 | ERP — Sales Invoices (Enterprise ERP) | The invoice starts in the entity's own Enterprise ERP, which barely changes |
+| 2 | ERP — Branch & Merchant Services (High-Volume Billing) | The group's second invoice origin — OIB Digital Payments's high-volume B2C branch and fee-service sales, collected by High-Volume Billing and reported to the OTA in batches through the same Hub |
 | | **II — The group, and the entities in it** | |
 | 3 | Hub — Sign in | The group platform team logs in |
-| 4 | Hub — Group Dashboard | All thirty-three entities, including any that have gone quiet |
+| 4 | Hub — Group Dashboard | All twelve entities, including any that have gone quiet |
 | 5 | Hub — Entities | How each connects, which ERP, which wave |
 | 6 | Hub — Entity detail | What that entity supplied, its own CR, the shared group VATIN |
 | | **III — Bringing an entity on** | |
@@ -95,7 +93,7 @@ at. It can be dismissed with the × if you would rather narrate it yourself.
 
 Screens 1, 10, 17 and 18 follow one document end to end, so the walkthrough closes a loop:
 
-**`ZCL-SINV-2026-00841`** — issued by the lead entity **The Zubair Corporation LLC** (CR `1008431`,
+**`OIB-SINV-2026-00841`** — issued by the lead entity **Oman Investment Bank SAOC** (CR `1008431`,
 shared VATIN `OM1200094685`, Peppol `0248:1008431`) to **Muscat Bay Hospitality LLC**. Six lines,
 PO-88213, dated 18-08-2026. Net **48,200.000**, VAT **2,410.000**, total **50,610.000 OMR**.
 Status: Posted / Acknowledged. ACK `ASP-OM-2026-0818-44718`, Peppol ref `PEP-8842-2026`, OTA ref
@@ -107,19 +105,19 @@ All light. The colour tells the viewer which system they are in without anyone h
 
 | Surface | Colour | Screens | Reads as |
 |---|---|---|---|
-| **ERP** | Neutral graphite | 1, 2, 18 | *Their existing systems — SAP S/4HANA and Autoline — deliberately unbranded* |
-| **Hub** | Hub navy `#1F4585` + group gold `#EDAF4A` | 3–15 | *The central platform we are building* |
+| **ERP** | Neutral graphite | 1, 2, 18 | *Their existing systems — Enterprise ERP and High-Volume Billing — deliberately unbranded* |
+| **Hub** | OIB navy `#12395B` + OIB amber `#E8762E` | 3–15 | *The central platform we are building, in OIB's own brand colours* |
 | **Portal** | Footer green `#143331` | 16–17 | *One entity's own workspace* |
 
 Headings are set in **Bahnschrift**, a Windows-only DIN, with **Barlow Semi Condensed** standing
-in as the closest webfont; body text is Archivo; and IBM Plex Mono carries every identifier,
+in as the closest webfont; body text is Inter/Archivo; and IBM Plex Mono carries every identifier,
 amount and XML fragment.
 
 The ERP surface is the one deliberate exception — it stays neutral grey and is styled to read as
-the entity's own system: **SAP S/4HANA** on screens 1 and 18, and **Autoline 8.39** on screen 2,
-the group's second invoice origin (General Automotive's B2C counter sales). The point of all three
-is that the entity's existing system barely changes. If it wore the group brand it would look like
-something we built.
+the entity's own system: **Enterprise ERP** on screens 1 and 18, and **High-Volume Billing** on
+screen 2, the group's second invoice origin (OIB Digital Payments's B2C branch sales). The point
+of all three is that the entity's existing system barely changes. If it wore the group brand it
+would look like something we built.
 
 The hub co-brands with **Fawtara X** (the ASP mark) in its footer — the compliant document and the
 report to the OTA leave through that provider, not the hub itself.
@@ -144,13 +142,12 @@ And several things it is emphatic about, which the prototype must get right:
 - **Method 1 — Direct API**, **Method 2 — On-site agent**, **Method 3 — Secure file transfer**.
   Not "Tier 1/2/3". Not "File drop".
 - **Entity** or **company**, not "tenant", in anything a viewer reads.
-- **One VAT Group, thirty-three legal entities** (twelve live/onboarding, twenty-one staged for
-  Wave 3, one excluded). The group TRN `OM1200094685` is a shared *data field*; the **CR (IBT-029,
-  scheme `CR`) distinguishes each member** as the seller identifier, with the shared VATIN
-  (IBT-031) as the VAT identifier. Never merge the members into one identity.
-- **Batch B2C.** General Automotive's ~66k/month simplified invoices are reported to the OTA in
-  **batches from Autoline**, not cleared live at the point of sale. This is flagged as an
-  *Assumption · to confirm with Zubair* on the relevant screen.
+- **One VAT Group, twelve group entities.** The group TRN `OM1200094685` is a shared *data field*;
+  the **CR (IBT-029, scheme `CR`) distinguishes the twelve members** as the seller identifier, with
+  the shared VATIN (IBT-031) as the VAT identifier. Never merge the twelve into one identity.
+- **Batch B2C.** OIB Digital Payments's ~66k/month simplified fee invoices are reported to the OTA
+  in **batches from High-Volume Billing**, not cleared live at the point of sale. This is flagged
+  as an *Assumption · to confirm with the group* on the relevant screen.
 - **The OTA does not clear or reject invoices.** The ASP validates and may reject, and the ASP —
   not the hub — reports the Tax Data Document to the OTA.
 - **Outcomes are asynchronous on three separate legs.** Never one synchronous round trip.
@@ -164,8 +161,9 @@ And several things it is emphatic about, which the prototype must get right:
 
     index.html              the six acts and eighteen steps — the entry point
     GAP-REGISTER.md         audit of the prototype against the proposal
+    OIB-REAL-ENTITIES.md    what's real about OIB, and what's invented about the group roster
     assets/css/app.css      design system: tokens for the three surfaces, every component
-    assets/js/data.js       the demonstration dataset (33 entities, one tracked invoice)
+    assets/js/data.js       the demonstration dataset (12 entities, one tracked invoice)
     assets/js/ui.js         component helpers that return HTML strings
     assets/js/shell.js      ACTS + WALKTHROUGH order, sidebar, toolbar, hints, step nav
     erp/ hub/ portal/       the screens
@@ -189,32 +187,33 @@ single screen.
 
 ## The data
 
-`assets/js/data.js` holds an illustrative dataset for the **Zubair Corporation VAT Group** —
-thirty-three legal entities, all sharing VATIN `OM1200094685`, each with its own CR. Shapes are
-real: VATIN `OM` + 10 digits, Peppol participant scheme `0248` over the entity's CR, OMR to three
+`assets/js/data.js` holds an illustrative dataset for **the Oman Investment Bank Group** —
+twelve group entities, all sharing VATIN `OM1200094685`, each with its own CR. Shapes are real:
+VATIN `OM` + 10 digits, Peppol participant scheme `0248` over the entity's CR, OMR to three
 decimals, 5% standard VAT, and real PINT-OM business-term and rule identifiers.
 
-All thirty-three are **real Zubair Corporation companies**, each with its **real ERP platform** —
-see `ZUBAIR-REAL-ENTITIES.md` for the roster and its provenance — so the group recognises itself on
-screen. Twelve are wired end to end (invoices, mapping, queue); the other twenty-one appear on the
-Companies screen as Wave 3, not yet started. They span five ERP platforms (SAP S/4HANA, SAP ECC
-legacy, Autoline 8.39, Orion 11J, FOCUS/FOCUS X) and sectors from Oil & Gas to Automotive, Water,
-Electrical, Real Estate, Education and Investment.
+The twelve entities are **invented business units of a fictional Oman Investment Bank Group** —
+see `OIB-REAL-ENTITIES.md` for exactly what's real (the OIB parent, its government ownership,
+Feb-2024 launch and CBO/FSA regulation) versus invented (everything about the twelve-entity group
+structure). They span four ERPs and eight illustrative sectors: Corporate & Investment Banking,
+Asset Management, Capital Markets, Research & Advisory, Trade Finance, Fund & Custody Services,
+Treasury Operations and Payments & Merchant Services.
 
 The demo clock is **Tuesday 18 August 2026, 10:42 GST**. The day matters: the Omani working week
 runs Sunday to Thursday, so a busy weekday has to fall inside it.
 
-> **The company names are real. Nothing attached to them is.** CR numbers, the shared VAT number,
-> ERP versions, connection methods, volumes, failure counts, wave assignments and onboarding states
-> are all invented, and none of it is a statement about how those companies actually operate.
-> Counterparties, people and email addresses (`@zubaircorp.com`) are fictional on purpose.
+> **Only Oman Investment Bank's name, government ownership, February 2024 launch and CBO/FSA
+> regulation are real.** The multi-entity group structure, all subsidiary names, CR/VAT numbers,
+> ERPs, volumes and the tracked invoice are invented for this demonstration — OIB does not
+> actually operate as a multi-entity VAT Group. Counterparties, people and email addresses
+> (`@oibgroup.example`) are fictional on purpose.
 
 ## Notes for presenting
 
 - Every number on screen is derived from `data.js` or computed in the page. Totals reconcile with
   the rows above them, and the same figure does not disagree with itself across two screens.
 - Screens 9 and 10 follow the same invoice through consecutive stages. Screens 1, 17 and 18 all
-  show `ZCL-SINV-2026-00841`, so the walkthrough closes a loop on one document.
+  show `OIB-SINV-2026-00841`, so the walkthrough closes a loop on one document.
 - The mapping screen is genuinely operable. Changing a transform recomputes the preview —
   switching the buyer name from `trim|upper` to `trim` visibly changes its case. That interaction
   is the point of the screen.
