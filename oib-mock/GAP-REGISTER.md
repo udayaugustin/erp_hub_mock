@@ -1,9 +1,8 @@
-# Zubair hub mock — gap register against the proposal
-Re-pointed 18 Aug 2026 for The Zubair Corporation VAT Group presentation. This build is a clone of
-the proven multi-entity hub; the rules below are inherited from that build's audit and re-targeted
-to the thirty-three-entity, single-VAT-group Zubair story (twelve live/onboarding, twenty-one
-staged for Wave 3, one excluded for liquidation). `tools/verify.py` enforces them as a lint
-over the user-visible markup and fails on any hit.
+# the OIB hub mock — gap register against the proposal
+Re-pointed 16 Sep 2026 for the Oman Investment Bank Group VAT Group presentation. This build is a
+clone of the proven multi-entity hub; the rules below are inherited from that build's audit and
+re-targeted to the twelve-entity, single-VAT-group OIB Group story. `tools/verify.py` enforces
+them as a lint over the user-visible markup and fails on any hit.
 
 ---
 
@@ -30,16 +29,16 @@ over the user-visible markup and fails on any hit.
 | B5 | "Appendix D", "Base64 TLV" QR | **"QR information"** only (Appendix D / TLV is Saudi ZATCA) |
 | B6 | "Rejected / cleared by the tax authority" | The **ASP** validates and may reject; **the OTA does not adjudicate invoices** |
 | B7 | "Reported by the Hub to the OTA" | **The ASP** reports the Tax Data Document to the OTA, not the hub |
-| B8 | Any clone-drift string: Towell / WJ Towell / WJT- / ERPNext / Odoo / Oracle E-Business / Enhance / Orbit / Readymix / Mazoon / "89 entities" / "Nazm" | Zubair entity names, five ERPs (SAP S/4HANA, SAP ECC legacy, Autoline 8.39, Orion 11J, FOCUS/FOCUS X), **thirty-three entities**, "the central hub" |
+| B8 | Any clone-drift string: Towell / WJ Towell / WJT- / ERPNext / Odoo / Oracle E-Business / Enhance / Orbit / Readymix / Mazoon / "89 entities" / "Nazm" | the group entity names, four ERPs (Enterprise ERP, High-Volume Billing, Finance Suite, Accounting System), **twelve entities**, "the central hub" |
 
 ## C. The single-group identity model — get this right
 
 | # | Rule | Why |
 |---|---|---|
-| C1 | **One VAT Group, thirty-three legal entities** (twelve live/onboarding, twenty-one staged for Wave 3, one excluded for liquidation). All thirty-three share VATIN `OM1200094685`. | The shared TRN is one filing identity; do not present it as thirty-three VAT registrations. |
-| C2 | **The CR distinguishes each member.** Seller identifier IBT-029, scheme `CR` (CL-06-OM) = the entity's own Commercial Registration. | This is the identity that keeps the members apart; the shared VATIN (IBT-031) is a data field. |
-| C3 | **Thirty-three Peppol participants**, each `0248:<CR>` — thirty-three endpoints, thirty-three certificates. | Never collapse the members into one shared technical identity. See `ZUBAIR-QUESTIONS.md` Q1. |
-| C4 | **Batch B2C.** General Automotive's ~66k/month simplified invoices are reported in **batches from Autoline**, not live at point of sale — carry the *"Assumption · to confirm with Zubair"* card. | Load-bearing demo assumption. See `ZUBAIR-QUESTIONS.md` Q2. |
+| C1 | **One VAT Group, twelve legal entities.** All share VATIN `OM1200094685`. | The shared TRN is one filing identity; do not present it as twelve VAT registrations. |
+| C2 | **The CR distinguishes the twelve.** Seller identifier IBT-029, scheme `CR` (CL-06-OM) = the entity's own Commercial Registration. | This is the identity that keeps the twelve apart; the shared VATIN (IBT-031) is a data field. |
+| C3 | **Twelve Peppol participants**, each `0248:<CR>` — twelve endpoints, twelve certificates. | Never collapse the members into one shared technical identity. |
+| C4 | **Batch B2C.** OIB Digital Payments's ~66k/month simplified invoices are reported in **batches from High-Volume Billing**, not live at point of sale — carry the *"Assumption · to confirm with the group"* card. | Load-bearing demo assumption. |
 
 ## D. Flows the prototype must show (inherited from the proposal)
 
@@ -55,8 +54,8 @@ over the user-visible markup and fails on any hit.
 ## E. Numbers must reconcile
 
 Totals reconcile with the rows above them; the same figure does not disagree with itself across
-two screens. Entity counts reconcile to **thirty-three** everywhere (twelve live/onboarding,
-twenty-one Wave 3, one excluded). GROUP totals equal the sum of their entities. VATIN `OM` + 10 digits; Peppol scheme `0248`; OMR at three decimals; 5% VAT arithmetic
+two screens. Entity counts reconcile to **twelve** everywhere. GROUP totals equal the sum of their
+entities. VATIN `OM` + 10 digits; Peppol scheme `0248`; OMR at three decimals; 5% VAT arithmetic
 correct on every amount; zero-rated exports correctly zeroed. No commercial figure anywhere. Every
 screen carries a disclaimer.
 
@@ -64,7 +63,8 @@ screen carries a disclaimer.
 
 All counterparties are **invented** (Muscat Bay Hospitality, Sohar Steel Rolling, Directorate
 General of Roads, Jebel Ali Equipment Trading FZE, Al Batinah Logistics Services, Salalah Port
-Services, Nizwa Auto Spares; suppliers Falaj Industrial Supplies, Ruwi Marine Contracting, Barka
-Freight Forwarding, Muscat Tyre & Battery). Never use a real Omani or UAE company as a fictional
-buyer with an invented VAT number. The only real names in the dataset are the thirty-three Zubair
-VAT-group entities themselves — see `ZUBAIR-REAL-ENTITIES.md`.
+Services, Nizwa Auto Spares; suppliers Falaj Facilities Management, Ruwi Security Services, Barka
+Office Solutions, Muscat IT Systems & Support). Never use a real Omani or UAE company as a
+fictional buyer with an invented VAT number. Unlike the other mocks in this repo, the twelve
+VAT-group entities here are **also invented** — the only real name in the whole dataset is the
+OIB parent brand itself. See `OIB-REAL-ENTITIES.md`.

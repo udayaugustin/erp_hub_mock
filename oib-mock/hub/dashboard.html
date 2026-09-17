@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Group Dashboard — Zubair Central E-Invoicing Hub</title>
+<title>Group Dashboard — OIB Group Central E-Invoicing Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -210,7 +210,7 @@
       stat({ label: 'In flight now', value: num(GROUP.todayPending),
              meta: 'Moving through the nine stages', tone: 'var(--warn)' }),
       stat({ label: 'Companies live', value: `${GROUP.live}<span style="font-size:15px;color:var(--text-lo)"> / ${GROUP.entities}</span>`,
-             meta: `${GROUP.onboarding} onboarding · ${GROUP.notStarted} not started · ${GROUP.excluded} excluded`, tone: 'var(--accent)' })
+             meta: `${GROUP.onboarding} onboarding · ${GROUP.notStarted} not started`, tone: 'var(--accent)' })
     ].join('');
     document.getElementById('periodNote').innerHTML = p.note;
   }

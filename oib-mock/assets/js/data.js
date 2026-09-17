@@ -1,15 +1,15 @@
 /* ==========================================================================
-   The Zubair Corporation — Central E-Invoicing Hub · demonstration dataset
+   OIB Group — Central E-Invoicing Hub · demonstration dataset
 
-   The twelve entities are REAL members of ONE Oman VAT Group — The Zubair
-   Corporation VAT Group, TRN OM1200094685 — so the group recognises itself.
-   Everything attached to them is INVENTED: volumes, failure counts, ERP
-   versions, connection state, commercial registrations and onboarding status.
-   None of it is a statement about how those companies actually operate.
-   Counterparties are fictional on purpose — see CUSTOMERS / SUPPLIERS.
+   The twelve entities are ILLUSTRATIVE members of ONE Oman VAT Group — The
+   Oman Investment Bank Group VAT Group, TRN OM1200094685. The names (OIB, OAM, OCM …) are
+   generic placeholders on purpose, so this hub can be shown at any client
+   presentation without rebranding. Everything else is invented too: volumes,
+   failure counts, ERP versions, connection state, commercial registrations
+   and onboarding status. Counterparties are fictional — see CUSTOMERS / SUPPLIERS.
 
    THE STORY: one VAT Group, twelve legal entities, four different ERPs
-   (SAP S/4HANA, Autoline, Orion 11J, FOCUS X). Every member invoices under
+   (Enterprise ERP, High-Volume Billing, Finance Suite, Accounting System). Every member invoices under
    the SAME shared group TRN — which is exactly why a single central hub is
    the natural place to normalise, validate and report to the OTA through one
    pipe.
@@ -27,8 +27,8 @@
    onboarding portal.)
 
    Shapes are real: Omani VATIN OM + 10 digits, Peppol scheme 0248, OMR to
-   3 decimals, 5% standard VAT. Source of the roster and volumes: the Oman
-   E-Invoicing entity tracker, "Entity Level" sheet.
+   3 decimals, 5% standard VAT. The roster and volumes are illustrative — a
+   generic twelve-company group sized to look like a real one.
 
    Demo clock: Tuesday 18 August 2026, 10:42 GST.
    Tuesday matters — the Omani working week is Sunday to Thursday, so a
@@ -57,269 +57,129 @@ const METHODS = {
 };
 
 /* --- entities --------------------------------------------------------------
-   Twelve members of The Zubair Corporation VAT Group (TRN OM1200094685).
+   Twelve members of The Oman Investment Bank Group VAT Group (TRN OM1200094685).
    All share the group VATIN; each carries its own commercial registration.
-   The companies and ERPs are real; volumes, versions, VAT/CR numbers and
-   states attached to them are illustrative.                                 */
+   The companies, ERPs, volumes, versions and VAT/CR numbers are all
+   illustrative placeholders — generic on purpose.                          */
 const TENANTS = [
   {
-    id: 'ZCL', code: 'ZUB-001', name: 'The Zubair Corporation LLC', short: 'Zubair Corporation',
-    sector: 'Corporate', city: 'Muscat', vatin: GROUP_TRN, cr: '1008431', peppol: '0248:1008431',
-    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
+    id: 'OIB', code: 'GRP-001', name: 'Oman Investment Bank SAOC', short: 'Oman Investment Bank',
+    sector: 'Corporate & Investment Banking', city: 'Muscat', vatin: GROUP_TRN, cr: '1008431', peppol: '0248:1008431',
+    erp: 'Enterprise ERP', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
+    conn: 'OData v4 — billing document API',
     status: 'live', wave: 1, health: 'ok', mapped: 46, mapTotal: 47, sync: '1 min ago',
     today: 8, mtd: 96, failed: 3, pending: 3, success: 99.2, inbound: true, inToday: 6
   },
   {
-    id: 'AHI', code: 'ZUB-002', name: 'Al-Hilal Investment Co LLC', short: 'Al-Hilal Investment',
+    id: 'OAM', code: 'GRP-002', name: 'OIB Asset Management LLC', short: 'OIB Asset Management',
     sector: 'Investment', city: 'Muscat', vatin: GROUP_TRN, cr: '1044190', peppol: '0248:1044190',
-    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
+    erp: 'Enterprise ERP', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
+    conn: 'OData v4 — billing document API',
     status: 'live', wave: 1, health: 'ok', mapped: 45, mapTotal: 47, sync: '7 min ago',
     today: 1, mtd: 12, failed: 0, pending: 0, success: 100, inbound: true, inToday: 2
   },
   {
-    id: 'OCS', code: 'ZUB-003', name: 'Oman Computer Services LLC', short: 'Oman Computer Services',
-    sector: 'Digital & IT', city: 'Muscat', vatin: GROUP_TRN, cr: '1019884', peppol: '0248:1019884',
-    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
+    id: 'OCM', code: 'GRP-003', name: 'OIB Capital Markets LLC', short: 'OIB Capital Markets',
+    sector: 'Capital Markets', city: 'Muscat', vatin: GROUP_TRN, cr: '1019884', peppol: '0248:1019884',
+    erp: 'Enterprise ERP', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
+    conn: 'OData v4 — billing document API',
     status: 'live', wave: 1, health: 'ok', mapped: 45, mapTotal: 46, sync: '3 min ago',
     today: 9, mtd: 150, failed: 0, pending: 1, success: 99.5, inbound: true, inToday: 14
   },
   {
-    id: 'ZED', code: 'ZUB-004', name: 'Zakher Education Property Dev Co LLC', short: 'Zakher Education',
-    sector: 'Education', city: 'Muscat', vatin: GROUP_TRN, cr: '1122870', peppol: '0248:1122870',
-    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
+    id: 'ORA', code: 'GRP-004', name: 'OIB Research & Advisory LLC', short: 'OIB Research & Advisory',
+    sector: 'Research & Advisory', city: 'Muscat', vatin: GROUP_TRN, cr: '1122870', peppol: '0248:1122870',
+    erp: 'Enterprise ERP', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
+    conn: 'OData v4 — billing document API',
     status: 'onboarding', wave: 3, health: 'warn', mapped: 20, mapTotal: 44, sync: '5 hr ago',
     today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0,
     silent: true, silentFor: '5 hr'
   },
   {
-    id: 'ZBS', code: 'ZUB-005', name: 'Zakher Building Solutions LLC', short: 'Zakher Building',
-    sector: 'Real Estate', city: 'Muscat', vatin: GROUP_TRN, cr: '1090552', peppol: '0248:1090552',
-    erp: 'Orion 11J', erpVer: '11J', method: 1, deploy: 'hub',
-    conn: 'Orion 11J REST — AR invoice',
+    id: 'OTF', code: 'GRP-005', name: 'OIB Trade Finance Services LLC', short: 'OIB Trade Finance',
+    sector: 'Trade Finance', city: 'Muscat', vatin: GROUP_TRN, cr: '1090552', peppol: '0248:1090552',
+    erp: 'Finance Suite', erpVer: '11J', method: 1, deploy: 'hub',
+    conn: 'Finance Suite REST — AR invoice',
     status: 'live', wave: 2, health: 'ok', mapped: 41, mapTotal: 44, sync: '12 min ago',
     today: 12, mtd: 95, failed: 1, pending: 2, success: 98.2, inbound: true, inToday: 5
   },
   {
-    id: 'OLG', code: 'ZUB-006', name: 'Oasis Logistics LLC', short: 'Oasis Logistics',
-    sector: 'Logistics', city: 'Muscat', vatin: GROUP_TRN, cr: '1067213', peppol: '0248:1067213',
-    erp: 'FOCUS X', erpVer: 'X', method: 1, deploy: 'hub',
-    conn: 'FOCUS X REST — sales invoice',
+    id: 'OCF', code: 'GRP-006', name: 'OIB Custody & Fund Services LLC', short: 'OIB Custody & Fund Services',
+    sector: 'Fund & Custody Services', city: 'Muscat', vatin: GROUP_TRN, cr: '1067213', peppol: '0248:1067213',
+    erp: 'Accounting System', erpVer: 'X', method: 1, deploy: 'hub',
+    conn: 'Accounting System REST — sales invoice',
     status: 'live', wave: 1, health: 'ok', mapped: 44, mapTotal: 45, sync: '4 min ago',
     today: 66, mtd: 880, failed: 3, pending: 4, success: 99.1, inbound: true, inToday: 22
   },
   {
-    id: 'DAU', code: 'ZUB-007', name: 'Dhofar Automotive LLC', short: 'Dhofar Automotive',
-    sector: 'Automotive', city: 'Salalah', vatin: GROUP_TRN, cr: '2013447', peppol: '0248:2013447',
-    erp: 'Autoline 8.39', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
-    conn: 'Autoline API — invoice extract',
+    id: 'OSP', code: 'GRP-007', name: 'OIB Salalah Payment Services LLC', short: 'OIB Salalah Payments',
+    sector: 'Payments & Merchant Services', city: 'Salalah', vatin: GROUP_TRN, cr: '2013447', peppol: '0248:2013447',
+    erp: 'High-Volume Billing', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
+    conn: 'billing API — invoice extract',
     status: 'live', wave: 2, health: 'ok', mapped: 43, mapTotal: 46, sync: '9 min ago',
     today: 12, mtd: 80, failed: 0, pending: 1, success: 99.4, inbound: true, inToday: 4
   },
   {
-    id: 'ZAG', code: 'ZUB-008', name: 'Zubair Automotive Group LLC', short: 'Zubair Automotive',
-    sector: 'Automotive', city: 'Muscat', vatin: GROUP_TRN, cr: '1055829', peppol: '0248:1055829',
-    erp: 'Autoline 8.39', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
-    conn: 'Autoline API — invoice extract',
+    id: 'OCC', code: 'GRP-008', name: 'OIB Corporate Card Services LLC', short: 'OIB Corporate Cards',
+    sector: 'Payments & Merchant Services', city: 'Muscat', vatin: GROUP_TRN, cr: '1055829', peppol: '0248:1055829',
+    erp: 'High-Volume Billing', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
+    conn: 'billing API — invoice extract',
     status: 'live', wave: 2, health: 'ok', mapped: 44, mapTotal: 46, sync: '6 min ago',
     today: 22, mtd: 340, failed: 1, pending: 2, success: 99.2, inbound: true, inToday: 9
   },
   {
-    id: 'GAC', code: 'ZUB-009', name: 'General Automotive Company LLC', short: 'General Automotive',
-    sector: 'Automotive', city: 'Muscat', vatin: GROUP_TRN, cr: '1002715', peppol: '0248:1002715',
-    erp: 'Autoline 8.39', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
-    conn: 'Autoline API — invoice extract · high-volume B2C',
+    id: 'ODP', code: 'GRP-009', name: 'OIB Digital Payments LLC', short: 'OIB Digital Payments',
+    sector: 'Payments & Merchant Services', city: 'Muscat', vatin: GROUP_TRN, cr: '1002715', peppol: '0248:1002715',
+    erp: 'High-Volume Billing', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
+    conn: 'billing API — invoice extract · high-volume B2C',
     status: 'live', wave: 1, health: 'ok', mapped: 45, mapTotal: 46, sync: '2 min ago',
     today: 3105, mtd: 41000, failed: 12, pending: 38, success: 99.2, inbound: true, inToday: 55,
-    note: 'Highest-volume member — showroom, parts and service counters. Simplified B2C invoices are reported to the OTA in batches from Autoline, not cleared live at point of sale.'
+    note: 'Highest-volume member — branch counters and digital service centres. Simplified B2C fee invoices are reported to the OTA in batches from High-Volume Billing, not cleared live at point of sale.'
   },
   {
-    id: 'IHE', code: 'ZUB-010', name: 'International Heavy Equipment LLC', short: 'Intl Heavy Equipment',
-    sector: 'Automotive', city: 'Muscat', vatin: GROUP_TRN, cr: '1033960', peppol: '0248:1033960',
-    erp: 'Autoline 8.39', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
-    conn: 'Autoline API — invoice extract',
+    id: 'OTR', code: 'GRP-010', name: 'OIB Treasury Operations LLC', short: 'OIB Treasury',
+    sector: 'Treasury Operations', city: 'Muscat', vatin: GROUP_TRN, cr: '1033960', peppol: '0248:1033960',
+    erp: 'High-Volume Billing', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
+    conn: 'billing API — invoice extract',
     status: 'live', wave: 2, health: 'ok', mapped: 44, mapTotal: 46, sync: '5 min ago',
     today: 210, mtd: 2700, failed: 3, pending: 6, success: 99.3, inbound: true, inToday: 18
   },
   {
-    id: 'ZES', code: 'ZUB-011', name: 'Zubair Enterprises Southern LLC', short: 'Zubair Enterprises S.',
-    sector: 'Automotive', city: 'Salalah', vatin: GROUP_TRN, cr: '2011208', peppol: '0248:2011208',
-    erp: 'Autoline 8.39', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
-    conn: 'Autoline API — invoice extract',
+    id: 'OSH', code: 'GRP-011', name: 'OIB Coastal Payment Solutions LLC', short: 'OIB Coastal Payments',
+    sector: 'Payments & Merchant Services', city: 'Salalah', vatin: GROUP_TRN, cr: '2011208', peppol: '0248:2011208',
+    erp: 'High-Volume Billing', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
+    conn: 'billing API — invoice extract',
     status: 'onboarding', wave: 3, health: 'warn', mapped: 22, mapTotal: 46, sync: '6 hr ago',
     today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0,
     silent: true, silentFor: '6 hr'
   },
   {
-    id: 'SAY', code: 'ZUB-012', name: 'Sayarti LLC', short: 'Sayarti',
-    sector: 'Automotive', city: 'Muscat', vatin: GROUP_TRN, cr: '1108734', peppol: '0248:1108734',
-    erp: 'Autoline 8.39', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
-    conn: 'Autoline API — invoice extract',
+    id: 'OMS', code: 'GRP-012', name: 'OIB Merchant Settlement LLC', short: 'OIB Merchant Settlement',
+    sector: 'Payments & Merchant Services', city: 'Muscat', vatin: GROUP_TRN, cr: '1108734', peppol: '0248:1108734',
+    erp: 'High-Volume Billing', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
+    conn: 'billing API — invoice extract',
     status: 'live', wave: 2, health: 'ok', mapped: 44, mapTotal: 46, sync: '8 min ago',
     today: 205, mtd: 2650, failed: 2, pending: 5, success: 99.4, inbound: true, inToday: 12
-  },
-
-  /* --- Wave 3: the rest of the group's real ERP inventory ------------------
-     Twenty-one more real Zubair Group entities, confirmed against the client's
-     ERP inventory ("Entity Level" sheet). Names and ERP platforms are real;
-     CR numbers, volumes and onboarding state remain invented placeholders,
-     same convention as the twelve above. None has started onboarding — ERP
-     assessment is under way — except Zubair Furnishing LLC, which is under
-     liquidation and is explicitly excluded from this rollout.              */
-  { id: 'ARP',  code: 'ZUB-013', name: 'ARA Petroleum LLC', short: 'ARA Petroleum',
-    sector: 'Oil & Gas', city: 'Muscat', vatin: GROUP_TRN, cr: '1200011', peppol: '0248:1200011',
-    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
-    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0,
-    note: 'One of five ARA Petroleum companies still on legacy SAP ECC — ERP inventory confirmed, connection not yet assessed.' },
-  { id: 'AP44', code: 'ZUB-014', name: 'ARA Petroleum Oman B44 Limited', short: 'ARA Petroleum B44',
-    sector: 'Oil & Gas', city: 'Muscat', vatin: GROUP_TRN, cr: '1200012', peppol: '0248:1200012',
-    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
-    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'AP31', code: 'ZUB-015', name: 'ARA Petroleum Oman B31 Limited', short: 'ARA Petroleum B31',
-    sector: 'Oil & Gas', city: 'Muscat', vatin: GROUP_TRN, cr: '1200013', peppol: '0248:1200013',
-    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
-    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'APEP', code: 'ZUB-016', name: 'ARA Petroleum Exploration and Production LLC', short: 'ARA Petroleum E&P',
-    sector: 'Oil & Gas', city: 'Muscat', vatin: GROUP_TRN, cr: '1200014', peppol: '0248:1200014',
-    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
-    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'ANR',  code: 'ZUB-017', name: 'ARA Natural Resources LLC', short: 'ARA Natural Resources',
-    sector: 'Oil & Gas', city: 'Muscat', vatin: GROUP_TRN, cr: '1200015', peppol: '0248:1200015',
-    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
-    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'OOI',  code: 'ZUB-018', name: 'Oman Oil Industry Supplies and Services Co. LLC', short: 'Oman Oil Industry Supplies',
-    sector: 'Oil & Gas Services', city: 'Muscat', vatin: GROUP_TRN, cr: '1200016', peppol: '0248:1200016',
-    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'ZOG',  code: 'ZUB-019', name: 'Zubair Oil & Gas LLC', short: 'Zubair Oil & Gas',
-    sector: 'Oil & Gas', city: 'Muscat', vatin: GROUP_TRN, cr: '1200017', peppol: '0248:1200017',
-    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'MCA',  code: 'ZUB-020', name: 'Muscat Commercial Agencies LLC', short: 'Muscat Commercial Agencies',
-    sector: 'Trading', city: 'Muscat', vatin: GROUP_TRN, cr: '1200018', peppol: '0248:1200018',
-    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'OCI',  code: 'ZUB-021', name: 'Oman Chemicals Industry Company LLC', short: 'Oman Chemicals Industry',
-    sector: 'Chemicals', city: 'Muscat', vatin: GROUP_TRN, cr: '1200019', peppol: '0248:1200019',
-    erp: 'FOCUS', erpVer: 'Focus 9', method: 1, deploy: 'hub',
-    conn: 'FOCUS REST — sales invoice',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'BIG',  code: 'ZUB-022', name: 'Business International Group LLC', short: 'Business International Group',
-    sector: 'Corporate', city: 'Muscat', vatin: GROUP_TRN, cr: '1200020', peppol: '0248:1200020',
-    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'ZEL',  code: 'ZUB-023', name: 'Zubair Electric LLC', short: 'Zubair Electric',
-    sector: 'Electrical', city: 'Muscat', vatin: GROUP_TRN, cr: '1200021', peppol: '0248:1200021',
-    erp: 'Orion 11J', erpVer: '11J', method: 1, deploy: 'hub',
-    conn: 'Orion 11J REST — AR invoice',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 44, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'FTS',  code: 'ZUB-024', name: 'Federal Transformers & Switchgears LLC', short: 'Federal Transformers & Switchgears',
-    sector: 'Electrical', city: 'Muscat', vatin: GROUP_TRN, cr: '1200022', peppol: '0248:1200022',
-    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'TZH',  code: 'ZUB-025', name: 'The Zubair Holding Company SAOC', short: 'Zubair Holding',
-    sector: 'Holding', city: 'Muscat', vatin: GROUP_TRN, cr: '1200023', peppol: '0248:1200023',
-    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'INM',  code: 'ZUB-026', name: 'Inma Property Development LLC', short: 'Inma Property Development',
-    sector: 'Real Estate', city: 'Muscat', vatin: GROUP_TRN, cr: '1200024', peppol: '0248:1200024',
-    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'MAZ',  code: 'ZUB-027', name: 'Mohammed Al Zubair Ali', short: 'Mohammed Al Zubair Ali',
-    sector: 'Individual establishment', city: 'Muscat', vatin: GROUP_TRN, cr: '1200025', peppol: '0248:1200025',
-    erp: 'SAP S/4HANA', erpVer: '2025 FPS02', method: 1, deploy: 'hub',
-    conn: 'OData v4 — API_BILLING_DOCUMENT_SRV (BAPI / CPI)',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 47, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0,
-    note: 'An individual establishment, not an LLC — filing under the same VAT Group TRN as its own Peppol participant.' },
-  { id: 'FMI',  code: 'ZUB-028', name: 'First Modern Investment SPC', short: 'First Modern Investment',
-    sector: 'Investment', city: 'Muscat', vatin: GROUP_TRN, cr: '1200026', peppol: '0248:1200026',
-    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
-    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'OWC',  code: 'ZUB-029', name: 'Oasis Water Co SAOC', short: 'Oasis Water',
-    sector: 'Water & Utilities', city: 'Muscat', vatin: GROUP_TRN, cr: '1200027', peppol: '0248:1200027',
-    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
-    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'AMW',  code: 'ZUB-030', name: 'Al Muzn Water Co', short: 'Al Muzn Water',
-    sector: 'Water & Utilities', city: 'Muscat', vatin: GROUP_TRN, cr: '1200028', peppol: '0248:1200028',
-    erp: 'SAP ECC (legacy)', erpVer: '6.0 EHP8', method: 1, deploy: 'hub',
-    conn: 'IDoc / BAPI extract — legacy SAP ECC billing interface',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 45, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'ZFU',  code: 'ZUB-031', name: 'Zubair Furnishing LLC', short: 'Zubair Furnishing (in liquidation)',
-    sector: 'Furnishing', city: 'Muscat', vatin: GROUP_TRN, cr: '1200029', peppol: '0248:1200029',
-    erp: 'Orion 11J', erpVer: '11J', method: 1, deploy: 'hub',
-    conn: 'Not applicable — under liquidation',
-    status: 'excluded', wave: 3, health: 'warn', mapped: 0, mapTotal: 0, sync: 'Excluded',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0,
-    note: 'Under liquidation. Listed in the group’s ERP inventory but explicitly excluded from this rollout — a future wave, not this one.' },
-  { id: 'ATR',  code: 'ZUB-032', name: 'Autoline Trading', short: 'Autoline Trading',
-    sector: 'Automotive', city: 'Muscat', vatin: GROUP_TRN, cr: '1200030', peppol: '0248:1200030',
-    erp: 'Autoline 8.39', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
-    conn: 'Autoline API — invoice extract',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 46, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 },
-  { id: 'SAS',  code: 'ZUB-033', name: 'Sohar Automotive SPC', short: 'Sohar Automotive',
-    sector: 'Automotive', city: 'Sohar', vatin: GROUP_TRN, cr: '1200031', peppol: '0248:1200031',
-    erp: 'Autoline 8.39', erpVer: '8.39 Rev8', method: 1, deploy: 'hub',
-    conn: 'Autoline API — invoice extract',
-    status: 'not-started', wave: 3, health: 'warn', mapped: 0, mapTotal: 46, sync: 'Not yet connected',
-    today: 0, mtd: 0, failed: 0, pending: 0, success: null, inbound: false, inToday: 0 }
+  }
 ];
 
 /* --- group roll-up ---------------------------------------------------------
-   One VAT Group, thirty-three legal entities, one shared TRN. Every figure
-   here is the Hub's own observation across the thirty-three — there are no
-   self-hosted members in this group, so the Hub sees everything. Twelve are
-   live or onboarding (the original pilot + Wave 2); the other twenty-one are
-   the rest of the group's confirmed ERP inventory, not yet started, except
-   Zubair Furnishing LLC, which is excluded (under liquidation).             */
+   One VAT Group, twelve legal entities, one shared TRN. Every figure here
+   is the Hub's own observation across the twelve — there are no self-hosted
+   members in this group, so the Hub sees everything.                        */
 const GROUP = {
-  name: 'The Zubair Corporation VAT Group',
+  name: 'The Oman Investment Bank Group VAT Group',
   trn: GROUP_TRN,
-  entities: 33,
+  entities: 12,
 
-  /* deployment — all thirty-three run through the Hub */
-  hubEntities: 33, selfHosted: 0, splitIndicative: false,
+  /* deployment — all twelve run through the Hub */
+  hubEntities: 12, selfHosted: 0, splitIndicative: false,
 
-  /* onboarding state across all thirty-three */
-  live: 10, onboarding: 2, notStarted: 20, excluded: 1,
+  /* onboarding state across all twelve */
+  live: 10, onboarding: 2, notStarted: 0,
 
-  /* connection method — all API-capable; twenty-three still in ERP assessment */
-  m1: 10, m2: 0, m3: 0, pendingAssessment: 22,
+  /* connection method — all API-capable; two still in ERP assessment */
+  m1: 10, m2: 0, m3: 0, pendingAssessment: 2,
 
   /* today, across all twelve entities */
   todayTotal: 3650, todaySuccess: 3563, todayFailed: 25, todayPending: 62,
@@ -343,37 +203,38 @@ const GROUP = {
    on a live pilot ahead of it, then the remaining entities cut over.        */
 const WAVES = [
   { n: 1, name: 'Live pilot', window: 'Live since Jun 2026', entities: 5, live: 5, state: 'complete',
-    note: 'SAP S/4HANA corporate entities and General Automotive — the volume proof. Validates the model before the mandate.' },
+    note: 'Enterprise ERP corporate entities and OIB Digital Payments — the volume proof. Validates the model before the mandate.' },
   { n: 2, name: 'Wave 2', window: 'Cutover Q4 2026', entities: 5, live: 5, state: 'active',
-    note: 'Autoline dealerships, Orion and FOCUS X. Mapping complete, running in parallel.' },
-  { n: 3, name: 'Wave 3', window: 'Ahead of the Apr 2027 mandate', entities: 23, live: 0, state: 'planned',
-    note: 'Low-volume and southern entities, plus the rest of the group’s confirmed ERP inventory: five ARA Petroleum companies on legacy SAP ECC, Zubair Electric, the two water companies, the Holding company and its investment/property/individual entities, and two more Autoline dealerships. ERP assessment under way. Zubair Furnishing LLC is under liquidation and is excluded from onboarding.' }
+    note: 'High-Volume Billing payment entities, Finance Suite and Accounting System. Mapping complete, running in parallel.' },
+  { n: 3, name: 'Wave 3', window: 'Ahead of the Apr 2027 mandate', entities: 2, live: 0, state: 'planned',
+    note: 'Low-volume and southern entities. ERP assessment under way.' }
 ];
 
-/* --- the second origin: high-volume B2C from Autoline ----------------------
-   General Automotive Company (GAC) runs Autoline 8.39. Its showroom, parts
-   counter and workshop generate the group's biggest B2C stream — thousands of
-   Simplified invoices a day. They are collected by Autoline and reported to
-   the OTA in BATCHES through the same Central Hub, not cleared live at the
-   counter. The batch cadence is an assumption to confirm with Zubair.        */
-const AUTOLINE_B2C = {
-  entity: 'GAC', system: 'Autoline 8.39', release: 'Rev8',
-  module: 'Retail & Service — Simplified invoicing',
+/* --- the second origin: high-volume B2C from High-Volume Billing ----------------------
+   OIB Digital Payments (ODP) runs High-Volume Billing. Its branch counters and
+   digital service centres generate the group's biggest B2C stream — thousands of
+   Simplified fee-invoice a day, for card, cheque, ATM and transfer services. They
+   are collected by High-Volume Billing and reported to the OTA in BATCHES through
+   the same Central Hub, not cleared live at the counter. The batch cadence is an
+   assumption to confirm with the group.        */
+const RETAIL_B2C = {
+  entity: 'ODP', system: 'High-Volume Billing', release: 'Rev8',
+  module: 'Branch & Merchant Services — Simplified invoicing',
   todayCount: 3105, monthCount: 66136, awaitingSync: 38, counters: 4,
-  batch: { id: 'GAC-B2C-2026-0818-14', count: 480, syncedAt: '10:30 GST',
+  batch: { id: 'ODP-B2C-2026-0818-14', count: 480, syncedAt: '10:30 GST',
            reportedAt: '10:34 GST', state: 'reported', ack: 'ASP-OM-2026-0818-BATCH-14' },
-  branches: ['Wattayah Showroom', 'Ghala Parts Counter', 'Rusayl Service', 'Sohar Branch'],
-  note: 'Simplified B2C invoices are collected by Autoline and reported to the OTA in scheduled batches from the Central Hub — not cleared live at the point of sale.',
-  assumption: 'Assumption · to confirm with Zubair: batch cadence and whether any counter requires a cleared invoice before the customer leaves.',
+  branches: ['Wattayah Branch', 'Ghala Service Centre', 'Rusayl Digital Branch', 'Sohar Branch'],
+  note: 'Simplified B2C fee invoices are collected by High-Volume Billing and reported to the OTA in scheduled batches from the Central Hub — not cleared live at the point of sale.',
+  assumption: 'Assumption · to confirm with the group: batch cadence and whether any branch requires a cleared invoice before the customer leaves.',
   rows: [
-    { no: 'GAC-SIMP-2026-441207', ctr: 'Ghala Parts Counter', cust: 'Walk-in Customer', item: 'Brake pad set', net: 84.400,  vat: 4.220,  total: 88.620,  t: '10:18', state: 'reported' },
-    { no: 'GAC-SIMP-2026-441208', ctr: 'Rusayl Service',      cust: 'Walk-in Customer', item: 'Oil change service', net: 32.000, vat: 1.600, total: 33.600, t: '10:19', state: 'reported' },
-    { no: 'GAC-SIMP-2026-441209', ctr: 'Wattayah Showroom',   cust: 'Walk-in Customer', item: 'Accessory pack',    net: 145.000, vat: 7.250, total: 152.250, t: '10:21', state: 'batched' },
-    { no: 'GAC-SIMP-2026-441210', ctr: 'Ghala Parts Counter', cust: 'Walk-in Customer', item: 'Air filter',        net: 12.500,  vat: 0.625, total: 13.125,  t: '10:22', state: 'batched' },
-    { no: 'GAC-SIMP-2026-441211', ctr: 'Rusayl Service',      cust: 'Al Batinah Logistics Services LLC', item: 'Tyre replacement ×4', net: 210.000, vat: 10.500, total: 220.500, t: '10:24', state: 'queued' },
-    { no: 'GAC-SIMP-2026-441212', ctr: 'Wattayah Showroom',   cust: 'Walk-in Customer', item: 'Car mats & trim',   net: 58.000,  vat: 2.900, total: 60.900,  t: '10:25', state: 'queued' },
-    { no: 'GAC-SIMP-2026-441213', ctr: 'Ghala Parts Counter', cust: 'Walk-in Customer', item: 'Wiper blades',      net: 9.000,   vat: 0.450, total: 9.450,   t: '10:26', state: 'queued' },
-    { no: 'GAC-SIMP-2026-441214', ctr: 'Sohar Branch',        cust: 'Walk-in Customer', item: 'AC re-gas',         net: 25.000,  vat: 1.250, total: 26.250,  t: '10:27', state: 'queued' }
+    { no: 'ODP-SIMP-2026-441207', ctr: 'Ghala Service Centre',   cust: 'Individual Client', item: 'POS terminal rental fee',       net: 84.400,  vat: 4.220,  total: 88.620,  t: '10:18', state: 'reported' },
+    { no: 'ODP-SIMP-2026-441208', ctr: 'Rusayl Digital Branch',  cust: 'Individual Client', item: 'SMS banking alert fee (annual)', net: 32.000, vat: 1.600, total: 33.600, t: '10:19', state: 'reported' },
+    { no: 'ODP-SIMP-2026-441209', ctr: 'Wattayah Branch',        cust: 'Individual Client', item: 'Safe deposit box rental fee',   net: 145.000, vat: 7.250, total: 152.250, t: '10:21', state: 'batched' },
+    { no: 'ODP-SIMP-2026-441210', ctr: 'Ghala Service Centre',   cust: 'Individual Client', item: 'Cheque book issuance fee',      net: 12.500,  vat: 0.625, total: 13.125,  t: '10:22', state: 'batched' },
+    { no: 'ODP-SIMP-2026-441211', ctr: 'Rusayl Digital Branch',  cust: 'Al Batinah Logistics Services LLC', item: 'Wire transfer fee bundle ×4', net: 210.000, vat: 10.500, total: 220.500, t: '10:24', state: 'queued' },
+    { no: 'ODP-SIMP-2026-441212', ctr: 'Wattayah Branch',        cust: 'Individual Client', item: 'Premium card replacement fee',  net: 58.000,  vat: 2.900, total: 60.900,  t: '10:25', state: 'queued' },
+    { no: 'ODP-SIMP-2026-441213', ctr: 'Ghala Service Centre',   cust: 'Individual Client', item: 'Certified account statement fee', net: 9.000,   vat: 0.450, total: 9.450,   t: '10:26', state: 'queued' },
+    { no: 'ODP-SIMP-2026-441214', ctr: 'Sohar Branch',           cust: 'Individual Client', item: 'Out-of-network ATM withdrawal fee', net: 25.000,  vat: 1.250, total: 26.250,  t: '10:27', state: 'queued' }
   ]
 };
 
@@ -385,17 +246,17 @@ const CUSTOMERS = [
   { name: 'Directorate General of Roads',      vatin: 'OM1100556677', type: 'B2G', country: 'OM' },
   { name: 'Jebel Ali Equipment Trading FZE',   vatin: 'AE100234567800003', type: 'Export', country: 'AE' },
   { name: 'Al Batinah Logistics Services LLC', vatin: 'OM1100778899', type: 'B2B', country: 'OM' },
-  { name: 'Walk-in Customer',                  vatin: null,          type: 'B2C', country: 'OM' },
+  { name: 'Individual Client',                 vatin: null,          type: 'B2C', country: 'OM' },
   { name: 'Salalah Port Services SAOC',        vatin: 'OM1100990011', type: 'B2B', country: 'OM' },
   { name: 'Nizwa Auto Spares LLC',             vatin: 'OM1100221144', type: 'B2B', country: 'OM' }
 ];
 
 /* --- suppliers, for the inbound flow --------------------------------------- */
 const SUPPLIERS = [
-  { name: 'Falaj Industrial Supplies LLC',  vatin: 'OM1100447722', peppol: '0248:OM1100447722' },
-  { name: 'Ruwi Marine Contracting SAOC',   vatin: 'OM1100663311', peppol: '0248:OM1100663311' },
-  { name: 'Barka Freight Forwarding LLC',   vatin: 'OM1100885544', peppol: '0248:OM1100885544' },
-  { name: 'Muscat Tyre & Battery Co LLC',   vatin: 'OM1100119966', peppol: '0248:OM1100119966' }
+  { name: 'Falaj Facilities Management LLC', vatin: 'OM1100447722', peppol: '0248:OM1100447722' },
+  { name: 'Ruwi Security Services SAOC',     vatin: 'OM1100663311', peppol: '0248:OM1100663311' },
+  { name: 'Barka Office Solutions LLC',      vatin: 'OM1100885544', peppol: '0248:OM1100885544' },
+  { name: 'Muscat IT Systems & Support LLC', vatin: 'OM1100119966', peppol: '0248:OM1100119966' }
 ];
 
 /* --- the nine outbound stages (proposal §5) --------------------------------
@@ -462,53 +323,53 @@ const LEGS_PENDING = [
 
 /* --- outbound documents ----------------------------------------------------
    stage indexes into STAGES; state: ok | active | failed | held
-   The tracked invoice ZCL-SINV-2026-00841 (Zubair Corporation LLC, SAP
-   S/4HANA) is the one followed end-to-end through the walkthrough.          */
+   The tracked invoice OIB-SINV-2026-00841 (Oman Investment Bank SAOC, Enterprise ERP
+   Enterprise ERP) is the one followed end-to-end through the walkthrough.          */
 const INVOICES = [
-  { no: 'ZCL-SINV-2026-00841', tenant: 'ZCL', cust: 0, net: 48200.000, vat: 2410.000, total: 50610.000,
+  { no: 'OIB-SINV-2026-00841', tenant: 'OIB', cust: 0, net: 48200.000, vat: 2410.000, total: 50610.000,
     cur: 'OMR', type: 'Invoice', scen: 'B2B', stage: 8, state: 'ok', retry: 0, created: '18 Aug 09:14:02',
     uuid: 'b7f4c2e1-9a3d-5c8b-a1f6-2e7d4b9c0a35', ackNo: 'ASP-OM-2026-0818-44718', ref: 'PEP-8842-2026',
     lines: 6, po: 'PO-88213' },
-  { no: 'GAC-SINV-2026-118420', tenant: 'GAC', cust: 1, net: 118400.000, vat: 5920.000, total: 124320.000,
+  { no: 'ODP-SINV-2026-118420', tenant: 'ODP', cust: 1, net: 118400.000, vat: 5920.000, total: 124320.000,
     cur: 'OMR', type: 'Invoice', scen: 'B2B', stage: 8, state: 'ok', retry: 0, created: '18 Aug 09:21:47',
     uuid: 'c1a8d3f2-4b7e-6d9c-b2a7-3f8e5c0d1b46', ackNo: 'ASP-OM-2026-0818-44719', ref: 'PEP-8843-2026',
     lines: 12, po: 'PO-88220' },
-  { no: 'OLG-SINV-2026-08810', tenant: 'OLG', cust: 3, net: 86200.000, vat: 0.000, total: 86200.000,
+  { no: 'OCF-SINV-2026-08810', tenant: 'OCF', cust: 3, net: 86200.000, vat: 0.000, total: 86200.000,
     cur: 'OMR', type: 'Invoice', scen: 'Export', stage: 6, state: 'active', retry: 0, created: '18 Aug 10:02:11',
     uuid: 'd2b9e4a3-5c8f-7e0d-c3b8-4a9f6d1e2c57', ackNo: 'ASP-OM-2026-0818-44755', ref: 'PEP-8851-2026',
     lines: 4, po: 'PO-11907', awaiting: 'OTA report · buyer delivery' },
-  { no: 'ZBS-SINV-2026-00934', tenant: 'ZBS', cust: 4, net: 3420.000, vat: 171.000, total: 3591.000,
+  { no: 'OTF-SINV-2026-00934', tenant: 'OTF', cust: 4, net: 3420.000, vat: 171.000, total: 3591.000,
     cur: 'OMR', type: 'Invoice', scen: 'B2B', stage: 3, state: 'failed', retry: 2, created: '18 Aug 10:11:38',
     uuid: 'e3c0f5b4-6d9a-8f1e-d4c9-5b0a7e2f3d68', ackNo: null, ref: null, lines: 3, po: null,
     owner: 'entity' },
-  { no: 'GAC-SINV-2026-118455', tenant: 'GAC', cust: 6, net: 9150.000, vat: 457.500, total: 9607.500,
+  { no: 'ODP-SINV-2026-118455', tenant: 'ODP', cust: 6, net: 9150.000, vat: 457.500, total: 9607.500,
     cur: 'OMR', type: 'Invoice', scen: 'B2B', stage: 3, state: 'active', retry: 0, created: '18 Aug 10:14:05',
     uuid: 'f4d1a6c5-7e0b-9a2f-e5d0-6c1b8f3a4e79', ackNo: null, ref: null, lines: 8, po: 'PO-4471' },
-  { no: 'ZCL-CRNT-2026-00218', tenant: 'ZCL', cust: 0, net: -4200.000, vat: -210.000, total: -4410.000,
+  { no: 'OIB-CRNT-2026-00218', tenant: 'OIB', cust: 0, net: -4200.000, vat: -210.000, total: -4410.000,
     cur: 'OMR', type: 'Credit Note', scen: 'B2B', stage: 8, state: 'ok', retry: 0, created: '18 Aug 10:26:14',
     uuid: 'c7a4d9f8-0b3e-2d5c-b8a3-9f4e1c6d7b02', ackNo: 'ASP-OM-2026-0818-44736', ref: 'PEP-8863-2026',
-    lines: 1, po: null, against: 'ZCL-SINV-2026-00790' },
-  { no: 'GAC-SIMP-2026-441207', tenant: 'GAC', cust: 5, net: 84.400, vat: 4.220, total: 88.620,
+    lines: 1, po: null, against: 'OIB-SINV-2026-00790' },
+  { no: 'ODP-SIMP-2026-441207', tenant: 'ODP', cust: 5, net: 84.400, vat: 4.220, total: 88.620,
     cur: 'OMR', type: 'Simplified', scen: 'B2C', stage: 8, state: 'ok', retry: 0, created: '18 Aug 10:18:52',
     uuid: 'a5e2b7d6-8f1c-0b3a-f6e1-7d2c9a4b5f80', ackNo: 'ASP-OM-2026-0818-44731', ref: 'PEP-8859-2026',
     lines: 5, po: null },
-  { no: 'IHE-SINV-2026-00611', tenant: 'IHE', cust: 7, net: 42750.000, vat: 2137.500, total: 44887.500,
+  { no: 'OTR-SINV-2026-00611', tenant: 'OTR', cust: 7, net: 42750.000, vat: 2137.500, total: 44887.500,
     cur: 'OMR', type: 'Invoice', scen: 'B2B', stage: 4, state: 'ok', retry: 0, created: '18 Aug 10:22:30',
     uuid: 'b6f3c8e7-9a2d-1c4b-a7f2-8e3d0b5c6a91', ackNo: null, ref: null, lines: 2, po: 'PO-3390' },
-  { no: 'OCS-SINV-2026-01181', tenant: 'OCS', cust: 2, net: 15600.000, vat: 780.000, total: 16380.000,
+  { no: 'OCM-SINV-2026-01181', tenant: 'OCM', cust: 2, net: 15600.000, vat: 780.000, total: 16380.000,
     cur: 'OMR', type: 'Invoice', scen: 'B2G', stage: 2, state: 'active', retry: 0, created: '18 Aug 10:31:09',
     uuid: 'd8b5e0a9-1c4f-3e6d-c9b4-0a5f2d7e8c13', ackNo: null, ref: null, lines: 7, po: 'PO-11912' },
-  { no: 'SAY-SINV-2026-02673', tenant: 'SAY', cust: 6, net: 7480.000, vat: 374.000, total: 7854.000,
+  { no: 'OMS-SINV-2026-02673', tenant: 'OMS', cust: 6, net: 7480.000, vat: 374.000, total: 7854.000,
     cur: 'OMR', type: 'Invoice', scen: 'B2B', stage: 1, state: 'active', retry: 0, created: '18 Aug 10:38:56',
     uuid: null, ackNo: null, ref: null, lines: 9, po: 'PO-88231' },
-  { no: 'ZAG-SINV-2026-03408', tenant: 'ZAG', cust: 4, net: 12900.000, vat: 645.000, total: 13545.000,
+  { no: 'OCC-SINV-2026-03408', tenant: 'OCC', cust: 4, net: 12900.000, vat: 645.000, total: 13545.000,
     cur: 'OMR', type: 'Invoice', scen: 'B2B', stage: 0, state: 'active', retry: 0, created: '18 Aug 10:41:12',
     uuid: null, ackNo: null, ref: null, lines: 4, po: 'PO-2201' },
-  { no: 'OLG-SINV-2026-08790', tenant: 'OLG', cust: 3, net: 28700.000, vat: 0.000, total: 28700.000,
+  { no: 'OCF-SINV-2026-08790', tenant: 'OCF', cust: 3, net: 28700.000, vat: 0.000, total: 28700.000,
     cur: 'OMR', type: 'Invoice', scen: 'Export', stage: 5, state: 'failed', retry: 4, created: '18 Aug 08:52:20',
     uuid: 'a1e8b3d2-4f7c-6b9a-f2e7-3d8c5a0b1f46', ackNo: null, ref: null, lines: 2, po: null,
     owner: 'platform' },
-  { no: 'IHE-SINV-2026-00610', tenant: 'IHE', cust: 5, net: 1890.000, vat: 94.500, total: 1984.500,
+  { no: 'OTR-SINV-2026-00610', tenant: 'OTR', cust: 5, net: 1890.000, vat: 94.500, total: 1984.500,
     cur: 'OMR', type: 'Simplified', scen: 'B2C', stage: 8, state: 'ok', retry: 0, created: '18 Aug 08:14:33',
     uuid: 'b2f9c4e3-5a8d-7c0b-a3f8-4e9d6b1c2a57', ackNo: 'ASP-OM-2026-0818-44702', ref: 'PEP-8801-2026',
     lines: 3, po: null }
@@ -516,19 +377,19 @@ const INVOICES = [
 
 /* --- inbound supplier documents (proposal §5 inbound) ----------------------- */
 const INBOUND = [
-  { no: 'FIS-INV-2026-11842', supplier: 0, to: 'ZCL', recv: '18 Aug 10:29:16', net: 8640.000,
+  { no: 'FIS-INV-2026-11842', supplier: 0, to: 'OIB', recv: '18 Aug 10:29:16', net: 8640.000,
     vat: 432.000, total: 9072.000, stage: 5, state: 'ok', erpRef: 'PINV-2026-00914',
     erpState: 'Draft — awaiting review', lines: 14, po: 'PO-88190' },
-  { no: 'RMC-INV-2026-00733', supplier: 1, to: 'GAC', recv: '18 Aug 10:24:03', net: 21500.000,
+  { no: 'RMC-INV-2026-00733', supplier: 1, to: 'ODP', recv: '18 Aug 10:24:03', net: 21500.000,
     vat: 1075.000, total: 22575.000, stage: 5, state: 'ok', erpRef: 'PINV-ATL-004411',
     erpState: 'Draft — awaiting review', lines: 6, po: 'PO-11866' },
-  { no: 'BFF-INV-2026-04120', supplier: 2, to: 'OLG', recv: '18 Aug 10:19:48', net: 3180.000,
+  { no: 'BFF-INV-2026-04120', supplier: 2, to: 'OCF', recv: '18 Aug 10:19:48', net: 3180.000,
     vat: 159.000, total: 3339.000, stage: 4, state: 'active', erpRef: null,
     erpState: 'Creating draft', lines: 3, po: null },
-  { no: 'FIS-INV-2026-02277', supplier: 0, to: 'ZCL', recv: '18 Aug 10:12:31', net: 14200.000,
+  { no: 'FIS-INV-2026-02277', supplier: 0, to: 'OIB', recv: '18 Aug 10:12:31', net: 14200.000,
     vat: 710.000, total: 14910.000, stage: 5, state: 'ok', erpRef: 'PINV-2026-00913',
     erpState: 'Draft — awaiting review', lines: 9, po: 'PO-88177' },
-  { no: 'MTB-CRN-2026-00318', supplier: 3, to: 'GAC', recv: '18 Aug 09:58:02', net: -1250.000,
+  { no: 'MTB-CRN-2026-00318', supplier: 3, to: 'ODP', recv: '18 Aug 09:58:02', net: -1250.000,
     vat: -62.500, total: -1312.500, stage: 5, state: 'ok', erpRef: 'PCRN-ATL-00072',
     erpState: 'Draft — awaiting review', lines: 1, po: null, credit: true },
   { no: 'UNK-INV-2026-00051', supplier: null, to: null, recv: '18 Aug 09:41:19', net: 990.000,
@@ -549,33 +410,33 @@ const ARCHIVE_ITEMS = [
   { item: 'Inbound original XML',               why: 'The preserved legal record, kept before the ERP draft is created.', size: '—' }
 ];
 
-/* --- ERP-side invoice list (screen 1 · SAP S/4HANA, Zubair Corporation LLC) -- */
+/* --- ERP-side invoice list (screen 1 · Enterprise ERP, Oman Investment Bank SAOC) -- */
 const ERP_INVOICES = [
-  { no: 'ZCL-SINV-2026-00841', cust: 'Muscat Bay Hospitality LLC', date: '18-08-2026', due: '17-09-2026',
+  { no: 'OIB-SINV-2026-00841', cust: 'Muscat Bay Hospitality LLC', date: '18-08-2026', due: '17-09-2026',
     net: 48200.000, vat: 2410.000, total: 50610.000, docStatus: 'Posted', eStatus: 'Acknowledged',
     ready: true, uuid: 'b7f4c2e1…0a35', qr: true },
-  { no: 'ZCL-SINV-2026-00840', cust: 'Sohar Steel Rolling LLC', date: '18-08-2026', due: '17-09-2026',
+  { no: 'OIB-SINV-2026-00840', cust: 'Sohar Steel Rolling LLC', date: '18-08-2026', due: '17-09-2026',
     net: 118400.000, vat: 5920.000, total: 124320.000, docStatus: 'Posted', eStatus: 'Acknowledged',
     ready: true, uuid: 'c1a8d3f2…1b46', qr: true },
-  { no: 'ZCL-SINV-2026-00842', cust: 'Salalah Port Services SAOC', date: '18-08-2026', due: '17-09-2026',
+  { no: 'OIB-SINV-2026-00842', cust: 'Salalah Port Services SAOC', date: '18-08-2026', due: '17-09-2026',
     net: 7480.000, vat: 374.000, total: 7854.000, docStatus: 'Posted', eStatus: 'In Progress',
     ready: true, uuid: null, qr: false },
-  { no: 'ZCL-CRNT-2026-00218', cust: 'Muscat Bay Hospitality LLC', date: '18-08-2026', due: '—',
+  { no: 'OIB-CRNT-2026-00218', cust: 'Muscat Bay Hospitality LLC', date: '18-08-2026', due: '—',
     net: -4200.000, vat: -210.000, total: -4410.000, docStatus: 'Posted', eStatus: 'Acknowledged',
     ready: true, uuid: 'c7a4d9f8…7b02', qr: false, credit: true },
-  { no: 'ZCL-SINV-2026-00843', cust: 'Nizwa Auto Spares LLC', date: '18-08-2026', due: '17-09-2026',
+  { no: 'OIB-SINV-2026-00843', cust: 'Nizwa Auto Spares LLC', date: '18-08-2026', due: '17-09-2026',
     net: 33150.000, vat: 1657.500, total: 34807.500, docStatus: 'Draft', eStatus: 'Not Applicable',
     ready: false, uuid: null, qr: false },
-  { no: 'ZCL-SINV-2026-00839', cust: 'Directorate General of Roads', date: '17-08-2026', due: '16-09-2026',
+  { no: 'OIB-SINV-2026-00839', cust: 'Directorate General of Roads', date: '17-08-2026', due: '16-09-2026',
     net: 51200.000, vat: 2560.000, total: 53760.000, docStatus: 'Posted', eStatus: 'Acknowledged',
     ready: true, uuid: 'd4c1b8a7…3e92', qr: true },
-  { no: 'ZCL-SINV-2026-00838', cust: 'Sohar Steel Rolling LLC', date: '17-08-2026', due: '16-09-2026',
+  { no: 'OIB-SINV-2026-00838', cust: 'Sohar Steel Rolling LLC', date: '17-08-2026', due: '16-09-2026',
     net: 7300.000, vat: 365.000, total: 7665.000, docStatus: 'Posted', eStatus: 'Rejected by ASP',
     ready: true, uuid: 'e5d2c9b8…4f03', qr: false }
 ];
 
 /* --- mapping: what the ERP actually exposes --------------------------------
-   The source list an analyst picks from, drawn from the SAP S/4HANA billing
+   The source list an analyst picks from, drawn from the Enterprise ERP billing
    document service. 386 fields are discovered; these are the billing ones.  */
 const ERP_SCHEMA = [
   { f: 'BillingDocument',            t: 'string',  ex: '9410000841' },
@@ -583,7 +444,7 @@ const ERP_SCHEMA = [
   { f: 'BillingDocumentType',        t: 'string',  ex: 'F2' },
   { f: 'BillingDocumentIsCancelled', t: 'boolean', ex: 'false' },
   { f: 'TransactionCurrency',        t: 'string',  ex: 'OMR' },
-  { f: 'CompanyCode',                t: 'string',  ex: 'ZUB1' },
+  { f: 'CompanyCode',                t: 'string',  ex: 'GRP1' },
   { f: 'CompanyRegistration',        t: 'string',  ex: '1008431' },
   { f: 'CompanyVATNumber',           t: 'string',  ex: '1200094685' },
   { f: 'CompanyAddressCity',         t: 'string',  ex: 'Muscat' },
@@ -731,10 +592,10 @@ const VALIDATION_FAILED = {
 
 /* --- processing logs -------------------------------------------------------- */
 const LOGS = [
-  { ts: '10:22:28.114', lv: 'info', txt: 'Poll tick — entity ZCL, watermark 2026-08-18T10:21:44Z' },
+  { ts: '10:22:28.114', lv: 'info', txt: 'Poll tick — entity OIB, watermark 2026-08-18T10:21:44Z' },
   { ts: '10:22:28.291', lv: 'info', txt: 'Fetched raw payload · 14.2 KB · 27 fields (allowlist applied)' },
-  { ts: '10:22:28.402', lv: 'ok',   txt: 'Idempotency check passed — (ZCL, ZCL-SINV-2026-00841) not previously seen' },
-  { ts: '10:22:28.556', lv: 'info', txt: 'Mapping profile ZCL/v3 applied — 46 of 47 fields resolved' },
+  { ts: '10:22:28.402', lv: 'ok',   txt: 'Idempotency check passed — (OIB, OIB-SINV-2026-00841) not previously seen' },
+  { ts: '10:22:28.556', lv: 'info', txt: 'Mapping profile OIB/v3 applied — 46 of 47 fields resolved' },
   { ts: '10:22:28.703', lv: 'info', txt: 'Scenario detected: B2B domestic · standard rate 5%' },
   { ts: '10:22:28.844', lv: 'ok',   txt: 'BTOM-002 UUID derived — b7f4c2e1-9a3d-5c8b-a1f6-2e7d4b9c0a35' },
   { ts: '10:22:29.017', lv: 'info', txt: 'UBL 2.1 Invoice built · 8.9 KB · 6 lines' },
@@ -742,7 +603,7 @@ const LOGS = [
   { ts: '10:22:31.472', lv: 'warn', txt: 'IBR-W-014 · payment means defaulted to 30' },
   { ts: '10:22:31.474', lv: 'ok',   txt: 'Validation passed — 148 passed, 0 failed, 2 warnings (284 ms)' },
   { ts: '10:22:31.610', lv: 'ok',   txt: 'Archived — XML, validation report and audit trail written before transmission' },
-  { ts: '10:22:31.788', lv: 'ok',   txt: 'State → READY_FOR_ASP · queued on entity channel ZCL' }
+  { ts: '10:22:31.788', lv: 'ok',   txt: 'State → READY_FOR_ASP · queued on entity channel OIB' }
 ];
 
 /* --- ASP exchange ----------------------------------------------------------- */
@@ -770,21 +631,21 @@ const ASP = {
 
 /* --- history ---------------------------------------------------------------- */
 const HISTORY = [
-  { no: 'ZCL-SINV-2026-00841', tenant: 'ZCL', date: '18 Aug 09:14', total: 50610.000, type: 'Invoice',  dir: 'out', st: 'success', ack: 'ASP-OM-2026-0818-44718', retries: 0 },
-  { no: 'GAC-SINV-2026-118420', tenant: 'GAC', date: '18 Aug 09:21', total: 124320.000, type: 'Invoice', dir: 'out', st: 'success', ack: 'ASP-OM-2026-0818-44719', retries: 0 },
-  { no: 'IHE-SINV-2026-00610', tenant: 'IHE', date: '18 Aug 08:14', total: 1984.500, type: 'Simplified', dir: 'out', st: 'success', ack: 'ASP-OM-2026-0818-44702', retries: 0 },
-  { no: 'OLG-SINV-2026-08790', tenant: 'OLG', date: '18 Aug 08:52', total: 28700.000, type: 'Invoice',  dir: 'out', st: 'failed',  ack: null, retries: 4, err: 'ASP timeout — transient, retrying' },
-  { no: 'ZCL-CRNT-2026-00218', tenant: 'ZCL', date: '18 Aug 10:26', total: -4410.000, type: 'Credit Note', dir: 'out', st: 'success', ack: 'ASP-OM-2026-0818-44736', retries: 0 },
-  { no: 'FIS-INV-2026-11842',  tenant: 'ZCL', date: '18 Aug 10:29', total: 9072.000, type: 'Supplier invoice', dir: 'in', st: 'success', ack: 'PINV-2026-00914', retries: 0 },
-  { no: 'RMC-INV-2026-00733',  tenant: 'GAC', date: '18 Aug 10:24', total: 22575.000, type: 'Supplier invoice', dir: 'in', st: 'success', ack: 'PINV-ATL-004411', retries: 0 },
-  { no: 'GAC-SIMP-2026-441207', tenant: 'GAC', date: '18 Aug 10:18', total: 88.620, type: 'Simplified',  dir: 'out', st: 'success', ack: 'ASP-OM-2026-0818-44731', retries: 0 },
-  { no: 'ZBS-SINV-2026-00934', tenant: 'ZBS', date: '18 Aug 10:11', total: 3591.000, type: 'Invoice',   dir: 'out', st: 'failed',  ack: null, retries: 2, err: 'IBR-CO-15 · total mismatch' },
-  { no: 'OCS-SINV-2026-01179', tenant: 'OCS', date: '18 Aug 07:40', total: 44210.000, type: 'Invoice',  dir: 'out', st: 'reprocessed', ack: 'ASP-OM-2026-0818-44688', retries: 1 },
-  { no: 'ZCL-SINV-2026-00838', tenant: 'ZCL', date: '17 Aug 16:22', total: 7665.000, type: 'Invoice',   dir: 'out', st: 'rejected', ack: null, retries: 0, err: 'ASP rejected — buyer participant not registered' },
-  { no: 'MTB-CRN-2026-00318',  tenant: 'GAC', date: '18 Aug 09:58', total: -1312.500, type: 'Supplier credit note', dir: 'in', st: 'success', ack: 'PCRN-ATL-00072', retries: 0 },
-  { no: 'OLG-SINV-2026-08810', tenant: 'OLG', date: '18 Aug 10:02', total: 86200.000, type: 'Invoice',  dir: 'out', st: 'pending', ack: null, retries: 0 },
-  { no: 'IHE-SINV-2026-00611', tenant: 'IHE', date: '18 Aug 10:22', total: 44887.500, type: 'Invoice',  dir: 'out', st: 'pending', ack: null, retries: 0 },
-  { no: 'ZCL-SINV-2026-00839', tenant: 'ZCL', date: '17 Aug 14:11', total: 53760.000, type: 'Invoice',  dir: 'out', st: 'success', ack: 'ASP-OM-2026-0817-44590', retries: 0 }
+  { no: 'OIB-SINV-2026-00841', tenant: 'OIB', date: '18 Aug 09:14', total: 50610.000, type: 'Invoice',  dir: 'out', st: 'success', ack: 'ASP-OM-2026-0818-44718', retries: 0 },
+  { no: 'ODP-SINV-2026-118420', tenant: 'ODP', date: '18 Aug 09:21', total: 124320.000, type: 'Invoice', dir: 'out', st: 'success', ack: 'ASP-OM-2026-0818-44719', retries: 0 },
+  { no: 'OTR-SINV-2026-00610', tenant: 'OTR', date: '18 Aug 08:14', total: 1984.500, type: 'Simplified', dir: 'out', st: 'success', ack: 'ASP-OM-2026-0818-44702', retries: 0 },
+  { no: 'OCF-SINV-2026-08790', tenant: 'OCF', date: '18 Aug 08:52', total: 28700.000, type: 'Invoice',  dir: 'out', st: 'failed',  ack: null, retries: 4, err: 'ASP timeout — transient, retrying' },
+  { no: 'OIB-CRNT-2026-00218', tenant: 'OIB', date: '18 Aug 10:26', total: -4410.000, type: 'Credit Note', dir: 'out', st: 'success', ack: 'ASP-OM-2026-0818-44736', retries: 0 },
+  { no: 'FIS-INV-2026-11842',  tenant: 'OIB', date: '18 Aug 10:29', total: 9072.000, type: 'Supplier invoice', dir: 'in', st: 'success', ack: 'PINV-2026-00914', retries: 0 },
+  { no: 'RMC-INV-2026-00733',  tenant: 'ODP', date: '18 Aug 10:24', total: 22575.000, type: 'Supplier invoice', dir: 'in', st: 'success', ack: 'PINV-ATL-004411', retries: 0 },
+  { no: 'ODP-SIMP-2026-441207', tenant: 'ODP', date: '18 Aug 10:18', total: 88.620, type: 'Simplified',  dir: 'out', st: 'success', ack: 'ASP-OM-2026-0818-44731', retries: 0 },
+  { no: 'OTF-SINV-2026-00934', tenant: 'OTF', date: '18 Aug 10:11', total: 3591.000, type: 'Invoice',   dir: 'out', st: 'failed',  ack: null, retries: 2, err: 'IBR-CO-15 · total mismatch' },
+  { no: 'OCM-SINV-2026-01179', tenant: 'OCM', date: '18 Aug 07:40', total: 44210.000, type: 'Invoice',  dir: 'out', st: 'reprocessed', ack: 'ASP-OM-2026-0818-44688', retries: 1 },
+  { no: 'OIB-SINV-2026-00838', tenant: 'OIB', date: '17 Aug 16:22', total: 7665.000, type: 'Invoice',   dir: 'out', st: 'rejected', ack: null, retries: 0, err: 'ASP rejected — buyer participant not registered' },
+  { no: 'MTB-CRN-2026-00318',  tenant: 'ODP', date: '18 Aug 09:58', total: -1312.500, type: 'Supplier credit note', dir: 'in', st: 'success', ack: 'PCRN-ATL-00072', retries: 0 },
+  { no: 'OCF-SINV-2026-08810', tenant: 'OCF', date: '18 Aug 10:02', total: 86200.000, type: 'Invoice',  dir: 'out', st: 'pending', ack: null, retries: 0 },
+  { no: 'OTR-SINV-2026-00611', tenant: 'OTR', date: '18 Aug 10:22', total: 44887.500, type: 'Invoice',  dir: 'out', st: 'pending', ack: null, retries: 0 },
+  { no: 'OIB-SINV-2026-00839', tenant: 'OIB', date: '17 Aug 14:11', total: 53760.000, type: 'Invoice',  dir: 'out', st: 'success', ack: 'ASP-OM-2026-0817-44590', retries: 0 }
 ];
 
 /* --- reporting -------------------------------------------------------------
@@ -793,12 +654,12 @@ const HISTORY = [
    up the difference to GROUP.mtdTotal. ack + failed = docs on every row;
    vat = (net − zero) × 5%.                                                  */
 const REPORT_ROWS = [
-  { id: 'GAC', docs: 41000, net: 4180000.000, vat: 203000.000, zero: 120000.000, failed: 300, ack: 40700 },
-  { id: 'IHE', docs: 2700,  net: 1240000.000, vat: 59000.000,  zero: 60000.000,  failed: 22,  ack: 2678 },
-  { id: 'SAY', docs: 2650,  net: 980000.000,  vat: 48000.000,  zero: 20000.000,  failed: 20,  ack: 2630 },
-  { id: 'OLG', docs: 880,   net: 1610000.000, vat: 70000.000,  zero: 210000.000, failed: 12,  ack: 868 },
-  { id: 'ZAG', docs: 340,   net: 612000.000,  vat: 30200.000,  zero: 8000.000,   failed: 6,   ack: 334 },
-  { id: 'ZCL', docs: 96,    net: 486000.000,  vat: 24300.000,  zero: 0.000,      failed: 0,   ack: 96 }
+  { id: 'ODP', docs: 41000, net: 4180000.000, vat: 203000.000, zero: 120000.000, failed: 300, ack: 40700 },
+  { id: 'OTR', docs: 2700,  net: 1240000.000, vat: 59000.000,  zero: 60000.000,  failed: 22,  ack: 2678 },
+  { id: 'OMS', docs: 2650,  net: 980000.000,  vat: 48000.000,  zero: 20000.000,  failed: 20,  ack: 2630 },
+  { id: 'OCF', docs: 880,   net: 1610000.000, vat: 70000.000,  zero: 210000.000, failed: 12,  ack: 868 },
+  { id: 'OCC', docs: 340,   net: 612000.000,  vat: 30200.000,  zero: 8000.000,   failed: 6,   ack: 334 },
+  { id: 'OIB', docs: 96,    net: 486000.000,  vat: 24300.000,  zero: 0.000,      failed: 0,   ack: 96 }
 ];
 
 const REPORT_TYPES = [
@@ -819,11 +680,11 @@ const ROLES = [
 ];
 
 const ENTITY_USERS = [
-  { name: 'N. Al-Kindi',   email: 'n.alkindi@zubaircorp.com',   role: 'entity-admin', state: 'active',  last: 'Today 10:31', who: 'ZCL' },
-  { name: 'F. Al-Harthy',  email: 'f.alharthy@zubaircorp.com',  role: 'finance',      state: 'active',  last: 'Today 09:48', who: 'ZCL' },
-  { name: 'R. Menon',      email: 'r.menon@zubaircorp.com',     role: 'finance',      state: 'active',  last: 'Yesterday',   who: 'ZCL' },
-  { name: 'S. Al-Zadjali', email: 's.alzadjali@zubaircorp.com', role: 'readonly',     state: 'active',  last: '3 days ago',  who: 'ZCL' },
-  { name: 'A. Baloushi',   email: 'a.baloushi@zubaircorp.com',  role: 'finance',      state: 'invited', last: 'Invited today', who: 'ZCL' }
+  { name: 'N. Al-Kindi',   email: 'n.alkindi@oibgroup.example',   role: 'entity-admin', state: 'active',  last: 'Today 10:31', who: 'OIB' },
+  { name: 'F. Al-Harthy',  email: 'f.alharthy@oibgroup.example',  role: 'finance',      state: 'active',  last: 'Today 09:48', who: 'OIB' },
+  { name: 'R. Menon',      email: 'r.menon@oibgroup.example',     role: 'finance',      state: 'active',  last: 'Yesterday',   who: 'OIB' },
+  { name: 'S. Al-Zadjali', email: 's.alzadjali@oibgroup.example', role: 'readonly',     state: 'active',  last: '3 days ago',  who: 'OIB' },
+  { name: 'A. Baloushi',   email: 'a.baloushi@oibgroup.example',  role: 'finance',      state: 'invited', last: 'Invited today', who: 'OIB' }
 ];
 
 /* how an entity is given access — the sequence, not a screenshot */
@@ -842,12 +703,12 @@ const ACCESS_STEPS = [
 
 /* --- onboarding wizard state (screen: onboard) ------------------------------ */
 const ONBOARD = {
-  entity: 'Zubair Enterprises Southern LLC',
-  code: 'ZUB-011', vatin: GROUP_TRN, wave: 3,
+  entity: 'OIB Coastal Payment Solutions LLC',
+  code: 'GRP-011', vatin: GROUP_TRN, wave: 3,
   steps: ['Entity details', 'Connection method', 'Connect and test', 'Map the fields', 'Test document', 'Go live'],
   at: 2,
   probe: [
-    { t: 'Reaching the Autoline API', st: 'ok',   ms: 214 },
+    { t: 'Reaching the billing API', st: 'ok',   ms: 214 },
     { t: 'Credentials accepted',      st: 'ok',   ms: 96 },
     { t: 'Reading a sample invoice',  st: 'ok',   ms: 431 },
     { t: 'Fields discovered',         st: 'ok',   ms: 88, note: '46 fields found' },
@@ -857,23 +718,23 @@ const ONBOARD = {
 
 /* --- group activity feed ---------------------------------------------------- */
 const ACTIVITY = [
-  { st: 'ok',   t: '10:35', title: 'Acknowledgement received', body: 'SAY-SINV-2026-02671 · reported to the OTA', tag: 'Sayarti' },
-  { st: 'fail', t: '10:11', title: 'Validation failed', body: 'ZBS-SINV-2026-00934 · IBR-CO-15 total mismatch', tag: 'Zakher Building' },
-  { st: 'ok',   t: '10:29', title: 'Supplier invoice drafted', body: 'FIS-INV-2026-11842 · draft PINV-2026-00914 awaiting review', tag: 'Zubair Corporation' },
-  { st: 'warn', t: '09:58', title: 'Connector latency elevated', body: 'Autoline extract p95 at 3.4 s — above the 2 s threshold', tag: 'General Automotive' },
-  { st: 'warn', t: '08:22', title: 'No documents received', body: 'Nothing since 04:38 from the Autoline connector.', tag: 'Zubair Enterprises S.' },
-  { st: 'ok',   t: '09:40', title: 'Mapping profile published', body: 'Dhofar Automotive v3 — 43 of 46 fields resolved', tag: 'Dhofar Automotive' }
+  { st: 'ok',   t: '10:35', title: 'Acknowledgement received', body: 'OMS-SINV-2026-02671 · reported to the OTA', tag: 'OIB Merchant Settlement' },
+  { st: 'fail', t: '10:11', title: 'Validation failed', body: 'OTF-SINV-2026-00934 · IBR-CO-15 total mismatch', tag: 'OIB Trade Finance' },
+  { st: 'ok',   t: '10:29', title: 'Supplier invoice drafted', body: 'FIS-INV-2026-11842 · draft PINV-2026-00914 awaiting review', tag: 'Oman Investment Bank' },
+  { st: 'warn', t: '09:58', title: 'Connector latency elevated', body: 'High-Volume Billing extract p95 at 3.4 s — above the 2 s threshold', tag: 'OIB Digital Payments' },
+  { st: 'warn', t: '08:22', title: 'No documents received', body: 'Nothing since 04:38 from the High-Volume Billing connector.', tag: 'OIB Coastal Payments' },
+  { st: 'ok',   t: '09:40', title: 'Mapping profile published', body: 'OIB Salalah Payments v3 — 43 of 46 fields resolved', tag: 'OIB Salalah Payments' }
 ];
 
 /* --- exceptions, split by who owns the fix (proposal §7) -------------------- */
 /* Entity-owned exceptions, shown to the entity in its own portal. These are
-   The Zubair Corporation LLC's (ZCL) own documents — the portal shows nothing
+   Oman Investment Bank SAOC's (OIB) own documents — the portal shows nothing
    belonging to any other member. */
 const EXCEPTIONS_ENTITY = [
-  { title: 'Buyer VAT number missing', count: 2, docs: ['ZCL-SINV-2026-00842', 'ZCL-SINV-2026-00844'],
+  { title: 'Buyer VAT number missing', count: 2, docs: ['OIB-SINV-2026-00842', 'OIB-SINV-2026-00844'],
     why: 'The customer record has no VAT number, and the buyer is a registered business.',
     fix: 'Add the VAT number to the customer in your own ERP, then press Reprocess.' },
-  { title: 'Invoice total does not add up', count: 1, docs: ['ZCL-SINV-2026-00845'],
+  { title: 'Invoice total does not add up', count: 1, docs: ['OIB-SINV-2026-00845'],
     why: 'Net plus VAT does not equal the invoice total. A rounding rule in the ERP is the usual cause.',
     fix: 'Correct the invoice in your own ERP and submit it again.' }
 ];
@@ -886,18 +747,18 @@ const EXCEPTIONS_PLATFORM = [
     why: 'A supplier sent to a participant ID that matches no entity in the group.',
     fix: 'No entity action. Central team is confirming the participant registration.' },
   { title: 'Connector went quiet', count: 1, who: 'Central technical team',
-    why: 'Zubair Enterprises Southern has sent nothing since 04:38. The Autoline connector appears not to have run.',
+    why: 'OIB Coastal Payments has sent nothing since 04:38. The High-Volume Billing connector appears not to have run.',
     fix: 'No entity action yet. Central team is checking the connection.' }
 ];
 
 /* --- ERP status sync steps (final screen) ---------------------------------- */
 const SYNC_STEPS = [
   { name: 'Invoice posted in the ERP', t: '18 Aug 09:14:02', st: 'ok',
-    body: 'Billing document ZCL-SINV-2026-00841 posted by A. Al-Balushi in SAP S/4HANA. Document status set to Posted.' },
+    body: 'Billing document OIB-SINV-2026-00841 posted by A. Al-Balushi in Enterprise ERP. Document status set to Posted.' },
   { name: 'Collected by the Hub', t: '18 Aug 09:14:04', st: 'ok',
-    body: 'Method 1 — Direct API. The Hub called the SAP billing document service (BAPI / CPI). Raw payload 14.2 KB, field allowlist applied.' },
+    body: 'Method 1 — Direct API. The Hub called the billing document API. Raw payload 14.2 KB, field allowlist applied.' },
   { name: 'Mapped, built and validated', t: '18 Aug 09:14:06', st: 'ok',
-    body: 'Profile ZCL/v3 applied. UBL 2.1 built. Oman CIUS Schematron passed — 148 rules, 2 warnings.' },
+    body: 'Profile OIB/v3 applied. UBL 2.1 built. Oman CIUS Schematron passed — 148 rules, 2 warnings.' },
   { name: 'Archived', t: '18 Aug 09:14:06', st: 'ok',
     body: 'XML, validation report and audit trail written to the compliance archive before anything was transmitted.' },
   { name: 'Transmitted to the ASP', t: '18 Aug 09:14:07', st: 'ok',

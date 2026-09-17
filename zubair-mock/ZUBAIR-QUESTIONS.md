@@ -3,15 +3,15 @@
 The prototype makes a set of **assumptions** so it can tell one clean story. Each is marked in the
 demo with an "Assumption · to confirm with Zubair" note. This is the list to walk through with the
 group. The answers decide effort and architecture — nothing here changes the compliance engine
-itself, only how the twelve entities connect and when their invoices are reported.
+itself, only how the twelve live/onboarding entities connect and when their invoices are reported.
 
 ---
 
 ## Q1. Entity identity within one shared VAT Group TRN — **RESOLVED**
 
-**The question was:** within one VAT Group TRN (`OM1200094685` shared by all twelve entities), how
-is each entity identified to the OTA and on Peppol? If the VAT number is shared, what keeps the
-twelve apart?
+**The question was:** within one VAT Group TRN (`OM1200094685` shared by all thirty-three entities),
+how is each entity identified to the OTA and on Peppol? If the VAT number is shared, what keeps the
+thirty-three apart?
 
 **The answer (from the PINT-OM Oman spec, test-docs.peppol.eu):** each entity is identified **per
 legal entity, not merged into one group identity**, on two levels:
@@ -24,14 +24,17 @@ legal entity, not merged into one group identity**, on two levels:
 
 2. **Invoice level (PINT-OM).** The seller is carried by **both** identifiers:
    - **Seller identifier — IBT-029, scheme `CR`** (Commercial Registration, from code list
-     **CL-06-OM**) = the entity's **own CR**. **This distinguishes the twelve members.**
+     **CL-06-OM**) = the entity's **own CR**. **This distinguishes each of the thirty-three
+     members.**
    - **Seller VAT identifier — IBT-031** = the **shared VAT Group TRN** `OM1200094685` (same for
-     all twelve). It is a *data field*, not the routing identity.
+     all thirty-three). It is a *data field*, not the routing identity.
 
-So: **twelve legal entities = twelve Peppol participants** (twelve CRs, twelve endpoints, twelve
-certificates) across four ERPs, but **one VAT-group return**. Registering, onboarding, routing and
-monitoring those twelve participants under one compliance view is exactly what the central hub is
-for — this *strengthens* the hub pitch rather than weakening it.
+So: **thirty-three legal entities = thirty-three Peppol participants** (thirty-three CRs,
+thirty-three endpoints, thirty-three certificates) across five ERPs, but **one VAT-group return**.
+Registering, onboarding, routing and monitoring those thirty-three participants under one
+compliance view is exactly what the central hub is for — this *strengthens* the hub pitch rather
+than weakening it. (Twelve of the thirty-three are live/onboarding today and carry real volumes in
+this prototype; the other twenty-one are staged for Wave 3 and share the same identity model.)
 
 **Only remaining to confirm:** the **exact Oman endpoint EAS/ICD scheme** for the Peppol address —
 whether the endpoint is addressed on the VAT identifier or the CR. A minor detail, confirmed
@@ -83,15 +86,15 @@ For each of the four ERPs, what is the integration surface the hub connects to?
   confirm they are in scope for OTA reporting.
 - **B2G** (e.g. Directorate General of Roads) — any additional buyer-reference or PO requirements?
 
-## Q7. Go-live sequencing across the twelve
+## Q7. Go-live sequencing across the twelve live/onboarding entities
 
-- All twelve are modelled as **Phase 2, go-live 2027-04-01**. Is that one cutover for all twelve,
-  or a **staged sequence** across the group?
+- All twelve live/onboarding entities are modelled as **Phase 2, go-live 2027-04-01**. Is that one
+  cutover for all twelve, or a **staged sequence** across the group?
 - If staged, in what order — by ERP (S/4HANA first, then Autoline, Orion, FOCUS), by volume, or by
   entity readiness? And where does the thirteenth member (*Zubair Furnishing LLC*, currently
   liquidation / Excel-only) fit, if at all?
 
 ---
 
-Nothing on this list changes the compliance engine. It changes only how the twelve entities
-connect, when their invoices are reported, and in what order they go live.
+Nothing on this list changes the compliance engine. It changes only how the twelve live/onboarding
+entities connect, when their invoices are reported, and in what order they go live.

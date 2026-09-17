@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Companies — Zubair Central E-Invoicing Hub</title>
+<title>Companies — OIB Group Central E-Invoicing Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -35,7 +35,7 @@
       <div class="grow">
         <div class="page-title">
           <h1>Companies</h1>
-          <span class="pill pill-accent" id="entityCountPill"><i class="dot"></i></span>
+          <span class="pill pill-accent"><i class="dot"></i>12 legal entities</span>
           <span id="livePill"></span>
         </div>
         <p class="page-sub">Every company in the group, configured and monitored from this one console.</p>
@@ -150,9 +150,6 @@
       <div class="tiny dim mt8">${w.window} &middot; ${w.note}</div>
     </div>`).join('');
 
-  document.getElementById('entityCountPill').innerHTML =
-    `<i class="dot"></i>${TENANTS.length} legal entities`;
-
   /* ---------- filters ------------------------------------------------------- */
   const STATUSES = [...new Set(TENANTS.map(t => t.status))];
   document.getElementById('fStatus').innerHTML =
@@ -168,7 +165,7 @@
 
   document.getElementById('coRows').innerHTML = ROWS.map(t => {
     const self    = t.deploy === 'self-hosted';
-    const mapPct  = t.mapTotal ? Math.round(t.mapped / t.mapTotal * 100) : 0;
+    const mapPct  = Math.round(t.mapped / t.mapTotal * 100);
     const mapTone = mapPct === 100 ? 'var(--ok)' : mapPct >= 85 ? 'var(--accent)' : 'var(--warn)';
     return `
     <tr class="${self ? 'is-self' : ''}">
