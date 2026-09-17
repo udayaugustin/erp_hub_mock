@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Branch &amp; Merchant Services Invoicing — High-Volume Billing · OHB Customer Experience</title>
+<link rel="stylesheet" href="../assets/css/app.css">
+<link rel="stylesheet" href="../assets/css/erp-b.css">
+</head>
+<!-- ERP surface: this is OHB Customer Experience's own High-Volume Billing
+     Branch & Merchant Services platform — a dense, classic terminal-style system,
+     deliberately NOT a modern web ERP.
+     It is the SECOND invoice origin: high-volume B2C branch/service-fee sales.
+     shell.js injects the floating walkthrough step bar because data-shell="off"
+     + data-step are set. -->
+<body class="erp-b" data-shell="off" data-surface="erp" data-step="erp-counter">
+
+<!-- ===================== High-Volume Billing chrome bar ===================== -->
+<div class="al-chrome">
+  <div class="al-logo">
+    <span class="glyph">O</span>
+    <span>High-Volume Billing</span>
+    <span class="rel">8.39 · Rev8</span>
+  </div>
+  <div class="al-co">Branch &amp; Merchant Services Platform · <b>OHB Customer Experience</b> · CR 4402715</div>
+  <span class="spacer"></span>
+  <span class="al-user"><span class="dot"></span> Operator: branch.teller · Company CEX1</span>
+</div>
+
+<!-- ===================== module / menu strip ===================== -->
+<div class="al-menu">
+  <span class="item">Accounts</span>
+  <span class="item">Cards</span>
+  <span class="item">Payments</span>
+  <span class="item on">Invoicing</span>
+  <span class="item">Reports</span>
+  <span class="path">Module <span class="mono">SL/INV</span> · Branch &amp; Merchant Services — Simplified Invoicing</span>
+</div>
+
+<div class="al-page">
+
+  <div class="al-pagehead">
+    <h1>Branch &amp; Merchant Services — Simplified Invoicing</h1>
+    <span class="sub">High-volume B2C · branch counters &amp; digital service centres</span>
+    <span class="clock">Tue 18 Aug 2026 · 10:42 GST</span>
+  </div>
+
+  <!-- ===================== summary tiles ===================== -->
+  <div class="al-tiles" id="alTiles">
+    <div class="al-tile">
+      <div class="k">Simplified invoices — today</div>
+      <div class="v">3,105</div>
+      <div class="u">across 4 counters</div>
+    </div>
+    <div class="al-tile">
+      <div class="k">Month to date</div>
+      <div class="v">66,136</div>
+      <div class="u">August 2026</div>
+    </div>
+    <div class="al-tile">
+      <div class="k">Active branches</div>
+      <div class="v">4</div>
+      <div class="u">Ruwi · Al Khuwair · Barka · Sohar</div>
+    </div>
+    <div class="al-tile warn">
+      <div class="k">Awaiting sync</div>
+      <div class="v">38</div>
+      <div class="u">queued for the next batch</div>
+    </div>
+  </div>
+
+  <div class="al-cols">
+
+    <!-- ===================== last batch panel ===================== -->
+    <div class="al-panel">
+      <div class="hd">Last batch to Central Hub <span class="r">High-Volume Billing collects &amp; the Hub reports to the OTA in batches</span></div>
+      <div class="bd">
+        <div class="al-batch">
+          <div class="cell">
+            <div class="k">Batch ID</div>
+            <div class="v mono">CEX-B2C-2026-0818-14</div>
+          </div>
+          <div class="cell">
+            <div class="k">Invoices</div>
+            <div class="v">480</div>
+          </div>
+          <div class="cell">
+            <div class="k">Synced to Hub</div>
+            <div class="v">10:30 GST</div>
+          </div>
+          <div class="cell">
+            <div class="k">Reported to OTA</div>
+            <div class="v">10:34 GST</div>
+          </div>
+          <div class="cell">
+            <div class="k">ASP acknowledgement</div>
+            <div class="v mono">ASP-OM-2026-0818-BATCH-14</div>
+          </div>
+        </div>
+        <div class="al-flow">
+          <span class="node">Branch sale</span><span class="arr">→</span>
+          <span class="node">High-Volume Billing</span><span class="arr">→</span>
+          <span class="node">Central Hub (batch)</span><span class="arr">→</span>
+          <span class="node">one connection to the OTA</span>
+          <span style="margin-left:auto">Latest reported: <span class="mono">CEX-SIMP-2026-441207</span> · state <b style="color:var(--al-grn)">reported</b></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== assumption / callout card ===================== -->
+    <div class="al-callout" id="alAssumption">
+      <div class="ico">!</div>
+      <div>
+        <div class="tt">Assumption — to confirm with the group</div>
+        <p>Simplified B2C invoices are collected by High-Volume Billing and reported to the OTA in scheduled batches from the Central Hub — <b>not cleared live at the point of sale</b>.</p>
+        <p class="q">To confirm with the group: batch cadence and whether any branch requires a cleared invoice before the customer leaves.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===================== recent simplified invoices grid ===================== -->
+  <div class="al-panel">
+    <div class="hd">Recent simplified invoices <span class="r" id="alGridCount">last 8 documents</span></div>
+    <div class="al-gridwrap">
+      <table class="al-grid" id="alGrid">
+        <thead>
+          <tr>
+            <th>Doc no.</th>
+            <th>Branch / centre</th>
+            <th>Customer</th>
+            <th>Item</th>
+            <th class="num">Net (OMR)</th>
+            <th class="num">VAT (OMR)</th>
+            <th class="num">Total (OMR)</th>
+            <th>Time</th>
+            <th>State</th>
+          </tr>
+        </thead>
+        <tbody><!-- rendered from RETAIL_B2C.rows --></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- architecture note -->
+  <div class="al-panel">
+    <div class="bd" style="font-size:12.5px;color:var(--al-ink2)">
+      <b style="color:var(--al-ink)">Architecture:</b>
+      Branch sale → High-Volume Billing → Central Hub (batch) → one connection to the OTA.
+      This is the group's second invoice origin — the same Central Hub that carries Enterprise ERP
+      B2B invoices also carries OHB Customer Experience's high-volume B2C stream, batched from High-Volume Billing.
+    </div>
+  </div>
+
+  <!-- function-key footer strip (High-Volume Billing authenticity) -->
+  <div class="al-fkeys" aria-hidden="true">
+    <span class="fk"><b>F1</b> Help</span>
+    <span class="fk"><b>F2</b> New invoice</span>
+    <span class="fk"><b>F3</b> Find</span>
+    <span class="fk"><b>F5</b> Print</span>
+    <span class="fk"><b>F7</b> Branch</span>
+    <span class="fk"><b>F8</b> Batch sync</span>
+    <span class="fk"><b>F9</b> Day end</span>
+    <span class="fk"><b>F12</b> Exit</span>
+  </div>
+
+</div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+/* Render the recent simplified invoices from RETAIL_B2C.rows. */
+(function () {
+  var d = (typeof RETAIL_B2C !== 'undefined') ? RETAIL_B2C : null;
+  if (!d) return;
+  var money = (typeof omr === 'function')
+    ? omr
+    : function (n) { return Number(n).toFixed(3); };
+
+  var tbody = document.querySelector('#alGrid tbody');
+  if (tbody) {
+    tbody.innerHTML = d.rows.map(function (r) {
+      return '<tr>'
+        + '<td class="doc">' + r.no + '</td>'
+        + '<td>' + r.ctr + '</td>'
+        + '<td>' + r.cust + '</td>'
+        + '<td>' + r.item + '</td>'
+        + '<td class="num">' + money(r.net) + '</td>'
+        + '<td class="num">' + money(r.vat) + '</td>'
+        + '<td class="num total">' + money(r.total) + '</td>'
+        + '<td>' + r.t + '</td>'
+        + '<td><span class="al-chip ' + r.state + '">' + r.state + '</span></td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  var cnt = document.getElementById('alGridCount');
+  if (cnt) cnt.textContent = d.rows.length + ' most recent · states: reported / batched / queued';
+})();
+</script>
+</body>
+</html>
