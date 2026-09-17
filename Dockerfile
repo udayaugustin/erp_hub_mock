@@ -3,7 +3,7 @@
 FROM nginx:alpine
 
 # Serve the client mock sites from nginx's web root.
-# Accessible at:  /wj-mock/  ·  /alnasr-mock/  ·  /ndc-mock/  ·  /zubair-mock/  ·  /vodafone-mock/  ·  /hub-mock/  ·  /rah-mock/
+# Accessible at:  /wj-mock/  ·  /alnasr-mock/  ·  /ndc-mock/  ·  /zubair-mock/  ·  /vodafone-mock/  ·  /hub-mock/  ·  /rah-mock/  ·  /oib-mock/
 COPY wj-mock/       /usr/share/nginx/html/wj-mock/
 COPY alnasr-mock/   /usr/share/nginx/html/alnasr-mock/
 COPY ndc-mock/      /usr/share/nginx/html/ndc-mock/
@@ -11,5 +11,6 @@ COPY zubair-mock/   /usr/share/nginx/html/zubair-mock/
 COPY vodafone-mock/ /usr/share/nginx/html/vodafone-mock/
 COPY hub-mock/      /usr/share/nginx/html/hub-mock/
 COPY rah-mock/      /usr/share/nginx/html/rah-mock/
+COPY oib-mock/      /usr/share/nginx/html/oib-mock/
 
 EXPOSE 80
