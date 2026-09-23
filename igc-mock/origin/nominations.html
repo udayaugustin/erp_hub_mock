@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nominations &amp; Metered Billing — IGC Enterprise ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  .erp-hero { display:flex; align-items:center; gap:14px; padding:14px 16px;
+    border:1px solid var(--line); border-radius:12px; background:var(--bg-alt);
+    margin-bottom:16px; }
+  .erp-hero .mk { width:38px; height:38px; flex:none; border-radius:9px;
+    display:grid; place-items:center; font-weight:700; font-size:18px;
+    color:#fff; background:linear-gradient(135deg,#4a5a68,#2f3b46); }
+  .erp-hero .h1 { font-weight:700; font-size:15px; }
+  .erp-hero .h2 { font-size:13px; color:var(--text-mid); margin-top:2px; line-height:1.5; }
+    .dayx { display:flex; align-items:flex-end; gap:3px; height:120px; padding-top:8px; }
+  .dayx .c { flex:1; position:relative; background:var(--accent); border-radius:2px 2px 0 0; min-height:4px; opacity:.85; }
+  .dayx .c.lo { background:var(--warn); }
+  .dayax { display:flex; justify-content:space-between; font-size:11px; color:var(--text-lo); margin-top:5px; }
+  .dcq { position:relative; }
+  .calc { display:grid; grid-template-columns:1fr auto; gap:7px 16px; font-size:13.5px; }
+  .calc .v { text-align:right; font-variant-numeric:tabular-nums; font-weight:600; }
+  .calc .tot { border-top:1px solid var(--line-hard); padding-top:8px; font-weight:700; }
+</style>
+</head>
+<body class="surface-erp" data-surface="erp" data-nav="nominations"
+      data-step="erp-nominations"
+      data-crumbs="Gas sales / Nominations &amp; Billing"
+      data-hint="Monthly gas invoices are built from metered volumes against nominations — take-or-pay and price included — before the invoice is posted.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Nominations &amp; Metered Billing</h1>
+          <span class="tag" id="periodTag"></span>
+        </div>
+        <p class="page-sub">Long-term gas customers are billed monthly on metered MMBtu against their nominations — then the invoice is posted and cleared like any other.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm">Metering statements</button>
+      </div>
+    </div>
+
+    <div class="erp-hero">
+      <div class="mk">I</div>
+      <div class="grow">
+        <div class="h1">IGC · Enterprise ERP</div>
+        <div class="h2">Daily nominations and metered volumes are held against each gas sales contract. At month end the ERP
+          prices the metered MMBtu, tests it against the take-or-pay minimum, and raises the invoice. The e-invoicing
+          Hub reads it only after it is posted.</div>
+      </div>
+    </div>
+
+    <div class="grid g4 mb16" id="tiles"></div>
+
+    <div class="split-wide">
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow" id="dayTitle"></h2>
+              <span class="small dim">MMBtu per day · <b id="dayTotal"></b> metered</span>
+            </div>
+            <div class="card-body">
+              <div class="dayx" id="dayChart"></div>
+              <div class="dayax"><span>1 Jul</span><span>Nominated 17,000 MMBtu/day</span><span>31 Jul</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">Contracts billed this cycle</h2>
+              <span class="tag">standard-rated · 5% VAT</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="tbl" style="min-width:820px">
+                  <thead>
+                    <tr>
+                      <th>Customer</th>
+                      <th>Contract</th>
+                      <th class="r">Nominated</th>
+                      <th class="r">Metered</th>
+                      <th class="r">Minimum (90%)</th>
+                      <th class="r">Shortfall</th>
+                      <th class="r">Price / MMBtu</th>
+                      <th>Invoice</th>
+                      <th>State</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rows"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-foot">
+              <span class="small dim">Volumes in MMBtu. Prices in OMR per MMBtu. Illustrative figures.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Invoice build</h2><span class="tag" id="buildTag"></span></div>
+            <div class="card-body" id="build"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Take-or-pay test</h2><span class="tag">Sohar Metals · GSA-041</span></div>
+            <div class="card-body" id="top"></div>
+          </div>
+        </section>
+
+        <section id="assumeWrap"></section>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  const N = NOMINATIONS, F = N.focus;
+  const metered = N.daily.reduce((a, b) => a + b, 0);
+  const net = metered * F.price, vat = net * VAT_RATE / 100;
+  const short = N.rows.filter(r => r.shortfall > 0);
+  const shortVol = short.reduce((a, r) => a + r.shortfall, 0);
+  const totalMetered = N.rows.reduce((a, r) => a + r.metered, 0);
+
+  document.getElementById('periodTag').textContent = N.period;
+
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Contracts this cycle', value: num(N.rows.length),
+           meta: 'shown of ' + num(GROUP.cycle.customers) + ' gas customers', tone: 'var(--accent)' }),
+    stat({ label: 'Metered volume', value: num(totalMetered),
+           meta: 'MMBtu · ' + N.period, tone: 'var(--info)' }),
+    stat({ label: 'Take-or-pay shortfall', value: num(shortVol),
+           meta: 'MMBtu · ' + short.length + ' contract · treatment to confirm', tone: 'var(--warn)' }),
+    stat({ label: 'Held for metering check', value: num(GROUP.cycle.held),
+           meta: 'not yet posted', tone: 'var(--ok)' })
+  ].join('');
+
+  document.getElementById('dayTitle').textContent = 'Daily metered volume — ' + F.customer;
+  document.getElementById('dayTotal').textContent = num(metered) + ' MMBtu';
+  const max = Math.max.apply(null, N.daily);
+  document.getElementById('dayChart').innerHTML = N.daily.map((v, i) =>
+    `<div class="c ${v < F.dcq ? 'lo' : ''}" style="height:${(v / max) * 100}%" title="${i + 1} Jul · ${num(v)} MMBtu"></div>`
+  ).join('');
+
+  function statePill(s) {
+    const map = { 'Invoiced': ['ok', 'Invoiced'], 'Shortfall held': ['warn', 'Shortfall held'], 'Metering check': ['info', 'Metering check'] };
+    const m = map[s] || ['idle', s];
+    return `<span class="pill pill-${m[0]}"><i class="dot"></i>${m[1]}</span>`;
+  }
+  document.getElementById('rows').innerHTML = N.rows.map(r => `
+    <tr>
+      <td class="nowrap">${r.cust}</td>
+      <td class="nowrap"><span class="mono" style="font-size:12px">${r.contract}</span></td>
+      <td class="r num">${num(r.nominated)}</td>
+      <td class="r num" style="font-weight:600">${num(r.metered)}</td>
+      <td class="r num">${num(r.minimum)}</td>
+      <td class="r num" style="${r.shortfall ? 'color:var(--warn);font-weight:600' : ''}">${r.shortfall ? num(r.shortfall) : '—'}</td>
+      <td class="r num">${omr(r.price)}</td>
+      <td class="nowrap"><span class="mono" style="font-size:11.5px">${r.no}</span></td>
+      <td>${statePill(r.state)}</td>
+    </tr>`).join('');
+
+  document.getElementById('buildTag').textContent = F.invoice;
+  document.getElementById('build').innerHTML =
+    `<div class="small dim" style="margin-bottom:10px">${F.customer} · ${F.contract} · ${N.period}</div>
+     <div class="calc">
+       <span>Metered volume</span><span class="v">${num(metered)} MMBtu</span>
+       <span>Price per MMBtu</span><span class="v">${omr(F.price)}</span>
+       <span>Net amount</span><span class="v">${omr(net)}</span>
+       <span>VAT · 5%</span><span class="v">${omr(vat)}</span>
+       <span class="tot">Invoice total (OMR)</span><span class="v tot" style="color:var(--accent-hi)">${omr(net + vat)}</span>
+     </div>
+     <p class="small dim" style="margin:12px 0 0">Posted in the ERP as a normal receivable. This is the invoice that is followed to the OTA and back.</p>`;
+
+  const s0 = short[0];
+  document.getElementById('top').innerHTML =
+    `<div class="calc">
+       <span>Daily contract quantity</span><span class="v">${num(s0.dcq)} MMBtu</span>
+       <span>Minimum · ${F.topPct}% × ${N.days} days</span><span class="v">${num(s0.minimum)}</span>
+       <span>Metered</span><span class="v">${num(s0.metered)}</span>
+       <span class="tot">Shortfall</span><span class="v tot" style="color:var(--warn)">${num(s0.shortfall)} MMBtu</span>
+     </div>
+     <p class="small dim" style="margin:12px 0 0">Shortfall × price = <b>${omr(s0.shortfall * s0.price)}</b> OMR. It is held rather than invoiced: how to tax it is not settled — see the take-or-pay position.</p>`;
+
+  document.getElementById('assumeWrap').innerHTML =
+    `<div class="card"><div class="card-body">
+      ${notice('warn', '<b>Assumption · to confirm</b><div class="small" style="margin-top:5px;line-height:1.6">' + N.assumption + '</div>')}
+    </div></div>`;
+</script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spot sales &amp; true-ups — IGC E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* page-local to hub/adjustments.html */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:760px){.grid2{grid-template-columns:1fr}}
+  .calc{display:grid;grid-template-columns:1fr auto;gap:7px 16px;font-size:13.5px}
+  .calc .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+  .calc .tot{border-top:1px solid var(--line-hard);padding-top:8px;font-weight:700}
+  .cite{font-family:var(--font-mono);font-size:12px}
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="adjustments"
+      data-step="hub-adjustments"
+      data-crumbs="Operations / Spot &amp; true-ups"
+      data-hint="A one-off spot sale clears like any B2B invoice; price and volume true-ups go out as credit and debit notes that reference the original.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Spot Sales &amp; True-up Notes</h1>
+          <span id="statePill"></span>
+        </div>
+        <p class="page-sub" id="sub"></p>
+      </div>
+      <div class="page-actions">
+        <span class="tag" id="dateTag"></span>
+      </div>
+    </div>
+
+    <div class="grid g4 mb16" id="tiles"></div>
+
+    <section style="margin-top:0">
+      <div class="section-head">
+        <div class="grow"><div class="eyebrow">Stream 4 · settled</div><h2>Spot gas sale — one-off, cleared live</h2></div>
+      </div>
+      <div class="grid2">
+        <div class="card"><div class="card-body" id="spot"></div></div>
+        <div class="card"><div class="card-body" id="spotWhy"></div></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="grow"><div class="eyebrow">Stream 5 · settled</div><h2>Credit and debit notes — price and volume true-ups</h2></div>
+        <span class="small dim" id="noteCount"></span>
+      </div>
+      <div class="card card-tight">
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Note</th><th>Customer</th><th>Type</th><th>Reason</th>
+                <th>Original invoice</th><th class="r">Total (OMR)</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="noteRows"></tbody>
+          </table>
+        </div>
+        <div class="card-foot"><span class="tiny dim">Each note carries the original invoice number as its preceding-invoice reference, so the OTA can match the two.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2 class="grow">Worked example — the July price true-up</h2></div>
+      <div class="card"><div class="card-body" id="example"></div></div>
+    </section>
+
+    <section>
+      <div id="assumption"></div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  const spot  = INVOICES.find(d => d.stream === 'spot-sell');
+  const notes = INVOICES.filter(d => d.stream === 'adjust');
+  const S_VOL = 12000, S_PRICE = 3.250;
+
+  document.getElementById('sub').textContent =
+    `${GROUP.name} — one-off sales and after-the-fact corrections, both cleared live. ${DEMO_DAY} ${DEMO_CLOCK}.`;
+  document.getElementById('dateTag').textContent = DEMO_DATE;
+  document.getElementById('statePill').outerHTML = pill('ok', 'Clearing normally');
+
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Spot invoices today', value: num(stream('spot-sell').today), meta: num(stream('spot-sell').mtd) + ' month to date', tone: 'var(--accent)' }),
+    stat({ label: 'Notes today', value: num(stream('adjust').today), meta: num(stream('adjust').mtd) + ' month to date', tone: 'var(--info)' }),
+    stat({ label: 'Credit notes', value: num(notes.filter(n => n.type === 'Credit Note').length), meta: 'shown below', tone: 'var(--warn)' }),
+    stat({ label: 'Debit notes', value: num(notes.filter(n => n.type === 'Debit Note').length), meta: 'shown below', tone: 'var(--ok)' })
+  ].join('');
+
+  const c = CUSTOMERS[spot.cust];
+  document.getElementById('spot').innerHTML =
+    `<div class="row" style="gap:8px;margin-bottom:10px"><span class="id" style="font-weight:600">${spot.no}</span>${pill('ok', 'Cleared')}</div>` +
+    kv([
+      ['Customer', c.name],
+      ['Basis', 'Spot sale · ' + spot.po + ' · one delivery'],
+      ['Quantity', `<span class="num">${num(S_VOL)} MMBtu</span>`],
+      ['Spot price', `<span class="num">${omr(S_PRICE)} OMR / MMBtu</span>`],
+      ['Net', `<span class="num">${omr(spot.net)}</span>`],
+      ['VAT · 5%', `<span class="num">${omr(spot.vat)}</span>`],
+      ['Total', `<span class="num" style="font-weight:600">${omr(spot.total)} OMR</span>`],
+      ['Acknowledgement', `<span class="id">${spot.ackNo}</span>`]
+    ], true);
+  document.getElementById('spotWhy').innerHTML =
+    `<div style="font-weight:600;font-size:15px;margin-bottom:6px">Same pipe, no special handling</div>
+     <p class="small muted" style="margin:0 0 8px">A spot sale is not part of a long-term schedule: it is priced at the spot price on the day and invoiced once, straight after delivery.</p>
+     <p class="small muted" style="margin:0">To the Hub it is an ordinary standard tax invoice — mapped, validated, sent, and tracked through the same three acknowledgement legs. There is no batch and no waiting for a month-end run.</p>`;
+
+  document.getElementById('noteCount').textContent = notes.length + ' notes today';
+  const reason = { 'Credit Note': 'Price true-up — final July price below provisional', 'Debit Note': 'Volume true-up — metered volume restated upward' };
+  document.getElementById('noteRows').innerHTML = notes.map(n => `
+    <tr>
+      <td class="nowrap"><span class="id" style="font-weight:600">${n.no}</span><div class="tiny dim num">${n.created}</div></td>
+      <td>${CUSTOMERS[n.cust].name}</td>
+      <td class="nowrap"><span class="chip info">${n.type}</span></td>
+      <td class="small">${reason[n.type]}</td>
+      <td class="nowrap"><span class="id">${n.against}</span></td>
+      <td class="r num" style="font-weight:600">${omr(n.total)}</td>
+      <td>${pill('ok', 'Cleared')}</td>
+    </tr>`).join('');
+
+  const cn = notes.find(n => n.type === 'Credit Note');
+  document.getElementById('example').innerHTML =
+    `<div class="grid2">
+      <div>
+        <div class="small dim" style="margin-bottom:8px">Original invoice <span class="id">${cn.against}</span> · June 2026 · provisional price</div>
+        <div class="calc">
+          <span>Volume billed</span><span class="v">520,000 MMBtu</span>
+          <span>Provisional price</span><span class="v">${omr(1.600)}</span>
+          <span>Final agreed price</span><span class="v">${omr(1.570)}</span>
+          <span class="tot">Difference</span><span class="v tot">${omr(0.030)} × 520,000</span>
+        </div>
+      </div>
+      <div>
+        <div class="small dim" style="margin-bottom:8px">Credit note <span class="id">${cn.no}</span></div>
+        <div class="calc">
+          <span>Net</span><span class="v">${omr(cn.net)}</span>
+          <span>VAT · 5%</span><span class="v">${omr(cn.vat)}</span>
+          <span class="tot">Total</span><span class="v tot" style="color:var(--accent-hi)">${omr(cn.total)}</span>
+        </div>
+        <p class="small dim" style="margin:10px 0 0">References <span class="id">${cn.against}</span> and is cleared like an invoice.</p>
+      </div>
+    </div>`;
+
+  document.getElementById('assumption').innerHTML = notice('warn',
+    `<b>Assumption · to confirm</b><br>Assumption · to confirm with IGC and OTA: that price and volume true-ups are issued as credit and debit notes (rather than a cancelled and re-issued invoice), and that the OTA accepts debit notes under PINT-OM.`);
+</script>
+</body>
+</html>
