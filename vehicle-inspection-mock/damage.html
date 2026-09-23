@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView — Damage &amp; Defects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/portal.css" />
+<style>
+  /* ---- damage kanban (page-specific) ---- */
+  .filterbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  .filterbar .fb-label{font-size:12px;color:var(--txt-3);font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+  .fchip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface);color:var(--txt-2);cursor:pointer;transition:.15s}
+  .fchip:hover{border-color:var(--txt-3);color:var(--txt)}
+  .fchip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .fchip .d{width:8px;height:8px;border-radius:50%}
+  .search-mini{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface);color:var(--txt-3);margin-left:auto;min-width:220px}
+  .search-mini svg{width:15px;height:15px}
+  .search-mini input{border:0;background:none;outline:0;font-family:var(--font-ui);font-size:13px;color:var(--txt);width:100%}
+
+  .kanban-board{display:flex;gap:16px;overflow-x:auto;padding:4px 4px 16px;scrollbar-width:thin}
+  .kanban-board::-webkit-scrollbar{height:9px}
+  .kanban-board::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:9px}
+  .kcol{flex:0 0 296px;display:flex;flex-direction:column;gap:12px}
+  .kcol-head{display:flex;align-items:center;gap:9px;padding:2px 4px}
+  .kcol-head .kdot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  .kcol-head .ktitle{font-size:13px;font-weight:600;letter-spacing:-.01em}
+  .kcol-head .kcount{margin-left:auto;font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--txt-2);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:1px 9px}
+  .klist{display:flex;flex-direction:column;gap:12px;background:rgba(255,255,255,.4);border:1px dashed var(--line-strong);border-radius:14px;padding:12px;min-height:120px}
+
+  .dcard{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 14px;box-shadow:var(--shadow-sm);transition:transform .14s ease, box-shadow .14s ease, border-color .14s}
+  .dcard:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--line-strong)}
+  .dcard-top{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+  .dcard-id{font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--txt)}
+  .dcard-veh{margin-left:auto;font-family:var(--font-mono);font-size:11px;font-weight:500;color:var(--txt-2);background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+  .dcard-title{font-size:13.5px;font-weight:600;line-height:1.35;letter-spacing:-.01em}
+  .dcard-loc{font-size:12px;color:var(--txt-2);margin-top:2px}
+  .dcard-meta{display:flex;align-items:center;gap:8px;margin-top:11px;padding-top:10px;border-top:1px solid var(--line)}
+  .dcard-by{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--txt-2)}
+  .dcard-av{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:9.5px;font-weight:600;color:#fff;flex:0 0 auto}
+  .dcard-date{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--txt-3)}
+
+  .sev{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;line-height:1.6}
+  .sev .d{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .sev.minor{background:#eef1f6;color:#5a6a80}
+  .sev.moderate{background:var(--attn-soft);color:#a86a12}
+  .sev.critical{background:var(--crit-soft);color:#b3372c}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ NAV RAIL ============ -->
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H6v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z" stroke="#241700" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="16" r="1.3" fill="#241700"/><circle cx="17" cy="16" r="1.3" fill="#241700"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">FleetView</div>
+        <div class="brand-sub">Inspection &amp; Audit</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24" fill="none"><path d="M4 13h6V4H4v9zm10 7h6v-9h-6v9zM4 20h6v-4H4v4zM14 4v4h6V4h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Dashboard</a>
+      <a class="nav-item" href="vehicles.html"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/></svg>Vehicles</a>
+      <a class="nav-item" href="driver-compliance.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Drivers</a>
+      <a class="nav-item" href="assignments.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Assignments</a>
+      <a class="nav-item" href="inspections.html"><svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/></svg>Inspections</a>
+      <a class="nav-item" href="supervisor-audits.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Supervisor Audits<span class="nav-badge amber">4</span></a>
+      <a class="nav-item active" href="damage.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Damage &amp; Defects<span class="nav-badge">5</span></a>
+      <a class="nav-item" href="reports.html"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Reports</a>
+      <div class="nav-label">Intelligence</div>
+      <a class="nav-item" href="ai-insights.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/></svg>AI Insights<span class="nav-badge amber">NEW</span></a>
+      <div class="nav-label">Configure</div>
+      <a class="nav-item" href="checklist-builder.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Checklist Templates</a>
+      <a class="nav-item" href="users.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="2.8" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="15" r="2.8" stroke="currentColor" stroke-width="1.6"/><path d="M4 19c0-2.5 2.2-4 5-4M20 9c0-2.5-2.2-4-5-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Users &amp; Roles</a>
+      <a class="nav-item" href="settings.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.9 7.9 0 000-2l1.6-1.3-1.6-2.8-2 .8a7.6 7.6 0 00-1.7-1l-.3-2.1H10l-.3 2.1a7.6 7.6 0 00-1.7 1l-2-.8L4.4 9.7 6 11a7.9 7.9 0 000 2l-1.6 1.3 1.6 2.8 2-.8a7.6 7.6 0 001.7 1l.3 2.1h3.4l.3-2.1a7.6 7.6 0 001.7-1l2 .8 1.6-2.8L19.4 13z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Settings</a>
+    </nav>
+    <div class="rail-foot">
+      <div class="userbox">
+        <div class="avatar">RS</div>
+        <div style="min-width:0"><div class="nm">Rahul Sharma</div><div class="rl">Fleet Manager</div></div>
+        <svg style="margin-left:auto" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="#93a3ba" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="depot"><span class="dot"></span> Central Depot
+        <svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M20 20l-3.2-3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <input placeholder="Search vehicles, drivers, damage cases…" />
+        <span class="kbd">⌘K</span>
+      </div>
+      <div class="top-right">
+        <span class="today">Wed, <b>19 Aug 2026</b></span>
+        <button class="icon-btn" title="Notifications"><span class="ping"></span>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19a2 2 0 004 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <button class="icon-btn" title="Help">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M9.6 9.5a2.4 2.4 0 114 1.8c-1 .7-1.6 1.2-1.6 2.2M12 16.5v.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="canvas">
+      <!-- page head -->
+      <div class="pagehead">
+        <div>
+          <h1>Damage &amp; Defects</h1>
+          <div class="sub">10 open cases across 6 stages · <b>3 confirmed today</b> · custody window applied to every new case</div>
+        </div>
+        <div class="ph-actions">
+          <div class="seg">
+            <button class="on">Kanban</button>
+            <button>List</button>
+          </div>
+          <button class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            New Case
+          </button>
+        </div>
+      </div>
+
+      <!-- severity filter bar -->
+      <div class="filterbar">
+        <span class="fb-label">Severity</span>
+        <button class="fchip on">All</button>
+        <button class="fchip"><span class="d" style="background:#5a6a80"></span>Minor</button>
+        <button class="fchip"><span class="d" style="background:var(--attn)"></span>Moderate</button>
+        <button class="fchip"><span class="d" style="background:var(--crit)"></span>Safety Critical</button>
+        <div class="search-mini">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M20 20l-3.2-3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <input placeholder="Filter by vehicle or case ID…" />
+        </div>
+      </div>
+
+      <!-- kanban board -->
+      <div class="kanban-board">
+
+        <!-- Reported -->
+        <div class="kcol">
+          <div class="kcol-head"><span class="kdot" style="background:var(--info)"></span><span class="ktitle">Reported</span><span class="kcount">2</span></div>
+          <div class="klist">
+            <a class="dcard" href="damage-detail.html">
+              <div class="dcard-top"><span class="dcard-id">DMG-00185</span><span class="dcard-veh">VEH-021</span></div>
+              <div class="dcard-title">Windscreen chip</div>
+              <div class="dcard-loc">Exterior · front windscreen</div>
+              <div style="margin-top:9px"><span class="sev minor"><span class="d"></span>Minor</span></div>
+              <div class="dcard-meta">
+                <div class="dcard-by"><span class="dcard-av" style="background:linear-gradient(140deg,#e0952a,#c9821b)">RK</span>Ravi Kumar</div>
+                <span class="dcard-date">19 Aug 08:05</span>
+              </div>
+            </a>
+            <a class="dcard" href="damage-detail.html">
+              <div class="dcard-top"><span class="dcard-id">DMG-00184</span><span class="dcard-veh">VEH-178</span></div>
+              <div class="dcard-title">Side mirror crack</div>
+              <div class="dcard-loc">Exterior · left side mirror</div>
+              <div style="margin-top:9px"><span class="sev moderate"><span class="d"></span>Moderate</span></div>
+              <div class="dcard-meta">
+                <div class="dcard-by"><span class="dcard-av" style="background:linear-gradient(140deg,#d8483c,#b3372c)">SA</span>Sameer Ali</div>
+                <span class="dcard-date">19 Aug 07:40</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Under Review -->
+        <div class="kcol">
+          <div class="kcol-head"><span class="kdot" style="background:var(--amber)"></span><span class="ktitle">Under Review</span><span class="kcount">2</span></div>
+          <div class="klist">
+            <a class="dcard" href="damage-detail.html">
+              <div class="dcard-top"><span class="dcard-id">DMG-00182</span><span class="dcard-veh">VEH-087</span></div>
+              <div class="dcard-title">Rear bumper scratch</div>
+              <div class="dcard-loc">Exterior · rear bumper</div>
+              <div style="margin-top:9px"><span class="sev minor"><span class="d"></span>Minor</span></div>
+              <div class="dcard-meta">
+                <div class="dcard-by"><span class="dcard-av" style="background:linear-gradient(140deg,#3a72c4,#274a86)">JM</span>John Mathew</div>
+                <span class="dcard-date">19 Aug 07:12</span>
+              </div>
+            </a>
+            <a class="dcard" href="damage-detail.html">
+              <div class="dcard-top"><span class="dcard-id">DMG-00181</span><span class="dcard-veh">VEH-242</span></div>
+              <div class="dcard-title">Passenger door dent</div>
+              <div class="dcard-loc">Exterior · rear-left door</div>
+              <div style="margin-top:9px"><span class="sev minor"><span class="d"></span>Minor</span></div>
+              <div class="dcard-meta">
+                <div class="dcard-by"><span class="dcard-av" style="background:linear-gradient(140deg,#1f9d6b,#137a51)">AK</span>Ahmed Khan</div>
+                <span class="dcard-date">19 Aug 06:50</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Confirmed -->
+        <div class="kcol">
+          <div class="kcol-head"><span class="kdot" style="background:var(--attn-soft);box-shadow:inset 0 0 0 3px var(--attn)"></span><span class="ktitle">Confirmed</span><span class="kcount">1</span></div>
+          <div class="klist">
+            <a class="dcard" href="damage-detail.html">
+              <div class="dcard-top"><span class="dcard-id">DMG-00179</span><span class="dcard-veh">VEH-104</span></div>
+              <div class="dcard-title">Front-left dent</div>
+              <div class="dcard-loc">Exterior · front-left panel</div>
+              <div style="margin-top:9px"><span class="sev moderate"><span class="d"></span>Moderate</span></div>
+              <div class="dcard-meta">
+                <div class="dcard-by"><span class="dcard-av" style="background:linear-gradient(140deg,#6b7a90,#4d5a6e)">JD</span>Joseph Daniel</div>
+                <span class="dcard-date">18 Aug 16:20</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Repair Required -->
+        <div class="kcol">
+          <div class="kcol-head"><span class="kdot" style="background:#e07b2a"></span><span class="ktitle">Repair Required</span><span class="kcount">2</span></div>
+          <div class="klist">
+            <a class="dcard" href="damage-detail.html">
+              <div class="dcard-top"><span class="dcard-id">DMG-00175</span><span class="dcard-veh">VEH-067</span></div>
+              <div class="dcard-title">Headlight crack</div>
+              <div class="dcard-loc">Exterior · right headlight</div>
+              <div style="margin-top:9px"><span class="sev moderate"><span class="d"></span>Moderate</span></div>
+              <div class="dcard-meta">
+                <div class="dcard-by"><span class="dcard-av" style="background:linear-gradient(140deg,#3a72c4,#274a86)">JM</span>John Mathew</div>
+                <span class="dcard-date">17 Aug 09:30</span>
+              </div>
+            </a>
+            <a class="dcard" href="damage-detail.html">
+              <div class="dcard-top"><span class="dcard-id">DMG-00170</span><span class="dcard-veh">VEH-104</span></div>
+              <div class="dcard-title">Tail light broken</div>
+              <div class="dcard-loc">Exterior · left tail light</div>
+              <div style="margin-top:9px"><span class="sev moderate"><span class="d"></span>Moderate</span></div>
+              <div class="dcard-meta">
+                <div class="dcard-by"><span class="dcard-av" style="background:linear-gradient(140deg,#6b7a90,#4d5a6e)">MK</span>Manoj Kumar</div>
+                <span class="dcard-date">16 Aug 14:10</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Repair in Progress -->
+        <div class="kcol">
+          <div class="kcol-head"><span class="kdot" style="background:var(--crit)"></span><span class="ktitle">Repair in Progress</span><span class="kcount">1</span></div>
+          <div class="klist">
+            <a class="dcard" href="damage-detail.html">
+              <div class="dcard-top"><span class="dcard-id">DMG-00166</span><span class="dcard-veh">VEH-211</span></div>
+              <div class="dcard-title">Tyre sidewall damage</div>
+              <div class="dcard-loc">Mechanical · front-left tyre</div>
+              <div style="margin-top:9px"><span class="sev critical"><span class="d"></span>Safety Critical</span></div>
+              <div class="dcard-meta">
+                <div class="dcard-by"><span class="dcard-av" style="background:linear-gradient(140deg,#e0952a,#c9821b)">RK</span>Ravi Kumar</div>
+                <span class="dcard-date">15 Aug 07:24</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Closed -->
+        <div class="kcol">
+          <div class="kcol-head"><span class="kdot" style="background:var(--good)"></span><span class="ktitle">Closed</span><span class="kcount">2</span></div>
+          <div class="klist">
+            <a class="dcard" href="damage-detail.html">
+              <div class="dcard-top"><span class="dcard-id">DMG-00158</span><span class="dcard-veh">VEH-087</span></div>
+              <div class="dcard-title">Floor mat tear</div>
+              <div class="dcard-loc">Interior · driver floor</div>
+              <div style="margin-top:9px"><span class="sev minor"><span class="d"></span>Minor</span></div>
+              <div class="dcard-meta">
+                <div class="dcard-by"><span class="dcard-av" style="background:linear-gradient(140deg,#1f9d6b,#137a51)">AK</span>Ahmed Khan</div>
+                <span class="dcard-date">12 Aug 08:15</span>
+              </div>
+            </a>
+            <a class="dcard" href="damage-detail.html">
+              <div class="dcard-top"><span class="dcard-id">DMG-00151</span><span class="dcard-veh">VEH-211</span></div>
+              <div class="dcard-title">Wiper blade worn</div>
+              <div class="dcard-loc">Mechanical · driver wiper</div>
+              <div style="margin-top:9px"><span class="sev minor"><span class="d"></span>Minor</span></div>
+              <div class="dcard-meta">
+                <div class="dcard-by"><span class="dcard-av" style="background:linear-gradient(140deg,#6b7a90,#4d5a6e)">MK</span>Manoj Kumar</div>
+                <span class="dcard-date">11 Aug 10:40</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="foot-note">FleetView — Fleet Inspection &amp; Accountability Platform · <b>Demo prototype</b> · sample data for proposal presentation</div>
+    </div>
+  </div>
+</div>
+<span class="demo-tag">Demo prototype</span>
+
+<script>
+  document.querySelectorAll('.seg').forEach(seg=>{seg.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;seg.querySelectorAll('button').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');});});
+  document.querySelectorAll('.filterbar').forEach(fb=>{fb.addEventListener('click',e=>{if(!e.target.classList.contains('fchip'))return;fb.querySelectorAll('.fchip').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');});});
+</script>
+</body>
+</html>

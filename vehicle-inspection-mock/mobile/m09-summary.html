@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FleetView · Inspection Summary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link href="../assets/mobile.css" rel="stylesheet" />
+<style>
+  .sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .sumcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:14px}
+  .sumcard .lab{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;color:var(--txt-3)}
+  .sumcard .lab svg{width:15px;height:15px}
+  .sumcard .val{font-family:var(--font-display);font-size:26px;font-weight:700;letter-spacing:-.02em;margin-top:8px;line-height:1}
+  .sumcard .val small{font-size:14px;color:var(--txt-3);font-weight:600}
+  .sumcard .foot{margin-top:9px}
+  .issue-row{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid #f0d9b8;border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:13px 14px;margin-top:11px;text-decoration:none;color:inherit}
+  .issue-row .ic{width:40px;height:40px;border-radius:11px;background:var(--attn-soft);display:grid;place-items:center;flex:0 0 auto}
+  .issue-row .ic svg{width:20px;height:20px;color:var(--attn)}
+  .issue-row .t{font-weight:700;font-size:14px}
+  .issue-row .s{font-size:12px;color:var(--txt-2);margin-top:1px}
+  .issue-row .go{margin-left:auto;color:var(--txt-3)}
+  .issue-row .go svg{width:18px;height:18px}
+  .kv{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+  .kv:last-child{border-bottom:0}
+  .kv .k{font-size:13px;color:var(--txt-2)}
+  .kv .v{font-size:13.5px;font-weight:600}
+  .evidence{display:flex;flex-wrap:wrap;gap:6px 14px;background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:12px;padding:11px 13px;margin-top:14px}
+  .evidence div{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--txt-2)}
+  .evidence svg{width:13px;height:13px;color:var(--txt-3)}
+  .evidence .mono{font-weight:600;color:var(--txt)}
+  .ghost-note{display:flex;gap:9px;align-items:flex-start;background:var(--info-soft);border-radius:12px;padding:11px 13px;margin-top:14px;font-size:12px;color:#2c5aa0;line-height:1.45}
+  .ghost-note svg{width:16px;height:16px;flex:0 0 auto;margin-top:1px}
+  .sec-h{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-3);margin:20px 0 11px}
+</style>
+</head>
+<body>
+  <div class="stage-head">
+    <div class="kick">Driver App · Inspection</div>
+    <h1>Inspection Summary</h1>
+    <p>Final review before submitting. Every condition event ties Vehicle + Driver + Timestamp + Photo + Checklist — evidence-first by design.</p>
+  </div>
+
+  <div class="stage">
+    <div class="phone-wrap">
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="sig">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+            <svg viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 5.5a10 10 0 0 1 14 0"/><path d="M4.5 8a6.5 6.5 0 0 1 9 0"/><path d="M7 10.5a3 3 0 0 1 4 0"/><circle cx="9" cy="12.4" r="1" fill="currentColor" stroke="none"/></svg>
+            <svg viewBox="0 0 26 13" fill="none"><rect x="1" y="1" width="21" height="11" rx="3" stroke="currentColor" stroke-width="1.3"/><rect x="3" y="3" width="15" height="7" rx="1.5" fill="currentColor"/><rect x="23.4" y="4.5" width="2" height="4" rx="1" fill="currentColor"/></svg>
+          </span>
+        </div>
+
+        <div class="mscroll">
+          <div class="appbar">
+            <a class="back" href="m08-damage-diagram.html" aria-label="Back">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </a>
+            <div>
+              <div class="ttl">Inspection Summary</div>
+              <div class="sub">VEH-087 · Ahmed Khan · Wed 19 Aug 2026</div>
+            </div>
+          </div>
+
+          <div class="mpad" style="padding-top:6px">
+            <div class="sumgrid">
+              <div class="sumcard">
+                <div class="lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Checklist</div>
+                <div class="val">30<small>/30</small></div>
+                <div class="foot"><span class="chip good"><span class="d"></span>All complete</span></div>
+              </div>
+              <div class="sumcard">
+                <div class="lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4l-1.5-2z"/><circle cx="12" cy="13" r="3.2"/></svg>Photos</div>
+                <div class="val">10<small>/10</small></div>
+                <div class="foot"><span class="chip good"><span class="d"></span>All captured</span></div>
+              </div>
+              <div class="sumcard">
+                <div class="lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>Odometer</div>
+                <div class="val" style="font-size:22px">84,421<small> km</small></div>
+                <div class="foot"><span class="chip neutral">+312 km since last</span></div>
+              </div>
+              <div class="sumcard">
+                <div class="lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M3 22h14M15 10h3a2 2 0 0 1 2 2v6a1.5 1.5 0 0 0 3 0V9l-3-3"/></svg>Fuel</div>
+                <div class="val" style="font-size:22px">3/4</div>
+                <div class="foot"><span class="chip neutral">Tank level logged</span></div>
+              </div>
+            </div>
+
+            <div class="sec-h">Issues found · 1</div>
+            <a class="issue-row" href="m08-damage-diagram.html">
+              <div class="ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+              </div>
+              <div>
+                <div class="t">Rear bumper scratch</div>
+                <div class="s">Scratch · Minor · photo + comment attached</div>
+              </div>
+              <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+            </a>
+
+            <div class="sec-h">Sync</div>
+            <div class="mcard mpad">
+              <div class="kv"><span class="k">Odometer</span><span class="v mono">84,421 km</span></div>
+              <div class="kv"><span class="k">Fuel level</span><span class="v">3/4 tank</span></div>
+              <div class="kv"><span class="k">Sync status</span><span class="v"><span class="chip good"><span class="d"></span>Ready to submit</span></span></div>
+            </div>
+
+            <div class="evidence">
+              <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="8" width="18" height="10" rx="2"/><path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg><span class="mono">VEH-087</span></div>
+              <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Ahmed Khan <span class="mono">DRV-0142</span></div>
+              <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="mono">19 Aug 07:12</span></div>
+              <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-6.7-7-12a7 7 0 0 1 14 0c0 5.3-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>GPS <span class="mono">12.97, 77.59</span></div>
+            </div>
+
+            <div class="ghost-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+              <span>This inspection has no safety-critical defects, so it can be submitted directly. Any critical item marked Not OK would instead route to <b>Supervisor Review</b> before the vehicle could be cleared.</span>
+            </div>
+          </div>
+
+          <div class="cta-dock">
+            <a class="cta cta-good" href="m10-cleared.html">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              Submit Inspection
+            </a>
+          </div>
+        </div>
+      </div></div>
+      <div class="phone-cap">M09 · <b>summary</b></div>
+    </div>
+  </div>
+
+  <div class="stage-foot">FleetView Driver App · <a href="../index.html">All screens</a> · <a href="m08-damage-diagram.html">‹ prev</a> · <a href="m10-cleared.html">next ›</a></div>
+</body>
+</html>

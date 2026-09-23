@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView — Driver Compliance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/portal.css" />
+<style>
+  /* profile card */
+  .profile{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+  .profile-id{display:flex;align-items:center;gap:16px}
+  .p-av{width:66px;height:66px;border-radius:16px;display:grid;place-items:center;font-family:var(--font-display);font-weight:700;font-size:24px;color:#fff;flex:0 0 auto;background:linear-gradient(140deg,#1f9d6b,#137a51);box-shadow:0 8px 20px -8px rgba(31,157,107,.7)}
+  .p-name{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+  .p-meta{font-size:12.5px;color:var(--txt-2);margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .p-meta .mono{font-family:var(--font-mono)}
+  .p-kpis{display:grid;grid-template-columns:repeat(7,1fr);gap:0;border-left:1px solid var(--line)}
+  .p-kpi{padding:2px 16px;border-right:1px solid var(--line)}
+  .p-kpi:last-child{border-right:0}
+  .p-kpi .n{font-family:var(--font-display);font-size:23px;font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+  .p-kpi .l{font-size:10.5px;color:var(--txt-2);font-weight:500;margin-top:6px;line-height:1.3}
+  @media(max-width:1180px){.profile{grid-template-columns:1fr}.p-kpis{grid-template-columns:repeat(4,1fr);border-left:0;border-top:1px solid var(--line);padding-top:14px}.p-kpi{border-bottom:1px solid var(--line);padding:10px 16px}}
+
+  /* rank table */
+  .tbl-wrap{overflow-x:auto;margin-top:2px}
+  table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+  table.tbl thead th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-3);font-weight:600;padding:11px 14px;border-bottom:1px solid var(--line)}
+  table.tbl thead th.num{text-align:center}
+  table.tbl tbody td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+  table.tbl tbody tr:last-child td{border-bottom:0}
+  table.tbl tbody tr:hover{background:var(--surface-2)}
+  td.num{text-align:center;font-family:var(--font-mono);font-weight:600}
+  .rank{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-family:var(--font-mono);font-weight:600;font-size:12px;background:var(--surface-2);color:var(--txt-2);margin:0 auto}
+  .rank.top{background:var(--amber-soft);color:var(--amber-deep)}
+  .drv{display:flex;align-items:center;gap:11px}
+  .drv-av{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-weight:600;font-size:12px;color:#fff;flex:0 0 auto}
+  .drv-nm{font-size:13px;font-weight:600;line-height:1.2}
+  .drv-id{font-size:11px;color:var(--txt-3);font-family:var(--font-mono)}
+  .agree{display:flex;align-items:center;gap:10px;min-width:150px}
+  .agree-track{flex:1;height:7px;border-radius:20px;background:var(--surface-2);overflow:hidden}
+  .agree-track i{display:block;height:100%;border-radius:20px}
+  .agree-sc{font-family:var(--font-mono);font-weight:600;font-size:13px;width:38px;text-align:right}
+  .trend{display:inline-flex;align-items:center;gap:3px;font-family:var(--font-mono);font-weight:600;font-size:12px;padding:2px 7px;border-radius:20px}
+  .trend svg{width:12px;height:12px}
+  .trend.up{background:var(--good-soft);color:#137a51}
+  .trend.down{background:var(--crit-soft);color:#b3372c}
+  .trend.flat{background:#eef1f6;color:var(--slate)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ NAV RAIL ============ -->
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H6v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z" stroke="#241700" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="16" r="1.3" fill="#241700"/><circle cx="17" cy="16" r="1.3" fill="#241700"/></svg>
+      </div>
+      <div><div class="brand-name">FleetView</div><div class="brand-sub">Inspection &amp; Audit</div></div>
+    </div>
+    <nav class="nav">
+      <a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24" fill="none"><path d="M4 13h6V4H4v9zm10 7h6v-9h-6v9zM4 20h6v-4H4v4zM14 4v4h6V4h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Dashboard</a>
+      <a class="nav-item" href="vehicles.html"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/></svg>Vehicles</a>
+      <a class="nav-item active" href="driver-compliance.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Drivers</a>
+      <a class="nav-item" href="assignments.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Assignments</a>
+      <a class="nav-item" href="inspections.html"><svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/></svg>Inspections</a>
+      <a class="nav-item" href="supervisor-audits.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Supervisor Audits<span class="nav-badge amber">4</span></a>
+      <a class="nav-item" href="damage.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Damage &amp; Defects<span class="nav-badge">5</span></a>
+      <a class="nav-item" href="reports.html"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Reports</a>
+      <div class="nav-label">Intelligence</div>
+      <a class="nav-item" href="ai-insights.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/></svg>AI Insights<span class="nav-badge amber">NEW</span></a>
+      <div class="nav-label">Configure</div>
+      <a class="nav-item" href="checklist-builder.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Checklist Templates</a>
+      <a class="nav-item" href="users.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="2.8" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="15" r="2.8" stroke="currentColor" stroke-width="1.6"/><path d="M4 19c0-2.5 2.2-4 5-4M20 9c0-2.5-2.2-4-5-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Users &amp; Roles</a>
+      <a class="nav-item" href="settings.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.9 7.9 0 000-2l1.6-1.3-1.6-2.8-2 .8a7.6 7.6 0 00-1.7-1l-.3-2.1H10l-.3 2.1a7.6 7.6 0 00-1.7 1l-2-.8L4.4 9.7 6 11a7.9 7.9 0 000 2l-1.6 1.3 1.6 2.8 2-.8a7.6 7.6 0 001.7 1l.3 2.1h3.4l.3-2.1a7.6 7.6 0 001.7-1l2 .8 1.6-2.8L19.4 13z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Settings</a>
+    </nav>
+    <div class="rail-foot">
+      <div class="userbox">
+        <div class="avatar">RS</div>
+        <div style="min-width:0"><div class="nm">Rahul Sharma</div><div class="rl">Fleet Manager</div></div>
+        <svg style="margin-left:auto" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="#93a3ba" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="depot"><span class="dot"></span> Central Depot
+        <svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M20 20l-3.2-3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <input placeholder="Search vehicles, drivers, damage cases…" />
+        <span class="kbd">⌘K</span>
+      </div>
+      <div class="top-right">
+        <span class="today">Wed, <b>19 Aug 2026</b></span>
+        <button class="icon-btn" title="Notifications"><span class="ping"></span>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19a2 2 0 004 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <button class="icon-btn" title="Help">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M9.6 9.5a2.4 2.4 0 114 1.8c-1 .7-1.6 1.2-1.6 2.2M12 16.5v.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="canvas">
+      <!-- page head -->
+      <div class="pagehead">
+        <div>
+          <h1>Driver Compliance</h1>
+          <div class="sub">Inspection compliance &amp; agreement across all drivers · <b>fair, evidence-based</b> · scores measure inspection quality, not blame</div>
+        </div>
+        <div class="ph-actions">
+          <div class="seg">
+            <button>30 Days</button>
+            <button class="on">90 Days</button>
+            <button>Year</button>
+          </div>
+          <button class="btn">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Export
+          </button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- FEATURED PROFILE -->
+        <div class="card card-pad span-8" style="grid-column:span 12">
+          <div class="card-head" style="margin-bottom:16px">
+            <h3>Driver Profile</h3>
+            <span class="chip good" style="margin-left:6px"><span class="d"></span>Top agreement</span>
+            <span class="hint" style="margin-left:auto">Inspection Compliance &amp; Agreement</span>
+          </div>
+          <div class="profile">
+            <div class="profile-id">
+              <div class="p-av">AK</div>
+              <div>
+                <div class="p-name">Ahmed Khan</div>
+                <div class="p-meta"><span class="mono">DRV-0142</span> · Central Depot · <span class="chip good"><span class="d"></span>96% agreement</span></div>
+              </div>
+            </div>
+            <div class="p-kpis">
+              <div class="p-kpi"><div class="n">470</div><div class="l">Total inspections</div></div>
+              <div class="p-kpi"><div class="n" style="color:var(--good)">458</div><div class="l">On-time</div></div>
+              <div class="p-kpi"><div class="n">38</div><div class="l">Supervisor audits</div></div>
+              <div class="p-kpi"><div class="n" style="color:var(--good)">96%</div><div class="l">Agreement score</div></div>
+              <div class="p-kpi"><div class="n">11</div><div class="l">Reported defects</div></div>
+              <div class="p-kpi"><div class="n" style="color:var(--attn)">4</div><div class="l">Damage cases during custody window</div></div>
+              <div class="p-kpi"><div class="n">1</div><div class="l">Confirmed responsibility</div></div>
+            </div>
+          </div>
+          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--txt-2);display:flex;gap:9px;align-items:flex-start">
+            <svg style="width:16px;height:16px;flex:0 0 auto;color:var(--attn);margin-top:1px" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 11v5M12 8v.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span>"Damage cases during custody window" does not mean confirmed fault. It counts cases first identified while a vehicle was in this driver's custody; responsibility is decided separately through supervisor review.</span>
+          </div>
+        </div>
+
+        <!-- RANK TABLE -->
+        <div class="card span-8" style="grid-column:span 12">
+          <div class="card-pad">
+            <div class="card-head">
+              <h3>Compliance &amp; Agreement Ranking</h3>
+              <span class="hint">· all drivers · 90-day window</span>
+            </div>
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th class="num">Rank</th>
+                    <th>Driver</th>
+                    <th class="num">Inspections</th>
+                    <th class="num">On-time %</th>
+                    <th class="num">Sup. audits</th>
+                    <th>Agreement score</th>
+                    <th class="num">Mismatches</th>
+                    <th class="num">Trend</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="num"><span class="rank top">1</span></td>
+                    <td><div class="drv"><div class="drv-av" style="background:linear-gradient(140deg,#1f9d6b,#137a51)">AK</div><div><div class="drv-nm">Ahmed Khan</div><div class="drv-id">DRV-0142</div></div></div></td>
+                    <td class="num">470</td>
+                    <td class="num">97%</td>
+                    <td class="num">38</td>
+                    <td><div class="agree"><div class="agree-track"><i style="width:96%;background:var(--good)"></i></div><span class="agree-sc" style="color:var(--good)">96%</span></div></td>
+                    <td class="num">2</td>
+                    <td class="num"><span class="trend up"><svg viewBox="0 0 24 24" fill="none"><path d="M5 15l7-7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>2</span></td>
+                  </tr>
+                  <tr>
+                    <td class="num"><span class="rank">2</span></td>
+                    <td><div class="drv"><div class="drv-av" style="background:linear-gradient(140deg,#3a72c4,#274a86)">JM</div><div><div class="drv-nm">John Mathew</div><div class="drv-id">DRV-0098</div></div></div></td>
+                    <td class="num">431</td>
+                    <td class="num">94%</td>
+                    <td class="num">34</td>
+                    <td><div class="agree"><div class="agree-track"><i style="width:93%;background:var(--good)"></i></div><span class="agree-sc" style="color:var(--good)">93%</span></div></td>
+                    <td class="num">3</td>
+                    <td class="num"><span class="trend up"><svg viewBox="0 0 24 24" fill="none"><path d="M5 15l7-7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>1</span></td>
+                  </tr>
+                  <tr>
+                    <td class="num"><span class="rank">3</span></td>
+                    <td><div class="drv"><div class="drv-av" style="background:linear-gradient(140deg,#6b7a90,#4d5a6e)">PS</div><div><div class="drv-nm">Priya Sharma</div><div class="drv-id">DRV-0156</div></div></div></td>
+                    <td class="num">402</td>
+                    <td class="num">92%</td>
+                    <td class="num">29</td>
+                    <td><div class="agree"><div class="agree-track"><i style="width:90%;background:var(--good)"></i></div><span class="agree-sc" style="color:var(--good)">90%</span></div></td>
+                    <td class="num">4</td>
+                    <td class="num"><span class="trend flat"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>0</span></td>
+                  </tr>
+                  <tr>
+                    <td class="num"><span class="rank">4</span></td>
+                    <td><div class="drv"><div class="drv-av" style="background:linear-gradient(140deg,#e0952a,#c9821b)">RK</div><div><div class="drv-nm">Ravi Kumar</div><div class="drv-id">DRV-0211</div></div></div></td>
+                    <td class="num">388</td>
+                    <td class="num">89%</td>
+                    <td class="num">31</td>
+                    <td><div class="agree"><div class="agree-track"><i style="width:88%;background:var(--attn)"></i></div><span class="agree-sc" style="color:var(--attn)">88%</span></div></td>
+                    <td class="num">6</td>
+                    <td class="num"><span class="trend down"><svg viewBox="0 0 24 24" fill="none"><path d="M19 9l-7 7-7-7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>1</span></td>
+                  </tr>
+                  <tr>
+                    <td class="num"><span class="rank">5</span></td>
+                    <td><div class="drv"><div class="drv-av" style="background:linear-gradient(140deg,#6b7a90,#4d5a6e)">NF</div><div><div class="drv-nm">Nithin Fernandez</div><div class="drv-id">DRV-0173</div></div></div></td>
+                    <td class="num">356</td>
+                    <td class="num">86%</td>
+                    <td class="num">26</td>
+                    <td><div class="agree"><div class="agree-track"><i style="width:84%;background:var(--attn)"></i></div><span class="agree-sc" style="color:var(--attn)">84%</span></div></td>
+                    <td class="num">7</td>
+                    <td class="num"><span class="trend up"><svg viewBox="0 0 24 24" fill="none"><path d="M5 15l7-7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>3</span></td>
+                  </tr>
+                  <tr>
+                    <td class="num"><span class="rank">6</span></td>
+                    <td><div class="drv"><div class="drv-av" style="background:linear-gradient(140deg,#d8483c,#b3372c)">SA</div><div><div class="drv-nm">Sameer Ali</div><div class="drv-id">DRV-0184</div></div></div></td>
+                    <td class="num">312</td>
+                    <td class="num">81%</td>
+                    <td class="num">24</td>
+                    <td><div class="agree"><div class="agree-track"><i style="width:79%;background:var(--crit)"></i></div><span class="agree-sc" style="color:var(--crit)">79%</span></div></td>
+                    <td class="num">11</td>
+                    <td class="num"><span class="trend down"><svg viewBox="0 0 24 24" fill="none"><path d="M19 9l-7 7-7-7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>2</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="margin-top:14px;font-size:11.5px;color:var(--txt-3);line-height:1.5">Agreement score reflects how closely a driver's inspections match independent supervisor audits. It measures inspection accuracy and consistency — it is not a conduct or disciplinary rating.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="foot-note">FleetView — Fleet Inspection &amp; Accountability Platform · <b>Demo prototype</b> · sample data for proposal presentation</div>
+    </div>
+  </div>
+</div>
+<span class="demo-tag">Demo prototype</span>
+
+<script>
+  document.querySelectorAll('.seg').forEach(seg=>{seg.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;seg.querySelectorAll('button').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');});});
+</script>
+</body>
+</html>

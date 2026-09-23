@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView · M06 Inspection Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link href="../assets/mobile.css" rel="stylesheet" />
+<style>
+  .prog-wrap{padding:14px 18px 4px}
+  .prog-wrap .row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+  .prog-wrap .row .t{font-size:13px;font-weight:600}
+  .prog-wrap .row .n{font-family:var(--font-mono);font-size:12px;color:var(--amber-deep);font-weight:600}
+  .segtabs{display:flex;gap:7px;padding:14px 18px 4px;overflow-x:auto;scrollbar-width:none}
+  .segtabs::-webkit-scrollbar{display:none}
+  .segtabs a{flex:0 0 auto;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--txt-2);text-decoration:none}
+  .segtabs a.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .clitem{margin:11px 18px 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-sm);padding:13px 14px}
+  .clitem .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+  .clitem .top .nm{font-size:14.5px;font-weight:600}
+  .clitem .top .nm .req{color:var(--crit);font-weight:700}
+  .clitem .top .badge{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-3);font-weight:700}
+  .no-note{margin:11px 0 2px;padding:11px 12px;background:var(--crit-soft);border:1px solid #f0c9c4;border-radius:11px}
+  .no-note .hd{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:#b3372c}
+  .no-note .hd svg{width:15px;height:15px}
+  .no-note .rq{display:flex;gap:8px;margin-top:9px}
+  .no-note .rq .r{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;font-weight:600;padding:9px;border-radius:10px;border:1.5px dashed #e2a59d;color:#b3372c;background:#fff5f4}
+  .no-note .rq .r svg{width:14px;height:14px}
+  .no-note .report{display:block;text-align:center;margin-top:9px;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(160deg,var(--crit),#b3372c);border-radius:10px;padding:10px;text-decoration:none}
+  .sec-lbl{padding:18px 18px 2px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-3);font-weight:700}
+</style>
+</head>
+<body>
+  <div class="stage-head">
+    <div class="kick">Driver App</div>
+    <h1>Inspection Checklist</h1>
+    <p>Every item is OK / Not OK / N/A. A "Not OK" forces a comment and photo — guided accountability, not free text.</p>
+  </div>
+  <div class="stage">
+    <div class="phone-wrap">
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span class="sig">
+          <svg viewBox="0 0 20 20" fill="currentColor"><rect x="1" y="11" width="3" height="6" rx="1"/><rect x="6" y="8" width="3" height="9" rx="1"/><rect x="11" y="5" width="3" height="12" rx="1"/><rect x="16" y="2" width="3" height="15" rx="1"/></svg>
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7.6a12 12 0 0 1 16 0"/><path d="M4.9 10.7a8 8 0 0 1 10.2 0"/><path d="M7.7 13.8a4 4 0 0 1 4.6 0"/><circle cx="10" cy="16.6" r="1" fill="currentColor" stroke="none"/></svg>
+          <svg viewBox="0 0 26 20" style="width:22px" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="20" height="10" rx="2.5"/><rect x="3" y="7" width="13" height="6" rx="1" fill="currentColor" stroke="none"/><path d="M23.5 8.5v3" stroke-linecap="round"/></svg>
+        </span></div>
+        <div class="appbar">
+          <a href="m05-guided-photos.html" class="back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
+          <div><div class="ttl">Inspection Checklist</div><div class="sub">VEH-087 · Toyota Hiace</div></div>
+        </div>
+        <div class="mscroll">
+          <div class="prog-wrap">
+            <div class="row"><span class="t">Checklist progress</span><span class="n">18 of 30 completed</span></div>
+            <div class="mprog"><i style="width:60%"></i></div>
+          </div>
+          <div class="segtabs">
+            <a class="on" href="#">Exterior</a>
+            <a href="#">Interior</a>
+            <a href="#">Safety</a>
+            <a href="#">Mechanical</a>
+          </div>
+
+          <div class="sec-lbl">Exterior</div>
+
+          <div class="clitem">
+            <div class="top"><span class="nm">Body panels</span><span class="badge">Marked OK</span></div>
+            <div class="tri"><button class="ok on">OK</button><button class="no">Not OK</button><button class="na">N/A</button></div>
+          </div>
+
+          <div class="clitem">
+            <div class="top"><span class="nm">Windscreen</span><span class="badge">Marked OK</span></div>
+            <div class="tri"><button class="ok on">OK</button><button class="no">Not OK</button><button class="na">N/A</button></div>
+          </div>
+
+          <div class="clitem">
+            <div class="top"><span class="nm">Headlights</span><span class="badge">Marked OK</span></div>
+            <div class="tri"><button class="ok on">OK</button><button class="no">Not OK</button><button class="na">N/A</button></div>
+          </div>
+
+          <div class="clitem">
+            <div class="top"><span class="nm">Tyres <span class="req">· action required</span></span><span class="badge" style="color:#b3372c">Not OK</span></div>
+            <div class="tri"><button class="ok">OK</button><button class="no on">Not OK</button><button class="na">N/A</button></div>
+            <div class="no-note">
+              <div class="hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l9 16H3z"/><path d="M12 9v4M12 16h.01"/></svg>Comment + photo required for "Not OK"</div>
+              <div class="rq">
+                <span class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a2 2 0 0 1-2 2H8l-4 3V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg>Add comment</span>
+                <span class="r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg>Capture photo</span>
+              </div>
+              <a href="m07-report-issue.html" class="report">Report issue →</a>
+            </div>
+          </div>
+
+          <div class="clitem">
+            <div class="top"><span class="nm">Indicators</span><span class="badge">Marked OK</span></div>
+            <div class="tri"><button class="ok on">OK</button><button class="no">Not OK</button><button class="na">N/A</button></div>
+          </div>
+
+          <div class="clitem">
+            <div class="top"><span class="nm">Side mirrors</span><span class="badge">Marked OK</span></div>
+            <div class="tri"><button class="ok on">OK</button><button class="no">Not OK</button><button class="na">N/A</button></div>
+          </div>
+
+          <div class="clitem">
+            <div class="top"><span class="nm">Roof rack</span><span class="badge">Not fitted</span></div>
+            <div class="tri"><button class="ok">OK</button><button class="no">Not OK</button><button class="na on">N/A</button></div>
+          </div>
+          <div style="height:14px"></div>
+        </div>
+
+        <div class="cta-dock">
+          <a href="m09-summary.html" style="text-decoration:none"><button class="cta cta-amber">Review &amp; Submit
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          </button></a>
+        </div>
+      </div></div>
+      <div class="phone-cap">M06 · <b>checklist</b></div>
+    </div>
+  </div>
+  <div class="stage-foot">FleetView Driver App · <a href="../index.html">All screens</a> · <a href="m05-guided-photos.html">M05 Guided Photos</a> ← <b>M06</b> → <a href="m09-summary.html">M09 Summary</a></div>
+</body>
+</html>

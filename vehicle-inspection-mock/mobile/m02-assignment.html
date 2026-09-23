@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView · M02 Today's Assignment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link href="../assets/mobile.css" rel="stylesheet" />
+<style>
+  .greet{padding:8px 18px 4px}
+  .greet .hi{font-size:13px;color:var(--txt-2);font-weight:500}
+  .greet .nm{font-family:var(--font-display);font-size:25px;font-weight:700;letter-spacing:-.02em;margin-top:2px}
+  .greet .nm b{color:var(--amber-deep)}
+  .veh-card{margin:14px 18px 0;border-radius:var(--radius);overflow:hidden;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-md)}
+  .veh-img{height:132px;position:relative;background:radial-gradient(500px 200px at 75% 0%,#2a3d5f 0%,transparent 60%),linear-gradient(150deg,#1a2740,#0f1a2e);display:flex;align-items:flex-end;padding:12px}
+  .veh-img .van{position:absolute;right:16px;top:50%;transform:translateY(-50%);opacity:.9}
+  .veh-img .van svg{width:150px;height:74px;color:#cdd7e6}
+  .veh-img .tag{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#9fb0c8;font-weight:600}
+  .veh-body{padding:15px 16px 16px}
+  .veh-body .id{font-family:var(--font-mono);font-size:22px;font-weight:600;letter-spacing:-.01em}
+  .veh-body .mk{font-size:13.5px;color:var(--txt-2);margin-top:1px}
+  .veh-meta{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:14px}
+  .veh-meta .m{background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:9px 11px}
+  .veh-meta .m .k{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-3);font-weight:600}
+  .veh-meta .m .v{font-size:13.5px;font-weight:600;margin-top:2px}
+  .veh-meta .m .v.mono{font-family:var(--font-mono);font-size:13px}
+  .prev-line{display:flex;align-items:center;gap:8px;margin:13px 16px 0;padding:10px 12px;background:var(--good-soft);border-radius:11px;font-size:12px;color:#137a51;font-weight:500}
+  .prev-line svg{width:15px;height:15px;flex:0 0 auto}
+  .prev-line .mono{font-family:var(--font-mono)}
+  .sec-h{display:flex;align-items:center;justify-content:space-between;padding:22px 20px 8px}
+  .sec-h h3{font-size:13px;font-weight:700;letter-spacing:.01em}
+  .sec-h a{font-size:12px;font-weight:600;color:var(--amber-deep)}
+  .mini{margin:0 18px;display:flex;flex-direction:column;gap:9px}
+  .mini .r{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:11px 13px}
+  .mini .r .av{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;flex:0 0 auto;background:var(--surface-2);border:1px solid var(--line)}
+  .mini .r .av svg{width:19px;height:19px;color:var(--txt-2)}
+  .mini .r .id{font-family:var(--font-mono);font-size:13px;font-weight:600}
+  .mini .r .sub{font-size:11px;color:var(--txt-3);margin-top:1px}
+  .mini .r .meta{margin-left:auto;text-align:right}
+  .mini .r .meta .ts{font-family:var(--font-mono);font-size:11px;color:var(--txt-2)}
+</style>
+</head>
+<body>
+  <div class="stage-head">
+    <div class="kick">Driver App</div>
+    <h1>Today's Assignment</h1>
+    <p>The driver's home screen — one vehicle, one shift, one tap to begin the guided inspection.</p>
+  </div>
+  <div class="stage">
+    <div class="phone-wrap">
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span class="sig">
+          <svg viewBox="0 0 20 20" fill="currentColor"><rect x="1" y="11" width="3" height="6" rx="1"/><rect x="6" y="8" width="3" height="9" rx="1"/><rect x="11" y="5" width="3" height="12" rx="1"/><rect x="16" y="2" width="3" height="15" rx="1"/></svg>
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7.6a12 12 0 0 1 16 0"/><path d="M4.9 10.7a8 8 0 0 1 10.2 0"/><path d="M7.7 13.8a4 4 0 0 1 4.6 0"/><circle cx="10" cy="16.6" r="1" fill="currentColor" stroke="none"/></svg>
+          <svg viewBox="0 0 26 20" style="width:22px" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="20" height="10" rx="2.5"/><rect x="3" y="7" width="13" height="6" rx="1" fill="currentColor" stroke="none"/><path d="M23.5 8.5v3" stroke-linecap="round"/></svg>
+        </span></div>
+        <div class="mscroll">
+          <div class="greet">
+            <div class="hi">Good Morning · Wed, 19 Aug 2026</div>
+            <div class="nm">Good Morning, <b>Ahmed</b></div>
+          </div>
+
+          <div class="veh-card">
+            <div class="veh-img">
+              <span class="van"><svg viewBox="0 0 200 100" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"><path d="M8 66V40a6 6 0 0 1 6-6h96l30 12h42a6 6 0 0 1 6 6v14"/><path d="M8 66h180"/><path d="M110 34v22h78"/><path d="M118 40v14h30"/><circle cx="52" cy="70" r="11" fill="#0f1a2e"/><circle cx="158" cy="70" r="11" fill="#0f1a2e"/></svg></span>
+              <span class="tag">Today's Vehicle</span>
+            </div>
+            <div class="veh-body">
+              <div class="id">VEH-087</div>
+              <div class="mk">Toyota Hiace · Van</div>
+              <div class="veh-meta">
+                <div class="m"><div class="k">Registration</div><div class="v mono">KA-01-AB-1234</div></div>
+                <div class="m"><div class="k">Shift</div><div class="v">Morning · 07:00</div></div>
+                <div class="m"><div class="k">Depot</div><div class="v">Central Depot</div></div>
+                <div class="m"><div class="k">Odometer</div><div class="v mono">84,421 km</div></div>
+              </div>
+              <div class="prev-line">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                Previous inspection: <span class="mono">Yesterday 20:34</span> · cleared
+              </div>
+            </div>
+          </div>
+
+          <div class="sec-h"><h3>Recent inspections</h3><a href="#">View all</a></div>
+          <div class="mini">
+            <div class="r">
+              <span class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 12l2-5h9l3 4h2v5H4z"/><circle cx="8" cy="17" r="1.6"/><circle cx="16" cy="17" r="1.6"/></svg></span>
+              <div><div class="id">VEH-087</div><div class="sub">Toyota Hiace · Pre-shift</div></div>
+              <div class="meta"><span class="chip good"><span class="d"></span>Cleared</span><div class="ts">18 Aug 20:34</div></div>
+            </div>
+            <div class="r">
+              <span class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 12l2-5h9l3 4h2v5H4z"/><circle cx="8" cy="17" r="1.6"/><circle cx="16" cy="17" r="1.6"/></svg></span>
+              <div><div class="id">VEH-087</div><div class="sub">Toyota Hiace · Pre-shift</div></div>
+              <div class="meta"><span class="chip good"><span class="d"></span>Cleared</span><div class="ts">17 Aug 07:08</div></div>
+            </div>
+            <div class="r">
+              <span class="av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 12l2-5h9l3 4h2v5H4z"/><circle cx="8" cy="17" r="1.6"/><circle cx="16" cy="17" r="1.6"/></svg></span>
+              <div><div class="id">VEH-104</div><div class="sub">Toyota Coaster · Pre-shift</div></div>
+              <div class="meta"><span class="chip attn"><span class="d"></span>1 minor</span><div class="ts">15 Aug 06:52</div></div>
+            </div>
+          </div>
+          <div style="height:14px"></div>
+        </div>
+
+        <div class="cta-dock">
+          <a href="m03-qr-confirm.html" style="text-decoration:none"><button class="cta cta-amber">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3M20 14v.01M14 20h.01M20 20v.01M17 20h.01"/></svg>
+            Scan Vehicle QR
+          </button></a>
+        </div>
+
+        <div class="tabbar">
+          <a class="on" href="m02-assignment.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>Home</a>
+          <a href="m05-guided-photos.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg>Inspections</a>
+          <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="8"/></svg>History</a>
+          <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6"/></svg>Profile</a>
+        </div>
+      </div></div>
+      <div class="phone-cap">M02 · <b>today-assignment</b></div>
+    </div>
+  </div>
+  <div class="stage-foot">FleetView Driver App · <a href="../index.html">All screens</a> · <a href="m01-login.html">M01 Login</a> ← <b>M02</b> → <a href="m03-qr-confirm.html">M03 QR Confirm</a></div>
+</body>
+</html>

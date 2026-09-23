@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FleetView · Mark Damage Location</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link href="../assets/mobile.css" rel="stylesheet" />
+<style>
+  .diagram{background:linear-gradient(160deg,#f7f9fb,#eef2f7);border:1px solid var(--line);border-radius:var(--radius);padding:8px 8px 4px;box-shadow:var(--shadow-sm)}
+  .diagram svg{width:100%;height:auto;display:block}
+  .hint{display:flex;align-items:center;gap:7px;justify-content:center;font-size:11.5px;font-weight:600;color:var(--txt-3);margin:6px 0 2px}
+  .hint svg{width:14px;height:14px}
+  .callout-card{display:flex;align-items:center;gap:11px;background:var(--crit-soft);border:1px solid #f2c9c4;border-radius:13px;padding:12px 13px;margin-top:14px}
+  .callout-card .pinic{width:38px;height:38px;border-radius:11px;background:var(--crit);display:grid;place-items:center;flex:0 0 auto}
+  .callout-card .pinic svg{width:20px;height:20px;color:#fff}
+  .callout-card .t{font-weight:700;font-size:14px}
+  .callout-card .s{font-size:12px;color:var(--txt-2);margin-top:1px}
+  .legend{margin-top:16px}
+  .legend .lh{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-3);margin-bottom:11px}
+  .legend .lgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px}
+  .lz{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:500;color:var(--txt-2)}
+  .lz .dot{width:11px;height:11px;border-radius:4px;flex:0 0 auto;border:1px solid rgba(0,0,0,.06)}
+  .lz.sel{color:var(--txt);font-weight:600}
+</style>
+</head>
+<body>
+  <div class="stage-head">
+    <div class="kick">Driver App · Inspection</div>
+    <h1>Damage Diagram</h1>
+    <p>Tap the body zone where the issue is. The selected location is pinned to the vehicle diagram so reviewers see exactly where the damage sits.</p>
+  </div>
+
+  <div class="stage">
+    <div class="phone-wrap">
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="sig">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+            <svg viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 5.5a10 10 0 0 1 14 0"/><path d="M4.5 8a6.5 6.5 0 0 1 9 0"/><path d="M7 10.5a3 3 0 0 1 4 0"/><circle cx="9" cy="12.4" r="1" fill="currentColor" stroke="none"/></svg>
+            <svg viewBox="0 0 26 13" fill="none"><rect x="1" y="1" width="21" height="11" rx="3" stroke="currentColor" stroke-width="1.3"/><rect x="3" y="3" width="15" height="7" rx="1.5" fill="currentColor"/><rect x="23.4" y="4.5" width="2" height="4" rx="1" fill="currentColor"/></svg>
+          </span>
+        </div>
+
+        <div class="mscroll">
+          <div class="appbar">
+            <a class="back" href="m07-report-issue.html" aria-label="Back">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </a>
+            <div>
+              <div class="ttl">Mark Damage Location</div>
+              <div class="sub">VEH-087 · Toyota Hiace · top view</div>
+            </div>
+          </div>
+
+          <div class="mpad" style="padding-top:6px">
+            <div class="diagram">
+              <svg viewBox="0 0 300 520" role="img" aria-label="Top view of van with rear bumper selected">
+                <defs>
+                  <linearGradient id="body" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e7edf4"/>
+                  </linearGradient>
+                  <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#cdd9e8"/><stop offset="1" stop-color="#aebfd4"/>
+                  </linearGradient>
+                  <linearGradient id="ambz" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#f6cf8f"/><stop offset="1" stop-color="#e8a13a"/>
+                  </linearGradient>
+                  <radialGradient id="pulse" cx="0.5" cy="0.5" r="0.5">
+                    <stop offset="0" stop-color="#d8483c" stop-opacity="0"/><stop offset="0.7" stop-color="#d8483c" stop-opacity=".22"/><stop offset="1" stop-color="#d8483c" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
+
+                <!-- wheels -->
+                <g fill="#2a3444">
+                  <rect x="52" y="132" width="19" height="54" rx="8"/>
+                  <rect x="229" y="132" width="19" height="54" rx="8"/>
+                  <rect x="52" y="336" width="19" height="54" rx="8"/>
+                  <rect x="229" y="336" width="19" height="54" rx="8"/>
+                </g>
+
+                <!-- front bumper -->
+                <rect x="86" y="40" width="128" height="18" rx="9" fill="#cfd8e4"/>
+                <!-- rear bumper HIGHLIGHT zone -->
+                <ellipse cx="150" cy="470" rx="120" ry="70" fill="url(#pulse)"/>
+                <rect x="86" y="462" width="128" height="20" rx="10" fill="url(#ambz)" stroke="#c9821b" stroke-width="1.5"/>
+
+                <!-- body -->
+                <rect x="70" y="52" width="160" height="418" rx="48" fill="url(#body)" stroke="#c3ccd9" stroke-width="2"/>
+
+                <!-- windscreen (front) -->
+                <path d="M96 150 L204 150 L192 108 L108 108 Z" fill="url(#glass)"/>
+                <!-- rear window -->
+                <path d="M100 402 L200 402 L196 372 L104 372 Z" fill="url(#glass)" opacity=".82"/>
+
+                <!-- roof panel -->
+                <rect x="94" y="158" width="112" height="206" rx="22" fill="#eef2f7" stroke="#d5dde8" stroke-width="1.5"/>
+                <!-- door split lines -->
+                <line x1="70" y1="258" x2="94" y2="258" stroke="#c3ccd9" stroke-width="1.5"/>
+                <line x1="206" y1="258" x2="230" y2="258" stroke="#c3ccd9" stroke-width="1.5"/>
+                <text x="150" y="266" text-anchor="middle" font-family="IBM Plex Sans" font-size="12" font-weight="600" fill="#8494a8">ROOF</text>
+                <text x="82" y="212" text-anchor="middle" font-family="IBM Plex Sans" font-size="9" font-weight="600" fill="#a3b0c2" transform="rotate(-90 82 212)">L DOOR</text>
+                <text x="218" y="212" text-anchor="middle" font-family="IBM Plex Sans" font-size="9" font-weight="600" fill="#a3b0c2" transform="rotate(90 218 212)">R DOOR</text>
+                <text x="150" y="132" text-anchor="middle" font-family="IBM Plex Sans" font-size="9" font-weight="600" fill="#a3b0c2">FRONT</text>
+
+                <!-- rear bumper zone active label -->
+                <rect x="102" y="486" width="96" height="17" rx="8" fill="#b3372c"/>
+                <text x="150" y="498" text-anchor="middle" font-family="IBM Plex Sans" font-size="10.5" font-weight="700" fill="#fff">REAR BUMPER</text>
+
+                <!-- pin marker on rear bumper -->
+                <g>
+                  <path d="M150 418 C136 418 126 429 126 442 C126 458 150 476 150 476 C150 476 174 458 174 442 C174 429 164 418 150 418 Z" fill="#d8483c" stroke="#fff" stroke-width="2.5"/>
+                  <circle cx="150" cy="441" r="8.5" fill="#fff"/>
+                  <circle cx="150" cy="441" r="4" fill="#d8483c"/>
+                </g>
+
+                <!-- callout label -->
+                <g>
+                  <line x1="174" y1="440" x2="214" y2="420" stroke="#d8483c" stroke-width="1.5" stroke-dasharray="3 3"/>
+                  <rect x="196" y="404" width="96" height="34" rx="9" fill="#ffffff" stroke="#f2c9c4" stroke-width="1.5"/>
+                  <text x="207" y="419" font-family="IBM Plex Sans" font-size="12" font-weight="700" fill="#0f1826">Scratch</text>
+                  <text x="207" y="431" font-family="IBM Plex Sans" font-size="10" font-weight="600" fill="#b3372c">Minor</text>
+                </g>
+              </svg>
+              <div class="hint">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                Tap a zone to move the pin
+              </div>
+            </div>
+
+            <div class="callout-card">
+              <div class="pinic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.7-7-12a7 7 0 0 1 14 0c0 5.3-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              </div>
+              <div>
+                <div class="t">Rear bumper</div>
+                <div class="s">Scratch · <b>Minor</b> · pinned to vehicle diagram</div>
+              </div>
+              <span class="chip attn" style="margin-left:auto"><span class="d"></span>Selected</span>
+            </div>
+
+            <div class="legend">
+              <div class="lh">Body zones</div>
+              <div class="lgrid">
+                <div class="lz">Front bumper<span class="dot" style="background:#cfd8e4;margin-left:auto"></span></div>
+                <div class="lz sel">Rear bumper<span class="dot" style="background:#e8a13a;margin-left:auto"></span></div>
+                <div class="lz">Left door<span class="dot" style="background:#eef2f7;margin-left:auto"></span></div>
+                <div class="lz">Right door<span class="dot" style="background:#eef2f7;margin-left:auto"></span></div>
+                <div class="lz">Roof<span class="dot" style="background:#eef2f7;margin-left:auto"></span></div>
+                <div class="lz">Windscreen<span class="dot" style="background:#aebfd4;margin-left:auto"></span></div>
+                <div class="lz">Wheels / tyres<span class="dot" style="background:#2a3444;margin-left:auto"></span></div>
+                <div class="lz">Interior<span class="dot" style="background:#f7f9fb;margin-left:auto"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cta-dock">
+            <a class="cta cta-amber" href="m09-summary.html">
+              Confirm Location
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+        </div>
+      </div></div>
+      <div class="phone-cap">M08 · <b>damage-diagram</b></div>
+    </div>
+  </div>
+
+  <div class="stage-foot">FleetView Driver App · <a href="../index.html">All screens</a> · <a href="m07-report-issue.html">‹ prev</a> · <a href="m09-summary.html">next ›</a></div>
+</body>
+</html>

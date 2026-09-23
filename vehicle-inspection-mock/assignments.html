@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView — Vehicle Assignments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/portal.css" />
+<style>
+  .cal-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow-sm)}
+  table.cal{width:100%;border-collapse:collapse;min-width:960px}
+  table.cal th{text-align:left;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--txt-3);font-weight:600;padding:13px 14px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+  table.cal th .day{font-family:var(--font-mono);color:var(--txt-2);font-size:11px;font-weight:600}
+  table.cal th.today-col{background:var(--amber-soft);color:var(--amber-deep)}
+  table.cal td{padding:9px 12px;border-bottom:1px solid var(--line);border-left:1px solid var(--line);vertical-align:top}
+  table.cal td:first-child{border-left:0}
+  table.cal tr:last-child td{border-bottom:0}
+  table.cal td.today-col{background:#fefbf4}
+  .veh-cell{display:flex;align-items:center;gap:10px;min-width:190px}
+  .veh-cell .veh-thumb{width:34px;height:26px}
+  .veh-cell .vid{font-family:var(--font-mono);font-weight:600;font-size:12.5px}
+  .veh-cell .vsub{font-size:11px;color:var(--txt-3)}
+  /* assignment cell */
+  .asg{border-radius:9px;padding:7px 9px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px;min-height:38px}
+  .asg.assigned{background:var(--info-soft);color:#2c5aa0;border:1px solid #cadcf3}
+  .asg.available{background:var(--good-soft);color:#137a51;border:1px dashed #9fd6bd}
+  .asg.maint{background:var(--crit-soft);color:#b3372c;border:1px solid #f3cfca}
+  .asg.rev{background:var(--amber-soft);color:#a86a12;border:1px solid #eecfa0}
+  .asg .dav{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:700;color:#fff;flex:0 0 auto}
+  .asg .empty{color:var(--txt-3);font-weight:500;font-style:normal}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:16px}
+  .lgd{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--txt-2);font-weight:500}
+  .lgd i{width:14px;height:14px;border-radius:4px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ NAV RAIL ============ -->
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H6v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z" stroke="#241700" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="16" r="1.3" fill="#241700"/><circle cx="17" cy="16" r="1.3" fill="#241700"/></svg></div>
+      <div><div class="brand-name">FleetView</div><div class="brand-sub">Inspection &amp; Audit</div></div>
+    </div>
+    <nav class="nav">
+      <a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24" fill="none"><path d="M4 13h6V4H4v9zm10 7h6v-9h-6v9zM4 20h6v-4H4v4zM14 4v4h6V4h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Dashboard</a>
+      <a class="nav-item" href="vehicles.html"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/></svg>Vehicles</a>
+      <a class="nav-item" href="driver-compliance.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Drivers</a>
+      <a class="nav-item active" href="assignments.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Assignments</a>
+      <a class="nav-item" href="inspections.html"><svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/></svg>Inspections</a>
+      <a class="nav-item" href="supervisor-audits.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Supervisor Audits<span class="nav-badge amber">4</span></a>
+      <a class="nav-item" href="damage.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Damage &amp; Defects<span class="nav-badge">5</span></a>
+      <a class="nav-item" href="reports.html"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Reports</a>
+      <div class="nav-label">Intelligence</div>
+      <a class="nav-item" href="ai-insights.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/></svg>AI Insights<span class="nav-badge amber">NEW</span></a>
+      <div class="nav-label">Configure</div>
+      <a class="nav-item" href="checklist-builder.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Checklist Templates</a>
+      <a class="nav-item" href="users.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="2.8" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="15" r="2.8" stroke="currentColor" stroke-width="1.6"/><path d="M4 19c0-2.5 2.2-4 5-4M20 9c0-2.5-2.2-4-5-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Users &amp; Roles</a>
+      <a class="nav-item" href="settings.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.9 7.9 0 000-2l1.6-1.3-1.6-2.8-2 .8a7.6 7.6 0 00-1.7-1l-.3-2.1H10l-.3 2.1a7.6 7.6 0 00-1.7 1l-2-.8L4.4 9.7 6 11a7.9 7.9 0 000 2l-1.6 1.3 1.6 2.8 2-.8a7.6 7.6 0 001.7 1l.3 2.1h3.4l.3-2.1a7.6 7.6 0 001.7-1l2 .8 1.6-2.8L19.4 13z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Settings</a>
+    </nav>
+    <div class="rail-foot"><div class="userbox"><div class="avatar">RS</div><div style="min-width:0"><div class="nm">Rahul Sharma</div><div class="rl">Fleet Manager</div></div><svg style="margin-left:auto" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="#93a3ba" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="depot"><span class="dot"></span> Central Depot<svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="search"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M20 20l-3.2-3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><input placeholder="Search vehicles, drivers, damage cases…" /><span class="kbd">⌘K</span></div>
+      <div class="top-right"><span class="today">Wed, <b>19 Aug 2026</b></span>
+        <button class="icon-btn" title="Notifications"><span class="ping"></span><svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19a2 2 0 004 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        <button class="icon-btn" title="Help"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M9.6 9.5a2.4 2.4 0 114 1.8c-1 .7-1.6 1.2-1.6 2.2M12 16.5v.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+      </div>
+    </header>
+
+    <div class="canvas">
+      <div class="pagehead">
+        <div>
+          <h1>Vehicle Assignments</h1>
+          <div class="sub">Central Depot · week of <b style="color:var(--txt-2)">18–24 Aug 2026</b> · 12 vehicles · Morning shift</div>
+        </div>
+        <div class="ph-actions">
+          <div class="seg">
+            <button class="on">Morning</button>
+            <button>Evening</button>
+          </div>
+          <div class="seg">
+            <button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="margin:0"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="on">This week</button>
+            <button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="margin:0"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Assign Vehicle</button>
+        </div>
+      </div>
+
+      <div class="cal-wrap">
+        <table class="cal">
+          <thead>
+            <tr>
+              <th style="min-width:200px">Vehicle</th>
+              <th>Mon <span class="day">18</span></th>
+              <th class="today-col">Tue <span class="day">19</span></th>
+              <th>Wed <span class="day">20</span></th>
+              <th>Thu <span class="day">21</span></th>
+              <th>Fri <span class="day">22</span></th>
+              <th>Sat <span class="day">23</span></th>
+              <th>Sun <span class="day">24</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- VEH-087 -->
+            <tr>
+              <td><a class="veh-cell" href="vehicle-profile.html"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/></svg></span><span><span class="vid">VEH-087</span><br><span class="vsub">Toyota Hiace · Van</span></span></a></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#1f9d6b,#137a51)">AK</span>Ahmed Khan</div></td>
+              <td class="today-col"><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#3a72c4,#274a86)">JM</span>John Mathew</div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#3a72c4,#274a86)">JM</span>John Mathew</div></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#1f9d6b,#137a51)">AK</span>Ahmed Khan</div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#1f9d6b,#137a51)">AK</span>Ahmed Khan</div></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+            </tr>
+            <!-- VEH-104 -->
+            <tr>
+              <td><a class="veh-cell" href="vehicle-profile.html"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/></svg></span><span><span class="vid">VEH-104</span><br><span class="vsub">Toyota Coaster · Bus</span></span></a></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#e0952a,#c9821b)">RK</span>Ravi Kumar</div></td>
+              <td class="today-col"><div class="asg rev">Supervisor Review</div></td>
+              <td><div class="asg rev">Supervisor Review</div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#e0952a,#c9821b)">RK</span>Ravi Kumar</div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#e0952a,#c9821b)">RK</span>Ravi Kumar</div></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+            </tr>
+            <!-- VEH-067 -->
+            <tr>
+              <td><a class="veh-cell" href="vehicle-profile.html"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/></svg></span><span><span class="vid">VEH-067</span><br><span class="vsub">Toyota Innova · Car</span></span></a></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#d8483c,#b3372c)">SA</span>Sameer Ali</div></td>
+              <td class="today-col"><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#d8483c,#b3372c)">SA</span>Sameer Ali</div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#d8483c,#b3372c)">SA</span>Sameer Ali</div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#d8483c,#b3372c)">SA</span>Sameer Ali</div></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#3a72c4,#274a86)">JM</span>John Mathew</div></td>
+            </tr>
+            <!-- VEH-211 -->
+            <tr>
+              <td><a class="veh-cell" href="vehicle-profile.html"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/></svg></span><span><span class="vid">VEH-211</span><br><span class="vsub">Force Traveller · Van</span></span></a></td>
+              <td><div class="asg maint">Maintenance</div></td>
+              <td class="today-col"><div class="asg maint">Maintenance</div></td>
+              <td><div class="asg maint">Maintenance</div></td>
+              <td><div class="asg maint">Maintenance</div></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+            </tr>
+            <!-- VEH-021 -->
+            <tr>
+              <td><a class="veh-cell" href="vehicle-profile.html"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/></svg></span><span><span class="vid">VEH-021</span><br><span class="vsub">Toyota Hiace · Van</span></span></a></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#3a72c4,#274a86)">JM</span>John Mathew</div></td>
+              <td class="today-col"><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#1f9d6b,#137a51)">AK</span>Ahmed Khan</div></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#e0952a,#c9821b)">RK</span>Ravi Kumar</div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#e0952a,#c9821b)">RK</span>Ravi Kumar</div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#e0952a,#c9821b)">RK</span>Ravi Kumar</div></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+            </tr>
+            <!-- VEH-178 -->
+            <tr>
+              <td><a class="veh-cell" href="vehicle-profile.html"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/></svg></span><span><span class="vid">VEH-178</span><br><span class="vsub">Toyota Coaster · Bus</span></span></a></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+              <td class="today-col"><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#d8483c,#b3372c)">SA</span>Sameer Ali</div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#d8483c,#b3372c)">SA</span>Sameer Ali</div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#d8483c,#b3372c)">SA</span>Sameer Ali</div></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#1f9d6b,#137a51)">AK</span>Ahmed Khan</div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#1f9d6b,#137a51)">AK</span>Ahmed Khan</div></td>
+            </tr>
+            <!-- VEH-242 -->
+            <tr>
+              <td><a class="veh-cell" href="vehicle-profile.html"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.4" stroke="currentColor" stroke-width="1.6"/></svg></span><span><span class="vid">VEH-242</span><br><span class="vsub">Toyota Innova · Car</span></span></a></td>
+              <td><div class="asg available"><span class="empty">Available</span></div></td>
+              <td class="today-col"><div class="asg available"><span class="empty">Available</span></div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#3a72c4,#274a86)">JM</span>John Mathew</div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#3a72c4,#274a86)">JM</span>John Mathew</div></td>
+              <td><div class="asg assigned"><span class="dav" style="background:linear-gradient(140deg,#3a72c4,#274a86)">JM</span>John Mathew</div></td>
+              <td><div class="asg maint">Maintenance</div></td>
+              <td><div class="asg maint">Maintenance</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- legend -->
+      <div class="legend">
+        <span class="lgd"><i style="background:var(--info-soft);border:1px solid #cadcf3"></i>Assigned</span>
+        <span class="lgd"><i style="background:var(--good-soft);border:1px dashed #9fd6bd"></i>Available</span>
+        <span class="lgd"><i style="background:var(--amber-soft);border:1px solid #eecfa0"></i>Supervisor Review</span>
+        <span class="lgd"><i style="background:var(--crit-soft);border:1px solid #f3cfca"></i>Maintenance / Blocked</span>
+        <span class="lgd" style="margin-left:auto;color:var(--txt-3)">Tap a vehicle row to open its 360° profile</span>
+      </div>
+
+      <div class="foot-note">FleetView — Fleet Inspection &amp; Accountability Platform · <b>Demo prototype</b> · sample data for proposal presentation</div>
+    </div>
+  </div>
+</div>
+<span class="demo-tag">Demo prototype</span>
+<script>
+  document.querySelectorAll('.seg').forEach(seg=>seg.addEventListener('click',e=>{
+    if(e.target.tagName!=='BUTTON')return;
+    seg.querySelectorAll('button').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');
+  }));
+</script>
+</body>
+</html>

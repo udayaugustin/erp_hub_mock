@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView · M03 QR Vehicle Confirmation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link href="../assets/mobile.css" rel="stylesheet" />
+<style>
+  .scan{margin:16px 18px 0;height:230px;border-radius:20px;background:radial-gradient(400px 200px at 50% 40%,#1c2b47 0%,#0c1523 70%);position:relative;overflow:hidden;display:grid;place-items:center}
+  .scan .qr{width:112px;height:112px;color:rgba(255,255,255,.85)}
+  .scan .qr svg{width:112px;height:112px}
+  .cnr{position:absolute;width:40px;height:40px;border:3px solid var(--amber)}
+  .cnr.tl{top:20px;left:20px;border-right:0;border-bottom:0;border-radius:8px 0 0 0}
+  .cnr.tr{top:20px;right:20px;border-left:0;border-bottom:0;border-radius:0 8px 0 0}
+  .cnr.bl{bottom:20px;left:20px;border-right:0;border-top:0;border-radius:0 0 0 8px}
+  .cnr.br{bottom:20px;right:20px;border-left:0;border-top:0;border-radius:0 0 8px 0}
+  .scanline{position:absolute;left:22px;right:22px;height:2px;background:linear-gradient(90deg,transparent,var(--amber),transparent);top:50%;box-shadow:0 0 14px 2px rgba(232,161,58,.6)}
+  .scan .hint{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#9fb0c8;font-size:11.5px;font-weight:500}
+
+  .ok-banner{display:flex;align-items:center;gap:11px;margin:16px 18px 0;padding:13px 15px;background:var(--good-soft);border:1px solid #bfe6d5;border-radius:14px}
+  .ok-banner .ck{width:34px;height:34px;border-radius:50%;background:var(--good);display:grid;place-items:center;flex:0 0 auto}
+  .ok-banner .ck svg{width:19px;height:19px;color:#fff}
+  .ok-banner .t{font-weight:700;font-size:15px;color:#137a51}
+  .ok-banner .s{font-size:11.5px;color:#1f9d6b;margin-top:1px}
+
+  .conf-card{margin:14px 18px 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm)}
+  .conf-img{height:120px;background:radial-gradient(400px 160px at 75% 0%,#2a3d5f 0%,transparent 60%),linear-gradient(150deg,#1a2740,#0f1a2e);position:relative}
+  .conf-img .van{position:absolute;right:14px;top:50%;transform:translateY(-50%)}
+  .conf-img .van svg{width:140px;height:70px;color:#cdd7e6}
+  .conf-body{padding:14px 16px}
+  .conf-body .id{font-family:var(--font-mono);font-size:21px;font-weight:600}
+  .conf-body .mk{font-size:13px;color:var(--txt-2);margin-top:1px}
+  .kv{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
+  .kv:first-of-type{margin-top:10px}
+  .kv .k{font-size:12.5px;color:var(--txt-2)}
+  .kv .v{font-size:13px;font-weight:600}
+  .kv .v.mono{font-family:var(--font-mono)}
+</style>
+</head>
+<body>
+  <div class="stage-head">
+    <div class="kick">Driver App</div>
+    <h1>QR Vehicle Confirmation</h1>
+    <p>Scanning the vehicle QR binds this inspection to the right fleet ID — evidence-first, no manual typing.</p>
+  </div>
+  <div class="stage">
+    <div class="phone-wrap">
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span class="sig">
+          <svg viewBox="0 0 20 20" fill="currentColor"><rect x="1" y="11" width="3" height="6" rx="1"/><rect x="6" y="8" width="3" height="9" rx="1"/><rect x="11" y="5" width="3" height="12" rx="1"/><rect x="16" y="2" width="3" height="15" rx="1"/></svg>
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7.6a12 12 0 0 1 16 0"/><path d="M4.9 10.7a8 8 0 0 1 10.2 0"/><path d="M7.7 13.8a4 4 0 0 1 4.6 0"/><circle cx="10" cy="16.6" r="1" fill="currentColor" stroke="none"/></svg>
+          <svg viewBox="0 0 26 20" style="width:22px" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="20" height="10" rx="2.5"/><rect x="3" y="7" width="13" height="6" rx="1" fill="currentColor" stroke="none"/><path d="M23.5 8.5v3" stroke-linecap="round"/></svg>
+        </span></div>
+        <div class="mscroll">
+          <div class="scan">
+            <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+            <span class="scanline"></span>
+            <span class="qr"><svg viewBox="0 0 100 100" fill="currentColor"><path d="M8 8h26v26H8zM14 14v14h14V14zM66 8h26v26H66zM72 14v14h14V14zM8 66h26v26H8zM14 72v14h14V72z"/><rect x="40" y="8" width="6" height="6"/><rect x="52" y="8" width="6" height="6"/><rect x="40" y="20" width="6" height="6"/><rect x="40" y="40" width="6" height="6"/><rect x="52" y="40" width="6" height="6"/><rect x="64" y="40" width="6" height="6"/><rect x="76" y="40" width="6" height="6"/><rect x="88" y="40" width="6" height="6"/><rect x="40" y="52" width="6" height="6"/><rect x="64" y="52" width="6" height="6"/><rect x="88" y="52" width="6" height="6"/><rect x="52" y="64" width="6" height="6"/><rect x="76" y="64" width="6" height="6"/><rect x="40" y="76" width="6" height="6"/><rect x="64" y="76" width="6" height="6"/><rect x="88" y="76" width="6" height="6"/><rect x="52" y="88" width="6" height="6"/><rect x="76" y="88" width="6" height="6"/></svg></span>
+            <span class="hint">Hold steady over the QR code on the windshield</span>
+          </div>
+
+          <div class="ok-banner">
+            <span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+            <div><div class="t">Vehicle Confirmed</div><div class="s">QR matched to your assigned vehicle</div></div>
+          </div>
+
+          <div class="conf-card">
+            <div class="conf-img"><span class="van"><svg viewBox="0 0 200 100" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"><path d="M8 66V40a6 6 0 0 1 6-6h96l30 12h42a6 6 0 0 1 6 6v14"/><path d="M8 66h180"/><path d="M110 34v22h78"/><path d="M118 40v14h30"/><circle cx="52" cy="70" r="11" fill="#0f1a2e"/><circle cx="158" cy="70" r="11" fill="#0f1a2e"/></svg></span></div>
+            <div class="conf-body">
+              <div class="id">VEH-087</div>
+              <div class="mk">Toyota Hiace · Van · Central Depot</div>
+              <div class="kv"><span class="k">Fleet ID</span><span class="v mono">VEH-087</span></div>
+              <div class="kv"><span class="k">Registration</span><span class="v mono">KA-01-AB-1234</span></div>
+              <div class="kv"><span class="k">Last inspection</span><span class="v mono">Yesterday, 20:34</span></div>
+              <div class="kv"><span class="k">Status</span><span class="v"><span class="chip good"><span class="d"></span>Cleared</span></span></div>
+            </div>
+          </div>
+          <div style="height:14px"></div>
+        </div>
+
+        <div class="cta-dock">
+          <a href="m04-previous-condition.html" style="text-decoration:none"><button class="cta cta-amber">Start Inspection
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          </button></a>
+        </div>
+      </div></div>
+      <div class="phone-cap">M03 · <b>qr-confirm</b></div>
+    </div>
+  </div>
+  <div class="stage-foot">FleetView Driver App · <a href="../index.html">All screens</a> · <a href="m02-assignment.html">M02 Assignment</a> ← <b>M03</b> → <a href="m04-previous-condition.html">M04 Previous Condition</a></div>
+</body>
+</html>

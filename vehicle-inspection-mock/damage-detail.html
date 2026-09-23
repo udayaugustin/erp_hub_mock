@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView — DMG-00182</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/portal.css" />
+<style>
+  .breadcrumb{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--txt-2);margin-bottom:14px}
+  .breadcrumb a{color:var(--txt-2);text-decoration:none;font-weight:500}
+  .breadcrumb a:hover{color:var(--txt)}
+  .breadcrumb .sep{color:var(--txt-3)}
+  .breadcrumb .cur{color:var(--txt);font-weight:600;font-family:var(--font-mono)}
+
+  .sev{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;line-height:1.6}
+  .sev .d{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .sev.minor{background:#eef1f6;color:#5a6a80}
+  .sev.moderate{background:var(--attn-soft);color:#a86a12}
+  .sev.critical{background:var(--crit-soft);color:#b3372c}
+
+  .sec-title{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+  .sec-title svg{width:18px;height:18px}
+
+  /* custody banner */
+  .custody-banner{display:flex;gap:13px;background:var(--amber-soft);border:1px solid #f0d59a;border-radius:12px;padding:14px 16px;margin:14px 0 20px}
+  .custody-banner .cb-ic{width:34px;height:34px;border-radius:9px;background:var(--amber);display:grid;place-items:center;flex:0 0 auto;color:#241700}
+  .custody-banner .cb-ic svg{width:19px;height:19px}
+  .custody-banner .cb-t{font-size:13px;font-weight:600;color:#8a5a10;line-height:1.5}
+  .custody-banner .cb-sub{font-size:12px;color:#a86a12;margin-top:3px}
+
+  /* timeline */
+  .ctimeline{position:relative;margin:8px 0 4px;padding-left:6px}
+  .ctl-item{position:relative;display:flex;gap:16px;padding-bottom:22px}
+  .ctl-item:last-child{padding-bottom:0}
+  .ctl-rail{position:relative;flex:0 0 auto;width:22px;display:flex;justify-content:center}
+  .ctl-rail::before{content:"";position:absolute;top:22px;bottom:-22px;width:2px;background:var(--line-strong)}
+  .ctl-item:last-child .ctl-rail::before{display:none}
+  .ctl-node{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;z-index:1;flex:0 0 auto;border:2px solid var(--surface)}
+  .ctl-node svg{width:12px;height:12px}
+  .ctl-node.good{background:var(--good-soft);color:var(--good);box-shadow:0 0 0 2px var(--good-soft)}
+  .ctl-node.info{background:var(--info-soft);color:var(--info);box-shadow:0 0 0 2px var(--info-soft)}
+  .ctl-node.crit{background:var(--crit-soft);color:var(--crit);box-shadow:0 0 0 2px var(--crit-soft)}
+  .ctl-node.neutral{background:#eef1f6;color:var(--slate);box-shadow:0 0 0 2px #eef1f6}
+  .ctl-body{flex:1;padding-top:0}
+  .ctl-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .ctl-title{font-size:13px;font-weight:600;letter-spacing:-.01em}
+  .ctl-time{font-family:var(--font-mono);font-size:11.5px;color:var(--txt-3)}
+  .ctl-desc{font-size:12.5px;color:var(--txt-2);margin-top:3px}
+  .ctl-desc code{font-family:var(--font-mono);color:var(--txt);background:var(--surface-2);padding:0 5px;border-radius:5px;font-size:11.5px}
+  .ctl-gap{margin:-6px 0 16px 38px;padding:8px 12px;border-left:2px dashed var(--amber);background:var(--amber-soft);border-radius:0 8px 8px 0;font-size:12px;color:#8a5a10;font-weight:600}
+
+  /* photo compare */
+  .photo-compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+  .photo-card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+  .photo-frame{aspect-ratio:4/3;position:relative;display:grid;place-items:center}
+  .photo-frame.prev{background:linear-gradient(135deg,#dfe7f0,#c3d0e0)}
+  .photo-frame.curr{background:linear-gradient(135deg,#fbe8e6,#f4cbc6)}
+  .photo-frame .ico{width:44px;height:44px;opacity:.5}
+  .photo-tag{position:absolute;top:10px;left:10px;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.9)}
+  .photo-tag.prev{color:var(--info)}
+  .photo-tag.curr{color:var(--crit)}
+  .photo-cap{padding:10px 13px;display:flex;align-items:center;justify-content:space-between}
+  .photo-cap .l{font-size:12.5px;font-weight:600}
+  .photo-cap .t{font-family:var(--font-mono);font-size:11px;color:var(--txt-3)}
+
+  .stmt{background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:14px 16px;margin-top:14px}
+  .stmt-head{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+  .stmt-av{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-size:11px;font-weight:600;color:#fff;flex:0 0 auto}
+  .stmt-nm{font-size:12.5px;font-weight:600}
+  .stmt-role{font-size:11px;color:var(--txt-3)}
+  .stmt-time{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--txt-3)}
+  .stmt-txt{font-size:13px;color:var(--txt);line-height:1.55}
+  .stmt.empty .stmt-txt{color:var(--txt-3);font-style:italic}
+
+  /* sidebar */
+  .kv{display:flex;flex-direction:column;gap:0}
+  .kv-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .kv-row:last-child{border-bottom:0}
+  .kv-k{font-size:12px;color:var(--txt-2);font-weight:500;width:112px;flex:0 0 auto}
+  .kv-v{font-size:13px;font-weight:600;text-align:right;margin-left:auto}
+  .kv-v.mono{font-family:var(--font-mono);font-weight:500}
+
+  /* vertical stepper */
+  .stepper{display:flex;flex-direction:column;margin-top:6px}
+  .step{position:relative;display:flex;gap:13px;padding-bottom:16px}
+  .step:last-child{padding-bottom:0}
+  .step-rail{position:relative;flex:0 0 auto;width:18px;display:flex;justify-content:center}
+  .step-rail::before{content:"";position:absolute;top:18px;bottom:-16px;width:2px;background:var(--line-strong)}
+  .step:last-child .step-rail::before{display:none}
+  .step-dot{width:18px;height:18px;border-radius:50%;z-index:1;display:grid;place-items:center;flex:0 0 auto}
+  .step-dot svg{width:11px;height:11px}
+  .step.done .step-dot{background:var(--good);color:#fff}
+  .step.done .step-rail::before{background:var(--good)}
+  .step.current .step-dot{background:var(--amber);color:#241700;box-shadow:0 0 0 4px var(--amber-soft)}
+  .step.todo .step-dot{background:var(--surface);border:2px solid var(--line-strong)}
+  .step-body{padding-top:-1px}
+  .step-t{font-size:13px;font-weight:600;line-height:1.2}
+  .step.todo .step-t{color:var(--txt-3);font-weight:500}
+  .step-time{font-family:var(--font-mono);font-size:11px;color:var(--txt-3);margin-top:2px}
+
+  .resbtns{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+  .resbtn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font-family:var(--font-ui);font-weight:600;font-size:13px;padding:11px 14px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface);color:var(--txt);cursor:pointer;transition:.15s}
+  .resbtn:hover{border-color:var(--txt-3);box-shadow:var(--shadow-sm)}
+  .resbtn svg{width:16px;height:16px;flex:0 0 auto}
+  .resbtn.primary{background:linear-gradient(160deg,var(--amber),var(--amber-deep));border-color:var(--amber-deep);color:#241700}
+  .resbtn.g{color:var(--good)}.resbtn.g svg{color:var(--good)}
+  .resbtn.n{color:var(--slate)}.resbtn.n svg{color:var(--slate)}
+  .resbtn.c{color:var(--crit)}.resbtn.c svg{color:var(--crit)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ NAV RAIL ============ -->
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H6v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z" stroke="#241700" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="16" r="1.3" fill="#241700"/><circle cx="17" cy="16" r="1.3" fill="#241700"/></svg>
+      </div>
+      <div><div class="brand-name">FleetView</div><div class="brand-sub">Inspection &amp; Audit</div></div>
+    </div>
+    <nav class="nav">
+      <a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24" fill="none"><path d="M4 13h6V4H4v9zm10 7h6v-9h-6v9zM4 20h6v-4H4v4zM14 4v4h6V4h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Dashboard</a>
+      <a class="nav-item" href="vehicles.html"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/></svg>Vehicles</a>
+      <a class="nav-item" href="driver-compliance.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Drivers</a>
+      <a class="nav-item" href="assignments.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Assignments</a>
+      <a class="nav-item" href="inspections.html"><svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/></svg>Inspections</a>
+      <a class="nav-item" href="supervisor-audits.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Supervisor Audits<span class="nav-badge amber">4</span></a>
+      <a class="nav-item active" href="damage.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Damage &amp; Defects<span class="nav-badge">5</span></a>
+      <a class="nav-item" href="reports.html"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Reports</a>
+      <div class="nav-label">Intelligence</div>
+      <a class="nav-item" href="ai-insights.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/></svg>AI Insights<span class="nav-badge amber">NEW</span></a>
+      <div class="nav-label">Configure</div>
+      <a class="nav-item" href="checklist-builder.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Checklist Templates</a>
+      <a class="nav-item" href="users.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="2.8" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="15" r="2.8" stroke="currentColor" stroke-width="1.6"/><path d="M4 19c0-2.5 2.2-4 5-4M20 9c0-2.5-2.2-4-5-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Users &amp; Roles</a>
+      <a class="nav-item" href="settings.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.9 7.9 0 000-2l1.6-1.3-1.6-2.8-2 .8a7.6 7.6 0 00-1.7-1l-.3-2.1H10l-.3 2.1a7.6 7.6 0 00-1.7 1l-2-.8L4.4 9.7 6 11a7.9 7.9 0 000 2l-1.6 1.3 1.6 2.8 2-.8a7.6 7.6 0 001.7 1l.3 2.1h3.4l.3-2.1a7.6 7.6 0 001.7-1l2 .8 1.6-2.8L19.4 13z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Settings</a>
+    </nav>
+    <div class="rail-foot">
+      <div class="userbox">
+        <div class="avatar">RS</div>
+        <div style="min-width:0"><div class="nm">Rahul Sharma</div><div class="rl">Fleet Manager</div></div>
+        <svg style="margin-left:auto" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="#93a3ba" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="depot"><span class="dot"></span> Central Depot
+        <svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M20 20l-3.2-3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <input placeholder="Search vehicles, drivers, damage cases…" />
+        <span class="kbd">⌘K</span>
+      </div>
+      <div class="top-right">
+        <span class="today">Wed, <b>19 Aug 2026</b></span>
+        <button class="icon-btn" title="Notifications"><span class="ping"></span>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19a2 2 0 004 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <button class="icon-btn" title="Help">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M9.6 9.5a2.4 2.4 0 114 1.8c-1 .7-1.6 1.2-1.6 2.2M12 16.5v.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="canvas">
+      <!-- breadcrumb -->
+      <div class="breadcrumb">
+        <a href="damage.html">Damage</a>
+        <span class="sep">/</span>
+        <span class="cur">DMG-00182</span>
+      </div>
+
+      <!-- page head -->
+      <div class="pagehead">
+        <div>
+          <h1>Rear bumper scratch</h1>
+          <div class="sub"><span class="mono" style="font-family:var(--font-mono);color:var(--txt)">DMG-00182</span> · VEH-087 Toyota Hiace · <span class="mono" style="font-family:var(--font-mono)">KA-01-AB-1234</span> · reported by John Mathew, 19 Aug 07:12</div>
+        </div>
+        <div class="ph-actions">
+          <span class="sev minor" style="font-size:12px;padding:5px 12px"><span class="d"></span>Minor</span>
+          <span class="chip attn" style="font-size:12px;padding:5px 12px"><span class="d"></span>Under Review</span>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- ================= LEFT MAIN ================= -->
+        <div class="span-8" style="display:flex;flex-direction:column;gap:16px">
+
+          <!-- CUSTODY WINDOW (key screen) -->
+          <div class="card card-pad">
+            <div class="sec-title">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="var(--amber-deep)" stroke-width="1.7"/><path d="M12 7.5V12l3 2" stroke="var(--amber-deep)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Custody Window
+            </div>
+
+            <!-- exact banner -->
+            <div class="custody-banner">
+              <div class="cb-ic">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="#241700" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="#241700" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <div class="cb-t">New damage was first identified between the last known healthy inspection and the current inspection. Supervisor review required. Responsibility remains a management decision.</div>
+                <div class="cb-sub">Evidence links vehicle, driver, timestamp, photo and checklist for every event in this window.</div>
+              </div>
+            </div>
+
+            <!-- timeline -->
+            <div class="ctimeline">
+              <div class="ctl-item">
+                <div class="ctl-rail"><div class="ctl-node good"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+                <div class="ctl-body">
+                  <div class="ctl-head"><span class="ctl-title">Last known healthy inspection</span><span class="ctl-time">18 Aug 07:05</span></div>
+                  <div class="ctl-desc">Rear bumper marked <b>OK</b> · inspected by <b>Ahmed Khan</b> · <code>VEH-087</code> · 6 exterior photos captured</div>
+                </div>
+              </div>
+
+              <div class="ctl-item">
+                <div class="ctl-rail"><div class="ctl-node info"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+                <div class="ctl-body">
+                  <div class="ctl-head"><span class="ctl-title">Vehicle checked out</span><span class="ctl-time">18 Aug 07:20</span></div>
+                  <div class="ctl-desc">Assigned to <b>John Mathew</b> for daily route · custody window opens</div>
+                </div>
+              </div>
+
+              <div class="ctl-gap">Custody window · 18 Aug 07:20 → 19 Aug 07:10 · vehicle in field, no interim inspection</div>
+
+              <div class="ctl-item">
+                <div class="ctl-rail"><div class="ctl-node neutral"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l1.5-4.5" stroke="currentColor" stroke-width="0"/><path d="M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div></div>
+                <div class="ctl-body">
+                  <div class="ctl-head"><span class="ctl-title">Vehicle returned</span><span class="ctl-time">18 Aug 20:30</span></div>
+                  <div class="ctl-desc">Returned to Central Depot · parked overnight · no inspection recorded on return</div>
+                </div>
+              </div>
+
+              <div class="ctl-item">
+                <div class="ctl-rail"><div class="ctl-node info"><svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.7"/></svg></div></div>
+                <div class="ctl-body">
+                  <div class="ctl-head"><span class="ctl-title">New inspection started</span><span class="ctl-time">19 Aug 07:10</span></div>
+                  <div class="ctl-desc">Pre-route inspection by <b>John Mathew</b> · rear bumper marked <b>Not OK</b></div>
+                </div>
+              </div>
+
+              <div class="ctl-item">
+                <div class="ctl-rail"><div class="ctl-node crit"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 10v3.5M12 16.5v.01" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div></div>
+                <div class="ctl-body">
+                  <div class="ctl-head"><span class="ctl-title">Scratch reported</span><span class="ctl-time">19 Aug 07:12</span></div>
+                  <div class="ctl-desc"><code>DMG-00182</code> raised · comment + photo attached · flagged for supervisor review</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PHOTO COMPARE -->
+          <div class="card card-pad">
+            <div class="sec-title">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2.5" stroke="var(--info)" stroke-width="1.7"/><circle cx="8.5" cy="10" r="1.6" stroke="var(--info)" stroke-width="1.5"/><path d="M4 17l5-4 3.5 3 3-2.5L20 17" stroke="var(--info)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Photo Comparison
+            </div>
+            <div class="photo-compare">
+              <div class="photo-card">
+                <div class="photo-frame prev">
+                  <span class="photo-tag prev">Previous</span>
+                  <svg class="ico" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="#4d5a6e" stroke-width="1.5"/><circle cx="8.5" cy="10" r="1.6" stroke="#4d5a6e" stroke-width="1.4"/><path d="M4 17l5-4 3.5 3 3-2.5L20 17" stroke="#4d5a6e" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="photo-cap"><span class="l">Rear — healthy</span><span class="t">18 Aug 07:05</span></div>
+              </div>
+              <div class="photo-card">
+                <div class="photo-frame curr">
+                  <span class="photo-tag curr">Current</span>
+                  <svg class="ico" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="#b3372c" stroke-width="1.5"/><circle cx="8.5" cy="10" r="1.6" stroke="#b3372c" stroke-width="1.4"/><path d="M4 17l5-4 3.5 3 3-2.5L20 17" stroke="#b3372c" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="photo-cap"><span class="l">Rear — scratch visible</span><span class="t">19 Aug 07:11</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STATEMENTS -->
+          <div class="card card-pad">
+            <div class="sec-title">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H9l-4 3v-3H4V5z" stroke="var(--slate)" stroke-width="1.7" stroke-linejoin="round"/></svg>
+              Statements &amp; Comments
+            </div>
+            <div class="stmt">
+              <div class="stmt-head">
+                <span class="stmt-av" style="background:linear-gradient(140deg,#3a72c4,#274a86)">JM</span>
+                <div><div class="stmt-nm">John Mathew</div><div class="stmt-role">Driver · DRV-0098</div></div>
+                <span class="stmt-time">19 Aug 07:12</span>
+              </div>
+              <div class="stmt-txt">"Noticed a light scratch on the rear bumper during the pre-route check this morning. It was not visible to me at return last night — vehicle was parked in the shared bay overnight. Reporting so it is on record."</div>
+            </div>
+            <div class="stmt empty">
+              <div class="stmt-head">
+                <span class="stmt-av" style="background:linear-gradient(140deg,#6b7a90,#4d5a6e)">JD</span>
+                <div><div class="stmt-nm">Joseph Daniel</div><div class="stmt-role">Supervisor · SUP-0014</div></div>
+                <span class="stmt-time">awaiting review</span>
+              </div>
+              <div class="stmt-txt">No supervisor comment yet. Review the custody window and photo comparison, then record a decision using the actions on the right.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= RIGHT SIDEBAR ================= -->
+        <div class="span-4" style="display:flex;flex-direction:column;gap:16px">
+
+          <!-- CASE DETAILS -->
+          <div class="card card-pad">
+            <div class="card-head"><h3>Case Details</h3></div>
+            <div class="kv">
+              <div class="kv-row"><span class="kv-k">Case ID</span><span class="kv-v mono">DMG-00182</span></div>
+              <div class="kv-row"><span class="kv-k">Vehicle</span><span class="kv-v mono">VEH-087</span></div>
+              <div class="kv-row"><span class="kv-k">Registration</span><span class="kv-v mono">KA-01-AB-1234</span></div>
+              <div class="kv-row"><span class="kv-k">Location</span><span class="kv-v">Rear bumper</span></div>
+              <div class="kv-row"><span class="kv-k">Type</span><span class="kv-v">Scratch</span></div>
+              <div class="kv-row"><span class="kv-k">Severity</span><span class="kv-v"><span class="sev minor"><span class="d"></span>Minor</span></span></div>
+              <div class="kv-row"><span class="kv-k">Status</span><span class="kv-v"><span class="chip attn"><span class="d"></span>Under Review</span></span></div>
+              <div class="kv-row"><span class="kv-k">Reported by</span><span class="kv-v">John Mathew</span></div>
+              <div class="kv-row"><span class="kv-k">Reported at</span><span class="kv-v mono">19 Aug 07:12</span></div>
+            </div>
+          </div>
+
+          <!-- STATUS HISTORY -->
+          <div class="card card-pad">
+            <div class="card-head"><h3>Status History</h3></div>
+            <div class="stepper">
+              <div class="step done"><div class="step-rail"><div class="step-dot"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div><div class="step-body"><div class="step-t">Reported</div><div class="step-time">19 Aug 07:12 · John Mathew</div></div></div>
+              <div class="step current"><div class="step-rail"><div class="step-dot"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg></div></div><div class="step-body"><div class="step-t">Under Review</div><div class="step-time">awaiting supervisor decision</div></div></div>
+              <div class="step todo"><div class="step-rail"><div class="step-dot"></div></div><div class="step-body"><div class="step-t">Confirmed</div><div class="step-time">—</div></div></div>
+              <div class="step todo"><div class="step-rail"><div class="step-dot"></div></div><div class="step-body"><div class="step-t">Repair Required</div><div class="step-time">—</div></div></div>
+              <div class="step todo"><div class="step-rail"><div class="step-dot"></div></div><div class="step-body"><div class="step-t">Repair in Progress</div><div class="step-time">—</div></div></div>
+              <div class="step todo"><div class="step-rail"><div class="step-dot"></div></div><div class="step-body"><div class="step-t">Closed</div><div class="step-time">—</div></div></div>
+            </div>
+          </div>
+
+          <!-- RESOLUTION ACTIONS -->
+          <div class="card card-pad">
+            <div class="card-head"><h3>Resolution</h3><span class="hint">· supervisor decision</span></div>
+            <div class="resbtns">
+              <button class="resbtn primary"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4 10-10" stroke="#241700" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Confirm New Damage</button>
+              <button class="resbtn n"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Existing Damage</button>
+              <button class="resbtn g"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 12l2.2 2.2L16 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>No New Damage</button>
+              <button class="resbtn c"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v10m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Escalate</button>
+            </div>
+            <div style="margin-top:12px;font-size:11.5px;color:var(--txt-3);line-height:1.5">Custody window does not assign fault. Responsibility remains a management decision recorded against this case.</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="foot-note">FleetView — Fleet Inspection &amp; Accountability Platform · <b>Demo prototype</b> · sample data for proposal presentation</div>
+    </div>
+  </div>
+</div>
+<span class="demo-tag">Demo prototype</span>
+</body>
+</html>

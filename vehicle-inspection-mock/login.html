@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView — Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/portal.css" />
+<style>
+  .login{display:grid;grid-template-columns:1.05fr 1fr;min-height:100vh}
+  @media(max-width:860px){.login{grid-template-columns:1fr}.login .brandside{display:none}}
+
+  /* left midnight panel */
+  .brandside{
+    background:linear-gradient(160deg,var(--ink),var(--ink-2) 60%,#0b1220);
+    color:#fff;padding:56px 60px;display:flex;flex-direction:column;position:relative;overflow:hidden;
+  }
+  .brandside::after{content:"";position:absolute;right:-140px;top:-120px;width:420px;height:420px;border-radius:50%;
+    background:radial-gradient(circle,rgba(232,161,58,.18),transparent 68%)}
+  .brandside::before{content:"";position:absolute;left:-100px;bottom:-120px;width:360px;height:360px;border-radius:50%;
+    background:radial-gradient(circle,rgba(58,114,196,.14),transparent 68%)}
+  .bs-brand{display:flex;align-items:center;gap:13px;position:relative;z-index:1}
+  .bs-mark{width:44px;height:44px;border-radius:13px;flex:0 0 auto;
+    background:linear-gradient(150deg,var(--amber),var(--amber-deep));display:grid;place-items:center;
+    box-shadow:0 6px 18px -6px rgba(232,161,58,.6), inset 0 1px 0 rgba(255,255,255,.35)}
+  .bs-mark svg{width:25px;height:25px}
+  .bs-name{font-family:var(--font-display);font-weight:700;font-size:23px;letter-spacing:-.02em;line-height:1}
+  .bs-sub{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--txt-inv-2);margin-top:4px;font-weight:500}
+  .bs-mid{margin-top:auto;position:relative;z-index:1}
+  .bs-kick{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:16px}
+  .bs-tag{font-family:var(--font-display);font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1.14;max-width:15ch}
+  .bs-feat{list-style:none;margin:34px 0 0;display:flex;flex-direction:column;gap:15px}
+  .bs-feat li{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:#c6d2e2;max-width:40ch}
+  .bs-feat .ic{width:26px;height:26px;border-radius:8px;flex:0 0 auto;display:grid;place-items:center;
+    background:rgba(232,161,58,.14);color:var(--amber);margin-top:1px}
+  .bs-feat .ic svg{width:15px;height:15px}
+  .bs-foot{margin-top:44px;font-size:11.5px;color:var(--txt-inv-2);position:relative;z-index:1}
+
+  /* right form */
+  .formside{background:var(--surface);display:grid;place-items:center;padding:40px}
+  .lcard{width:100%;max-width:392px}
+  .lcard h1{font-family:var(--font-display);font-size:26px;font-weight:700;letter-spacing:-.03em}
+  .lcard .lsub{color:var(--txt-2);font-size:13.5px;margin-top:6px;margin-bottom:30px}
+  .flabel-row{display:flex;align-items:center;justify-content:space-between}
+  .flabel-row a{font-size:12px;font-weight:600;color:var(--info)}
+  .flabel-row a:hover{text-decoration:underline}
+  .btn-block{width:100%;justify-content:center;padding:12px 15px;font-size:14px;margin-top:6px}
+  .rolehint{margin-top:22px;padding:12px 14px;border-radius:11px;background:var(--surface-2);border:1px solid var(--line);
+    font-size:12px;color:var(--txt-2);display:flex;gap:9px;align-items:flex-start}
+  .rolehint svg{width:15px;height:15px;color:var(--info);flex:0 0 auto;margin-top:1px}
+  .rolehint b{color:var(--txt);font-weight:600}
+  .ldiv{display:flex;align-items:center;gap:12px;margin:22px 0;color:var(--txt-3);font-size:11.5px;font-weight:500}
+  .ldiv::before,.ldiv::after{content:"";height:1px;background:var(--line);flex:1}
+</style>
+</head>
+<body>
+<div class="login">
+
+  <!-- LEFT: midnight brand panel -->
+  <div class="brandside">
+    <div class="bs-brand">
+      <div class="bs-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H6v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z" stroke="#241700" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="16" r="1.3" fill="#241700"/><circle cx="17" cy="16" r="1.3" fill="#241700"/></svg>
+      </div>
+      <div>
+        <div class="bs-name">FleetView</div>
+        <div class="bs-sub">Inspection &amp; Audit</div>
+      </div>
+    </div>
+
+    <div class="bs-mid">
+      <div class="bs-kick">Fleet Inspection &amp; Accountability</div>
+      <div class="bs-tag">From paper inspections to complete vehicle accountability.</div>
+      <ul class="bs-feat">
+        <li>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.6"/></svg></span>
+          Guided digital checklists — every "Not OK" backed by a comment and photo evidence.
+        </li>
+        <li>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Supervisor audits and mismatch detection keep the record honest.
+        </li>
+        <li>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4.5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Custody-window tracing — damage tied to Vehicle + Driver + Timestamp, never blame.
+        </li>
+        <li>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          Optional AI observations — advisory only, always human-verified.
+        </li>
+      </ul>
+    </div>
+
+    <div class="bs-foot">300 vehicles · 4 depots · Demo prototype for proposal presentation</div>
+  </div>
+
+  <!-- RIGHT: sign-in card -->
+  <div class="formside">
+    <form class="lcard" onsubmit="return false">
+      <h1>Sign in to FleetView</h1>
+      <div class="lsub">Welcome back. Use your company email or Employee ID.</div>
+
+      <div class="field">
+        <label for="eid">Email or Employee ID</label>
+        <input id="eid" type="text" placeholder="rahul.sharma@transit.co  ·  EMP-0031" value="rahul.sharma@transit.co" />
+      </div>
+
+      <div class="field">
+        <div class="flabel-row">
+          <label for="pw">Password</label>
+          <a href="#">Forgot password?</a>
+        </div>
+        <input id="pw" type="password" placeholder="••••••••••" value="demo-password" />
+      </div>
+
+      <a href="dashboard.html" class="btn btn-primary btn-block">
+        Sign In
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+
+      <div class="rolehint">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v5M12 8v.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <div>Access adapts to your role. <b>Drivers</b> use the mobile app; <b>Supervisors</b>, <b>Fleet Managers</b> and <b>Administrators</b> see this web portal.</div>
+      </div>
+
+      <div class="ldiv">Demo prototype</div>
+      <div style="text-align:center;font-size:12px;color:var(--txt-3)">
+        No account? <a href="#" style="color:var(--info);font-weight:600">Contact your fleet administrator</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+<span class="demo-tag">Demo prototype</span>
+</body>
+</html>

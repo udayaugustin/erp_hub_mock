@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView — Monthly Fleet Inspection Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/portal.css" />
+<style>
+  /* AI summary panel (purple-tinted, distinct) */
+  .ai-panel{position:relative;border:1px solid #e2d8f6;border-radius:var(--radius);overflow:hidden;
+    background:linear-gradient(135deg,#faf7ff,#f4effd 60%,#fdf6ea);box-shadow:0 1px 2px rgba(122,92,196,.08),0 10px 26px -18px rgba(122,92,196,.5);margin-bottom:22px}
+  .ai-panel::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(var(--purple),var(--amber))}
+  .ai-panel-hd{display:flex;align-items:center;gap:12px;padding:16px 22px 4px}
+  .ai-spark{width:32px;height:32px;border-radius:9px;flex:0 0 auto;display:grid;place-items:center;
+    background:linear-gradient(150deg,var(--purple),#5a3fa0);box-shadow:0 5px 14px -6px rgba(122,92,196,.7)}
+  .ai-spark svg{width:18px;height:18px}
+  .ai-panel-hd .t{font-family:var(--font-display);font-weight:700;font-size:19px;letter-spacing:-.02em;color:#3f2b7d}
+  .ai-badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;letter-spacing:.04em;
+    text-transform:uppercase;color:#5a3fa0;background:#fff;border:1px solid #e2d8f6;padding:3px 9px;border-radius:20px}
+  .ai-badge svg{width:12px;height:12px}
+  .ai-summary-txt{padding:8px 22px 6px;font-size:14px;line-height:1.6;color:#2e2450;max-width:1000px}
+  .ai-summary-txt b{color:#3f2b7d}
+  .ai-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:14px 22px 20px}
+  .ai-mini{background:#fff;border:1px solid #ece5f8;border-radius:13px;padding:13px 14px}
+  .ai-mini .kk{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--purple);display:flex;align-items:center;gap:5px}
+  .ai-mini .kk svg{width:12px;height:12px}
+  .ai-mini .vv{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:6px;line-height:1.05}
+  .ai-mini .mm{font-size:11.5px;color:var(--txt-2);margin-top:3px}
+  .ai-disclaim{display:flex;gap:9px;align-items:flex-start;margin:0 22px 18px;padding:10px 13px;border-radius:10px;
+    background:#fff;border:1px dashed #cdbdf0;font-size:12px;color:#5a3fa0;font-weight:500}
+  .ai-disclaim svg{width:15px;height:15px;flex:0 0 auto;margin-top:1px}
+
+  .kpi3{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;grid-column:span 12}
+  .mkpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow-sm)}
+  .mkpi .l{font-size:12px;color:var(--txt-2);font-weight:500}
+  .mkpi .n{font-family:var(--font-display);font-size:30px;font-weight:700;letter-spacing:-.03em;line-height:1;margin-top:8px}
+  .mkpi .n small{font-size:15px;color:var(--txt-3);font-weight:600}
+
+  .num{font-family:var(--font-mono);font-weight:600;text-align:right}
+  table.tbl td.num,table.tbl th.num{text-align:right}
+  .divider-h{grid-column:span 12;display:flex;align-items:center;gap:14px;margin:6px 0 2px}
+  .divider-h .lbl{font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:-.02em}
+  .divider-h .ln{flex:1;height:1px;background:var(--line)}
+  .divider-h .tag{font-size:11px;color:var(--txt-3);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ NAV RAIL ============ -->
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H6v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z" stroke="#241700" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="16" r="1.3" fill="#241700"/><circle cx="17" cy="16" r="1.3" fill="#241700"/></svg></div>
+      <div><div class="brand-name">FleetView</div><div class="brand-sub">Inspection &amp; Audit</div></div>
+    </div>
+    <nav class="nav">
+      <a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24" fill="none"><path d="M4 13h6V4H4v9zm10 7h6v-9h-6v9zM4 20h6v-4H4v4zM14 4v4h6V4h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Dashboard</a>
+      <a class="nav-item" href="vehicles.html"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/></svg>Vehicles</a>
+      <a class="nav-item" href="driver-compliance.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Drivers</a>
+      <a class="nav-item" href="assignments.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Assignments</a>
+      <a class="nav-item" href="inspections.html"><svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/></svg>Inspections</a>
+      <a class="nav-item" href="supervisor-audits.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Supervisor Audits<span class="nav-badge amber">4</span></a>
+      <a class="nav-item" href="damage.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Damage &amp; Defects<span class="nav-badge">5</span></a>
+      <a class="nav-item active" href="reports.html"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Reports</a>
+      <div class="nav-label">Intelligence</div>
+      <a class="nav-item" href="ai-insights.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/></svg>AI Insights<span class="nav-badge amber">NEW</span></a>
+      <div class="nav-label">Configure</div>
+      <a class="nav-item" href="checklist-builder.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Checklist Templates</a>
+      <a class="nav-item" href="users.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="2.8" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="15" r="2.8" stroke="currentColor" stroke-width="1.6"/><path d="M4 19c0-2.5 2.2-4 5-4M20 9c0-2.5-2.2-4-5-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Users &amp; Roles</a>
+      <a class="nav-item" href="settings.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.9 7.9 0 000-2l1.6-1.3-1.6-2.8-2 .8a7.6 7.6 0 00-1.7-1l-.3-2.1H10l-.3 2.1a7.6 7.6 0 00-1.7 1l-2-.8L4.4 9.7 6 11a7.9 7.9 0 000 2l-1.6 1.3 1.6 2.8 2-.8a7.6 7.6 0 001.7 1l.3 2.1h3.4l.3-2.1a7.6 7.6 0 001.7-1l2 .8 1.6-2.8L19.4 13z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Settings</a>
+    </nav>
+    <div class="rail-foot">
+      <div class="userbox"><div class="avatar">RS</div><div style="min-width:0"><div class="nm">Rahul Sharma</div><div class="rl">Fleet Manager</div></div><svg style="margin-left:auto" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="#93a3ba" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="depot"><span class="dot"></span> Central Depot<svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="search"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M20 20l-3.2-3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><input placeholder="Search vehicles, drivers, damage cases…" /><span class="kbd">⌘K</span></div>
+      <div class="top-right">
+        <span class="today">Wed, <b>19 Aug 2026</b></span>
+        <button class="icon-btn" title="Notifications"><span class="ping"></span><svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19a2 2 0 004 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        <button class="icon-btn" title="Help"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M9.6 9.5a2.4 2.4 0 114 1.8c-1 .7-1.6 1.2-1.6 2.2M12 16.5v.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+      </div>
+    </header>
+
+    <div class="canvas">
+
+      <div class="pagehead">
+        <div>
+          <div class="breadcrumb"><a href="reports.html">Reports</a><svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Monthly Report</span></div>
+          <h1>Monthly Fleet Inspection Report — July 2026</h1>
+          <div class="sub">300 vehicles · 2 depots · compliance <b>94%</b> · generated 01 Aug 2026</div>
+        </div>
+        <div class="ph-actions">
+          <button class="btn"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.6"/></svg>Export PDF</button>
+          <button class="btn"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M9 4v16M4 9h5" stroke="currentColor" stroke-width="1.6"/></svg>Export Excel</button>
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9V4h12v5M6 15h12v5H6zM6 12h12" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Print</button>
+        </div>
+      </div>
+
+      <!-- Filter / period controls -->
+      <div class="filterbar">
+        <div class="selectbox"><span class="lb">Period</span> July 2026<svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="selectbox"><span class="lb">Depot</span> All depots<svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="selectbox"><span class="lb">Vehicle type</span> All types<svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="selectbox"><span class="lb">Compare</span> vs June 2026<svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="seg" style="margin-left:auto"><button>Summary</button><button class="on">Detailed</button></div>
+      </div>
+
+      <!-- ===== AI FLEET SUMMARY PANEL (distinct, purple-tinted) ===== -->
+      <div class="ai-panel">
+        <div class="ai-panel-hd">
+          <div class="ai-spark"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l1.9 5.6L19.5 9l-4.4 3.2L16.8 18 12 14.7 7.2 18l1.7-5.8L4.5 9l5.6-1.4L12 2z" fill="#fff"/></svg></div>
+          <div class="t">AI Fleet Summary — July 2026</div>
+          <span class="ai-badge" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l1.9 5.6L19.5 9l-4.4 3.2L16.8 18 12 14.7 7.2 18l1.7-5.8L4.5 9l5.6-1.4L12 2z" fill="currentColor"/></svg>AI-Generated Insights — Review Recommended</span>
+        </div>
+        <p class="ai-summary-txt">
+          Fleet inspection compliance remained strong at <b>94%</b>. However, <b>14 vehicles</b> showed repeated exterior
+          damage patterns and <b>6 vehicles</b> had recurring tyre-related issues. Supervisor audits identified <b>18 checklist
+          mismatches</b> for review. Three vehicles account for <b>31%</b> of new damage reports this month. Management attention
+          is recommended for <b>VEH-067</b>, <b>VEH-104</b>, and <b>VEH-211</b>.
+        </p>
+        <div class="ai-cards">
+          <div class="ai-mini"><div class="kk"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>Top Risk</div><div class="vv">3 vehicles</div><div class="mm">31% of new damage reports</div></div>
+          <div class="ai-mini"><div class="kk"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>Repeated Issue</div><div class="vv" style="color:var(--crit)">Tyre defects</div><div class="mm">+18% vs June</div></div>
+          <div class="ai-mini"><div class="kk"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4L19 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Inspection Quality</div><div class="vv" style="color:var(--good)">95.2%</div><div class="mm">Supervisor agreement</div></div>
+          <div class="ai-mini"><div class="kk"><svg viewBox="0 0 24 24" fill="none"><path d="M4 16l5-5 4 3 7-8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Damage Trend</div><div class="vv" style="color:var(--good)">−9%</div><div class="mm">Minor exterior damage</div></div>
+          <div class="ai-mini"><div class="kk"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Recommended Action</div><div class="vv" style="font-size:15px;color:var(--purple)">More audits · Depot B</div><div class="mm">Increase supervisor audits</div></div>
+        </div>
+        <div class="ai-disclaim"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v5M12 8v.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>This is an AI-generated summary and requires human verification. It highlights patterns for management review and does not assign fault to any driver.</div>
+      </div>
+
+      <!-- ===== NORMAL ANALYTICS ===== -->
+      <div class="grid">
+
+        <div class="divider-h"><span class="lbl">Inspection Performance</span><span class="ln"></span><span class="tag">Verified analytics</span></div>
+
+        <!-- KPI row -->
+        <div class="kpi3">
+          <div class="mkpi"><div class="l">Expected inspections</div><div class="n">9,300</div></div>
+          <div class="mkpi"><div class="l">Completed</div><div class="n" style="color:var(--good)">8,742</div></div>
+          <div class="mkpi"><div class="l">Missed</div><div class="n" style="color:var(--crit)">558</div></div>
+          <div class="mkpi"><div class="l">Compliance</div><div class="n">94<small>%</small></div></div>
+        </div>
+
+        <!-- Completion trend chart -->
+        <div class="card span-8">
+          <div class="card-pad">
+            <div class="card-head"><h3>Inspection Completion Trend</h3><span class="hint">· July 2026, weekly</span></div>
+            <div class="chart-legend" style="display:flex;gap:16px;margin-top:2px">
+              <span class="lg" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--txt-2);font-weight:500"><i style="width:9px;height:9px;border-radius:3px;background:var(--good)"></i>Completed</span>
+              <span class="lg" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--txt-2);font-weight:500"><i style="width:9px;height:9px;border-radius:3px;background:var(--line-strong)"></i>Expected</span>
+              <span class="lg" style="margin-left:auto;color:var(--good);font-weight:600;font-size:12px">Avg 94% / week</span>
+            </div>
+            <div class="area-wrap" style="margin-top:8px">
+              <svg viewBox="0 0 720 240" preserveAspectRatio="none" style="display:block;width:100%;height:auto">
+                <defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--good)" stop-opacity=".22"/><stop offset="1" stop-color="var(--good)" stop-opacity="0"/></linearGradient></defs>
+                <line class="gridline" x1="46" y1="30" x2="700" y2="30"/><line class="gridline" x1="46" y1="80" x2="700" y2="80"/><line class="gridline" x1="46" y1="130" x2="700" y2="130"/><line class="gridline" x1="46" y1="180" x2="700" y2="180"/>
+                <text class="yl" x="8" y="34">100%</text><text class="yl" x="8" y="84">96%</text><text class="yl" x="8" y="134">92%</text><text class="yl" x="8" y="184">88%</text>
+                <line x1="46" y1="30" x2="700" y2="30" stroke="var(--line-strong)" stroke-width="1.5" stroke-dasharray="5 5"/>
+                <path d="M46 92 L210 78 L374 96 L538 70 L700 62 L700 210 L46 210 Z" fill="url(#ga)"/>
+                <path d="M46 92 L210 78 L374 96 L538 70 L700 62" fill="none" stroke="var(--good)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <g fill="#fff" stroke="var(--good)" stroke-width="2.4"><circle cx="46" cy="92" r="4"/><circle cx="210" cy="78" r="4"/><circle cx="374" cy="96" r="4"/><circle cx="538" cy="70" r="4"/><circle cx="700" cy="62" r="5.5" fill="var(--good)"/></g>
+                <text class="xl" x="46" y="232" text-anchor="middle">Wk 1</text><text class="xl" x="210" y="232" text-anchor="middle">Wk 2</text><text class="xl" x="374" y="232" text-anchor="middle">Wk 3</text><text class="xl" x="538" y="232" text-anchor="middle">Wk 4</text><text class="xl" x="700" y="232" text-anchor="middle">Wk 5</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compliance donut -->
+        <div class="card span-4">
+          <div class="card-pad">
+            <div class="card-head"><h3>Compliance Breakdown</h3></div>
+            <div class="donut-wrap" style="display:flex;align-items:center;gap:22px;margin-top:12px">
+              <div class="donut-center" style="position:relative;width:150px;height:150px;flex:0 0 auto">
+                <svg width="150" height="150" viewBox="0 0 150 150" style="transform:rotate(-90deg)">
+                  <circle cx="75" cy="75" r="58" fill="none" stroke="var(--surface-2)" stroke-width="18"/>
+                  <circle cx="75" cy="75" r="58" fill="none" stroke="var(--good)" stroke-width="18" stroke-linecap="round" stroke-dasharray="342.5 364.4" stroke-dashoffset="0"/>
+                  <circle cx="75" cy="75" r="58" fill="none" stroke="var(--crit)" stroke-width="18" stroke-dasharray="21.9 364.4" stroke-dashoffset="-344.5"/>
+                </svg>
+                <div class="donut-lab" style="position:absolute;inset:0;display:grid;place-content:center;text-align:center"><div class="big" style="font-family:var(--font-display);font-size:30px;font-weight:700;letter-spacing:-.03em;line-height:1">94%</div><div class="sm" style="font-size:11px;color:var(--txt-2);margin-top:2px">compliant</div></div>
+              </div>
+              <div class="cond-list" style="flex:1;display:flex;flex-direction:column;gap:11px">
+                <div class="cond-row" style="display:flex;align-items:center;gap:10px"><span class="sw" style="width:10px;height:10px;border-radius:3px;background:var(--good)"></span><span class="nm" style="font-size:13px;font-weight:500">Completed</span><span class="vv" style="margin-left:auto;font-family:var(--font-mono);font-weight:600">8,742</span></div>
+                <div class="cond-row" style="display:flex;align-items:center;gap:10px"><span class="sw" style="width:10px;height:10px;border-radius:3px;background:var(--crit)"></span><span class="nm" style="font-size:13px;font-weight:500">Missed</span><span class="vv" style="margin-left:auto;font-family:var(--font-mono);font-weight:600">558</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider-h"><span class="lbl">Depot-wise Breakdown</span><span class="ln"></span><span class="tag">Verified analytics</span></div>
+
+        <!-- Depot table -->
+        <div class="span-12">
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>Depot</th><th class="num">Vehicles</th><th class="num">Expected</th><th class="num">Completed</th><th class="num">Missed</th><th class="num">Compliance</th><th class="num">Damage cases</th><th class="num">Audits</th></tr></thead>
+              <tbody>
+                <tr><td><b>Central Depot</b></td><td class="num">180</td><td class="num">5,580</td><td class="num">5,318</td><td class="num">262</td><td class="num" style="color:var(--good)">95.3%</td><td class="num">21</td><td class="num">412</td></tr>
+                <tr><td><b>Depot B</b></td><td class="num">120</td><td class="num">3,720</td><td class="num">3,424</td><td class="num">296</td><td class="num" style="color:var(--attn)">92.0%</td><td class="num">28</td><td class="num">238</td></tr>
+                <tr style="background:var(--surface-2)"><td><b>Fleet total</b></td><td class="num">300</td><td class="num">9,300</td><td class="num">8,742</td><td class="num">558</td><td class="num"><b>94.0%</b></td><td class="num">49</td><td class="num">650</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="divider-h"><span class="lbl">Vehicle-wise Highlights</span><span class="ln"></span><span class="tag">Verified analytics</span></div>
+
+        <!-- Vehicle table -->
+        <div class="span-12">
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>Vehicle</th><th>Type · Depot</th><th class="num">Inspections</th><th class="num">Compliance</th><th class="num">Damage cases</th><th class="num">Tyre defects</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="t-id">VEH-067</td><td>Car · Depot B</td><td class="num">31</td><td class="num" style="color:var(--good)">100%</td><td class="num">4</td><td class="num">1</td><td><span class="chip attn"><span class="d"></span>Watch</span></td></tr>
+                <tr><td class="t-id">VEH-104</td><td>Bus · Central</td><td class="num">30</td><td class="num" style="color:var(--good)">96.8%</td><td class="num">3</td><td class="num">0</td><td><span class="chip attn"><span class="d"></span>Supervisor Review</span></td></tr>
+                <tr><td class="t-id">VEH-211</td><td>Van · Depot B</td><td class="num">28</td><td class="num" style="color:var(--attn)">90.3%</td><td class="num">3</td><td class="num">5</td><td><span class="chip crit"><span class="d"></span>Blocked · tyre</span></td></tr>
+                <tr><td class="t-id">VEH-087</td><td>Van · Central</td><td class="num">31</td><td class="num" style="color:var(--good)">98.4%</td><td class="num">1</td><td class="num">0</td><td><span class="chip good"><span class="d"></span>Available</span></td></tr>
+                <tr><td class="t-id">VEH-178</td><td>Van · Depot B</td><td class="num">30</td><td class="num" style="color:var(--good)">96.7%</td><td class="num">2</td><td class="num">1</td><td><span class="chip neutral"><span class="d"></span>No audit 24d</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="foot-note">FleetView — Fleet Inspection &amp; Accountability Platform · <b>Demo prototype</b> · July 2026 report · AI summary is advisory and requires human verification</div>
+    </div>
+  </div>
+</div>
+<span class="demo-tag">Demo prototype</span>
+<script>
+  document.querySelectorAll('.seg').forEach(seg=>{seg.addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;seg.querySelectorAll('button').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');});});
+</script>
+</body>
+</html>

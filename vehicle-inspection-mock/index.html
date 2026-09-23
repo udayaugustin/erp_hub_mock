@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView — Prototype Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link href="assets/portal.css" rel="stylesheet" />
+<style>
+  body{background:
+    radial-gradient(1100px 560px at 82% -8%, #eaf0fb 0%, transparent 58%),
+    radial-gradient(760px 520px at -6% 8%, #fbf1de 0%, transparent 52%),
+    var(--bg);
+    min-height:100vh}
+  .wrap{max-width:1180px;margin:0 auto;padding:44px 26px 60px}
+
+  /* hero */
+  .hero{text-align:center;padding:26px 0 30px}
+  .logo{display:inline-flex;align-items:center;gap:14px;margin-bottom:22px}
+  .logo .mark{width:56px;height:56px;border-radius:16px;background:linear-gradient(150deg,var(--amber),var(--amber-deep));display:grid;place-items:center;box-shadow:0 12px 26px -10px rgba(232,161,58,.65),inset 0 1px 0 rgba(255,255,255,.35)}
+  .logo .mark svg{width:30px;height:30px}
+  .logo .nm{font-family:var(--font-display);font-weight:700;font-size:34px;letter-spacing:-.03em;line-height:1}
+  .logo .sb{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--txt-3);font-weight:600;margin-top:4px}
+  .hero h1{font-family:var(--font-display);font-size:32px;font-weight:700;letter-spacing:-.03em;max-width:720px;margin:0 auto;line-height:1.14}
+  .hero p{color:var(--txt-2);font-size:15px;margin:16px auto 0;max-width:600px;line-height:1.55}
+  .hero .badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+  .hbadge{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:20px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-sm)}
+  .hbadge svg{width:14px;height:14px}
+  .hbadge.amber{color:var(--amber-deep)}.hbadge.purple{color:#5a3fa0}.hbadge.info{color:#2c5aa0}
+
+  /* proposal packages */
+  .packs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0 40px}
+  .pack{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-sm);display:flex;gap:15px;align-items:flex-start}
+  .pack .pn{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto;font-family:var(--font-display);font-weight:700;font-size:19px}
+  .pack.a .pn{background:var(--info-soft);color:var(--info)}
+  .pack.b .pn{background:var(--purple-soft);color:#5a3fa0}
+  .pack .lb{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-3);font-weight:600}
+  .pack h3{font-size:15.5px;font-weight:700;letter-spacing:-.01em;margin-top:3px}
+  .pack p{font-size:12.5px;color:var(--txt-2);margin-top:6px;line-height:1.5}
+
+  /* sections */
+  .sec{margin-top:36px}
+  .sec-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .sec-head .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:0 0 auto}
+  .sec-head .ic svg{width:18px;height:18px}
+  .ic.rail{background:var(--ink);color:var(--amber)}
+  .ic.ai{background:var(--purple-soft);color:#5a3fa0}
+  .ic.drv{background:var(--info-soft);color:var(--info)}
+  .ic.sup{background:var(--amber-soft);color:var(--amber-deep)}
+  .sec-head h2{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:-.02em}
+  .sec-head .cnt{margin-left:auto;font-size:12px;color:var(--txt-3);font-weight:600;font-family:var(--font-mono)}
+  .sec-head .opt{font-size:11px;font-weight:600;color:#5a3fa0;background:var(--purple-soft);padding:3px 10px;border-radius:20px}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:14px}
+  .lc{display:flex;gap:13px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 16px;box-shadow:var(--shadow-sm);transition:transform .15s ease,box-shadow .15s ease,border-color .15s}
+  .lc:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--line-strong)}
+  .lc .li{width:38px;height:38px;border-radius:11px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center;color:var(--txt-2);flex:0 0 auto}
+  .lc .li svg{width:19px;height:19px}
+  .lc.mob .li{background:linear-gradient(150deg,#eef3fb,#e2ebf8);color:var(--info)}
+  .lc.sup .li{background:var(--amber-soft);color:var(--amber-deep)}
+  .lc.ai .li{background:var(--purple-soft);color:#5a3fa0}
+  .lc .code{font-family:var(--font-mono);font-size:10.5px;font-weight:600;color:var(--txt-3);letter-spacing:.02em}
+  .lc h4{font-size:13.5px;font-weight:700;letter-spacing:-.01em;margin-top:2px;line-height:1.2}
+  .lc p{font-size:11.5px;color:var(--txt-2);margin-top:4px;line-height:1.4}
+
+  .foot{margin-top:48px;text-align:center;font-size:12px;color:var(--txt-3)}
+  .foot b{color:var(--txt-2)}
+  @media(max-width:720px){.packs{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="logo">
+        <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H6v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z" stroke="#241700" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="16" r="1.3" fill="#241700"/><circle cx="17" cy="16" r="1.3" fill="#241700"/></svg></div>
+        <div style="text-align:left">
+          <div class="nm">FleetView</div>
+          <div class="sb">Inspection &amp; Accountability</div>
+        </div>
+      </div>
+      <h1>From paper inspections to complete vehicle accountability.</h1>
+      <p>An interactive prototype for a ~300-vehicle transport fleet — every screen is clickable sample data. An optional AI layer adds flagging, comparison and prioritisation, always advisory and human-verified.</p>
+      <div class="badges">
+        <span class="hbadge info"><svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.6"/></svg>Interactive prototype</span>
+        <span class="hbadge purple"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v2M12 19v2M3 12h2M19 12h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/></svg>Optional AI layer</span>
+        <span class="hbadge amber"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Evidence-first</span>
+      </div>
+    </div>
+
+    <!-- PROPOSAL PACKAGES -->
+    <div class="packs">
+      <div class="pack a">
+        <div class="pn">A</div>
+        <div>
+          <div class="lb">Proposal package</div>
+          <h3>Digital Inspection Platform</h3>
+          <p>Driver mobile inspections, supervisor audits, damage cases, assignments and reporting — the full accountability system without AI.</p>
+        </div>
+      </div>
+      <div class="pack b">
+        <div class="pn">B</div>
+        <div>
+          <div class="lb">Proposal package</div>
+          <h3>AI-Assisted Platform</h3>
+          <p>Everything in Option A plus the optional intelligence layer: AI flagging, photo comparison, prioritisation and summaries — always human-verified.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEB PORTAL -->
+    <div class="sec">
+      <div class="sec-head">
+        <div class="ic rail"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 9h18M8 4v16" stroke="currentColor" stroke-width="1.6"/></svg></div>
+        <h2>Web Portal</h2>
+        <span class="cnt">16 screens</span>
+      </div>
+      <div class="cards">
+        <a class="lc" href="dashboard.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M4 13h6V4H4v9zm10 7h6v-9h-6v9zM4 20h6v-4H4v4zM14 4v4h6V4h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div><div><div class="code">W01</div><h4>Fleet Overview</h4><p>KPI dashboard, compliance and alerts.</p></div></a>
+        <a class="lc" href="vehicles.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/></svg></div><div><div class="code">W02</div><h4>Vehicles</h4><p>Fleet register with status and condition.</p></div></a>
+        <a class="lc" href="vehicle-profile.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="code">W03</div><h4>Vehicle Profile</h4><p>History, custody timeline and damage.</p></div></a>
+        <a class="lc" href="inspections.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/></svg></div><div><div class="code">W04</div><h4>Inspections</h4><p>Daily driver inspection log.</p></div></a>
+        <a class="lc" href="inspection-detail.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="code">W05</div><h4>Inspection Detail</h4><p>Checklist, photos and evidence.</p></div></a>
+        <a class="lc" href="inspection-comparison.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M8 6h11M8 12h11M8 18h11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M4 6l1 1 1.5-1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="code">W06</div><h4>Inspection Comparison</h4><p>Driver vs supervisor, item by item.</p></div></a>
+        <a class="lc" href="damage.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div><div><div class="code">W07</div><h4>Damage &amp; Defects</h4><p>Case register across the fleet.</p></div></a>
+        <a class="lc" href="damage-detail.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 8l9 16" stroke="currentColor" stroke-width="0"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="code">W08</div><h4>Damage Detail</h4><p>Custody window and case lifecycle.</p></div></a>
+        <a class="lc" href="supervisor-audits.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="code">W09</div><h4>Supervisor Audits</h4><p>Audit coverage and mismatches.</p></div></a>
+        <a class="lc" href="driver-compliance.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="code">W10</div><h4>Driver Compliance</h4><p>Agreement scores and custody metrics.</p></div></a>
+        <a class="lc" href="assignments.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="code">W11</div><h4>Assignments</h4><p>Driver-to-vehicle custody schedule.</p></div></a>
+        <a class="lc" href="reports.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.6"/></svg></div><div><div class="code">W12</div><h4>Reports</h4><p>Fleet analytics and exports.</p></div></a>
+        <a class="lc" href="monthly-report.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 15l3-3 2 2 3-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="code">W13</div><h4>Monthly Report</h4><p>Compliance summary for the period.</p></div></a>
+        <a class="lc" href="checklist-builder.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="code">W14</div><h4>Checklist Builder</h4><p>Configure sections and items.</p></div></a>
+        <a class="lc" href="users.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="2.8" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="15" r="2.8" stroke="currentColor" stroke-width="1.6"/><path d="M4 19c0-2.5 2.2-4 5-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="code">W15</div><h4>Users &amp; Roles</h4><p>Accounts, roles and permissions.</p></div></a>
+        <a class="lc" href="settings.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.6"/><path d="M19 13a7 7 0 000-2l1.5-1.2-1.5-2.6-1.8.7a7 7 0 00-1.7-1L15.2 4h-3l-.3 1.9a7 7 0 00-1.7 1l-1.8-.7L6 8.8 7.5 10a7 7 0 000 2L6 13.2l1.5 2.6 1.8-.7a7 7 0 001.7 1l.3 1.9h3l.3-1.9a7 7 0 001.7-1l1.8.7 1.5-2.6L19 13z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div><div><div class="code">W16</div><h4>Settings</h4><p>Depot, rules and AI module toggle.</p></div></a>
+      </div>
+    </div>
+
+    <!-- AI INTELLIGENCE -->
+    <div class="sec">
+      <div class="sec-head">
+        <div class="ic ai"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/></svg></div>
+        <h2>AI Intelligence</h2>
+        <span class="opt">Optional module</span>
+        <span class="cnt">2 screens</span>
+      </div>
+      <div class="cards">
+        <a class="lc ai" href="ai-insights.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v2M3 12h2M19 12h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/></svg></div><div><div class="code">AI-01</div><h4>AI Insights</h4><p>Flags, priorities and summaries — advisory, human-verified.</p></div></a>
+        <a class="lc ai" href="ai-damage-review.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M3 12s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.6"/></svg></div><div><div class="code">AI-02</div><h4>AI Damage Review</h4><p>Photo comparison against last healthy inspection.</p></div></a>
+      </div>
+    </div>
+
+    <!-- DRIVER MOBILE -->
+    <div class="sec">
+      <div class="sec-head">
+        <div class="ic drv"><svg viewBox="0 0 24 24" fill="none"><rect x="7" y="3" width="10" height="18" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M11 18h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <h2>Driver Mobile App</h2>
+        <span class="cnt">11 screens</span>
+      </div>
+      <div class="cards">
+        <a class="lc mob" href="mobile/m01-login.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.6"/></svg></div><div><div class="code">M01</div><h4>Login</h4><p>Driver sign-in and shift start.</p></div></a>
+        <a class="lc mob" href="mobile/m02-assignment.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M4 11l8-6 8 6v8a1 1 0 01-1 1h-4v-5h-6v5H5a1 1 0 01-1-1v-8z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div><div><div class="code">M02</div><h4>Today's Assignment</h4><p>Assigned vehicle, shift, scan QR.</p></div></a>
+        <a class="lc mob" href="mobile/m03-qr-confirm.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M14 14h3v3M20 20v.01M17 20h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="code">M03</div><h4>QR Confirmation</h4><p>Scan confirms vehicle identity.</p></div></a>
+        <a class="lc mob" href="mobile/m04-previous-condition.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M12 8v4.5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/></svg></div><div><div class="code">M04</div><h4>Previous Condition</h4><p>Known prior damage before use.</p></div></a>
+        <a class="lc mob" href="mobile/m05-guided-photos.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="13" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M8 7l1.5-2h5L16 7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div><div><div class="code">M05</div><h4>Guided Photos</h4><p>Required angles, timestamped.</p></div></a>
+        <a class="lc mob" href="mobile/m06-checklist.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="code">M06</div><h4>Checklist</h4><p>Guided inspection sections.</p></div></a>
+        <a class="lc mob" href="mobile/m07-report-issue.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div><div><div class="code">M07</div><h4>Report Issue</h4><p>Not OK → comment + photo required.</p></div></a>
+        <a class="lc mob" href="mobile/m08-damage-diagram.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="16" cy="9" r="3" fill="currentColor" opacity=".25"/></svg></div><div><div class="code">M08</div><h4>Damage Diagram</h4><p>Tap the damaged body zone.</p></div></a>
+        <a class="lc mob" href="mobile/m09-summary.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="code">M09</div><h4>Inspection Summary</h4><p>Review before submission.</p></div></a>
+        <a class="lc mob" href="mobile/m10-cleared.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12l4 4 8-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="code">M10</div><h4>Vehicle Cleared</h4><p>Cleared for operation, ID logged.</p></div></a>
+        <a class="lc mob" href="mobile/m11-critical.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div><div><div class="code">M11</div><h4>Critical Defect</h4><p>Safety-critical Not OK → vehicle blocked.</p></div></a>
+      </div>
+    </div>
+
+    <!-- SUPERVISOR MOBILE -->
+    <div class="sec">
+      <div class="sec-head">
+        <div class="ic sup"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h2>Supervisor Mobile</h2>
+        <span class="cnt">4 screens</span>
+      </div>
+      <div class="cards">
+        <a class="lc sup" href="mobile/s01-home.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M4 11l8-6 8 6v8a1 1 0 01-1 1h-4v-5h-6v5H5a1 1 0 01-1-1v-8z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div><div><div class="code">S01</div><h4>Supervisor Home</h4><p>Audit workload and today's queue.</p></div></a>
+        <a class="lc sup" href="mobile/s02-audit-queue.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="code">S02</div><h4>Audit Queue</h4><p>Random, rules-based &amp; AI-recommended.</p></div></a>
+        <a class="lc sup" href="mobile/s03-inspection.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M3 12s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7z" stroke="currentColor" stroke-width="1.6"/><path d="M4 4l16 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="code">S03</div><h4>Independent Audit</h4><p>Blind inspection — driver answers hidden.</p></div></a>
+        <a class="lc sup" href="mobile/s04-comparison.html"><div class="li"><svg viewBox="0 0 24 24" fill="none"><path d="M8 6h11M8 12h11M8 18h11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div><div><div class="code">S04</div><h4>Result Comparison</h4><p>Agreement, mismatches and actions.</p></div></a>
+      </div>
+    </div>
+
+    <div class="foot">FleetView — Fleet Inspection &amp; Accountability Platform · <b>Demo prototype</b> · sample data for proposal presentation</div>
+
+  </div>
+</body>
+</html>

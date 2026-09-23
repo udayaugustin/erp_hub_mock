@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView — Fleet Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#0d1420;
+    --ink-2:#131c2b;
+    --rail:#0e1622;
+    --rail-hover:#182233;
+    --bg:#eef1f5;
+    --surface:#ffffff;
+    --surface-2:#f7f9fb;
+    --line:#e4e9f0;
+    --line-strong:#d3dbe6;
+    --txt:#0f1826;
+    --txt-2:#54637a;
+    --txt-3:#8494a8;
+    --txt-inv:#eaf0f7;
+    --txt-inv-2:#93a3ba;
+
+    --amber:#e8a13a;
+    --amber-deep:#c9821b;
+    --amber-soft:#fdf3e2;
+
+    --good:#1f9d6b;
+    --good-soft:#e5f5ee;
+    --attn:#e0952a;
+    --attn-soft:#fbf0dd;
+    --crit:#d8483c;
+    --crit-soft:#fbe8e6;
+    --info:#3a72c4;
+    --info-soft:#e8f0fb;
+    --slate:#6b7a90;
+
+    --radius:16px;
+    --radius-sm:11px;
+    --shadow-sm:0 1px 2px rgba(16,29,50,.06), 0 1px 3px rgba(16,29,50,.05);
+    --shadow-md:0 4px 14px rgba(16,29,50,.08), 0 2px 4px rgba(16,29,50,.05);
+    --shadow-lg:0 18px 44px -18px rgba(13,20,32,.28);
+    --font-display:"Bricolage Grotesque", sans-serif;
+    --font-ui:"IBM Plex Sans", sans-serif;
+    --font-mono:"IBM Plex Mono", monospace;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{
+    font-family:var(--font-ui);
+    background:var(--bg);
+    color:var(--txt);
+    font-size:14px;
+    line-height:1.5;
+    letter-spacing:-.006em;
+  }
+  ::selection{background:var(--amber);color:#1c1300}
+
+  /* ============ LAYOUT ============ */
+  .app{display:grid;grid-template-columns:264px 1fr;min-height:100vh}
+
+  /* ============ RAIL ============ */
+  .rail{
+    background:var(--rail);
+    color:var(--txt-inv);
+    display:flex;flex-direction:column;
+    position:sticky;top:0;height:100vh;
+    border-right:1px solid rgba(255,255,255,.05);
+  }
+  .brand{
+    display:flex;align-items:center;gap:12px;
+    padding:22px 22px 20px;
+  }
+  .brand-mark{
+    width:38px;height:38px;border-radius:11px;flex:0 0 auto;
+    background:linear-gradient(150deg,var(--amber),var(--amber-deep));
+    display:grid;place-items:center;
+    box-shadow:0 6px 16px -6px rgba(232,161,58,.6), inset 0 1px 0 rgba(255,255,255,.35);
+    position:relative;
+  }
+  .brand-mark svg{width:21px;height:21px}
+  .brand-name{font-family:var(--font-display);font-weight:700;font-size:19px;letter-spacing:-.02em;color:#fff;line-height:1}
+  .brand-sub{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt-inv-2);margin-top:3px;font-weight:500}
+
+  .nav{padding:8px 12px;overflow-y:auto;flex:1;scrollbar-width:thin}
+  .nav::-webkit-scrollbar{width:5px}
+  .nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:9px}
+  .nav-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#5f6f86;padding:16px 12px 8px;font-weight:600}
+  .nav-item{
+    display:flex;align-items:center;gap:12px;
+    padding:9px 12px;border-radius:10px;
+    color:var(--txt-inv-2);font-weight:500;font-size:13.5px;
+    cursor:pointer;position:relative;
+    transition:background .15s ease, color .15s ease;
+    text-decoration:none;
+  }
+  .nav-item svg{width:18px;height:18px;flex:0 0 auto;opacity:.9}
+  .nav-item:hover{background:var(--rail-hover);color:#dfe8f3}
+  .nav-item.active{background:linear-gradient(90deg,rgba(232,161,58,.16),rgba(232,161,58,.04));color:#fff}
+  .nav-item.active::before{content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--amber)}
+  .nav-item.active svg{opacity:1;color:var(--amber)}
+  .nav-badge{margin-left:auto;font-size:11px;font-weight:600;background:rgba(216,72,60,.9);color:#fff;padding:1px 7px;border-radius:20px;font-family:var(--font-mono)}
+  .nav-badge.amber{background:rgba(232,161,58,.9);color:#1c1300}
+
+  .rail-foot{padding:12px;border-top:1px solid rgba(255,255,255,.06)}
+  .userbox{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:11px;cursor:pointer;transition:background .15s}
+  .userbox:hover{background:var(--rail-hover)}
+  .avatar{width:34px;height:34px;border-radius:9px;background:linear-gradient(140deg,#3a72c4,#274a86);display:grid;place-items:center;font-weight:600;font-size:13px;color:#fff;flex:0 0 auto}
+  .userbox .nm{font-size:13px;font-weight:600;color:#eef3f9;line-height:1.25}
+  .userbox .rl{font-size:11px;color:var(--txt-inv-2)}
+
+  /* ============ MAIN ============ */
+  .main{display:flex;flex-direction:column;min-width:0}
+
+  .topbar{
+    height:64px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:16px;padding:0 26px;
+    position:sticky;top:0;z-index:20;
+  }
+  .depot{
+    display:flex;align-items:center;gap:9px;padding:7px 13px;border-radius:10px;
+    border:1px solid var(--line-strong);background:var(--surface);cursor:pointer;font-weight:600;font-size:13px;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .depot:hover{border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
+  .depot .dot{width:7px;height:7px;border-radius:50%;background:var(--good)}
+  .depot svg{width:14px;height:14px;color:var(--txt-3)}
+
+  .search{
+    flex:1;max-width:420px;display:flex;align-items:center;gap:10px;
+    padding:9px 14px;border-radius:11px;background:var(--surface-2);
+    border:1px solid transparent;color:var(--txt-3);cursor:text;transition:.15s;
+  }
+  .search:hover{border-color:var(--line-strong);background:var(--surface)}
+  .search svg{width:16px;height:16px}
+  .search input{border:0;background:none;outline:0;font-family:var(--font-ui);font-size:13.5px;color:var(--txt);width:100%}
+  .search .kbd{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--txt-3);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+
+  .top-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;color:var(--txt-2);position:relative;transition:.15s}
+  .icon-btn:hover{border-color:var(--line-strong);color:var(--txt);background:var(--surface-2)}
+  .icon-btn svg{width:18px;height:18px}
+  .icon-btn .ping{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--crit);border:2px solid var(--surface)}
+  .today{font-size:13px;color:var(--txt-2);font-weight:500;padding-right:6px;border-right:1px solid var(--line);margin-right:2px}
+  .today b{color:var(--txt);font-weight:600}
+
+  .canvas{padding:26px;max-width:1440px;width:100%;margin:0 auto}
+
+  /* ---- page head ---- */
+  .pagehead{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+  .pagehead h1{font-family:var(--font-display);font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1.05}
+  .pagehead .sub{color:var(--txt-2);font-size:13.5px;margin-top:5px}
+  .pagehead .sub b{color:var(--good);font-weight:600}
+  .ph-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px}
+  .seg button{border:0;background:none;font-family:var(--font-ui);font-weight:600;font-size:12.5px;color:var(--txt-2);padding:6px 13px;border-radius:7px;cursor:pointer;transition:.15s}
+  .seg button.on{background:var(--ink);color:#fff;box-shadow:var(--shadow-sm)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-ui);font-weight:600;font-size:13px;padding:9px 15px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface);color:var(--txt);cursor:pointer;transition:.15s}
+  .btn:hover{border-color:var(--txt-3);box-shadow:var(--shadow-sm)}
+  .btn svg{width:15px;height:15px}
+  .btn-primary{background:linear-gradient(160deg,var(--amber),var(--amber-deep));border-color:var(--amber-deep);color:#241700;box-shadow:0 6px 16px -8px rgba(201,130,27,.7)}
+  .btn-primary:hover{filter:brightness(1.04)}
+
+  /* ---- grid ---- */
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+  .card-pad{padding:18px 20px}
+  .card-head{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+  .card-head h3{font-size:14px;font-weight:600;letter-spacing:-.01em}
+  .card-head .hint{font-size:12px;color:var(--txt-3)}
+  .card-head .more{margin-left:auto;color:var(--txt-3);cursor:pointer;display:grid;place-items:center;width:26px;height:26px;border-radius:7px}
+  .card-head .more:hover{background:var(--surface-2);color:var(--txt)}
+  .card-head .more svg{width:16px;height:16px}
+
+  /* ---- KPI ---- */
+  .kpi-row{grid-column:span 12;display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+  .kpi{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 17px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;
+    transition:transform .16s ease, box-shadow .16s ease;
+  }
+  .kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+  .kpi.feature{grid-row:span 1}
+  .kpi-top{display:flex;align-items:center;gap:9px;margin-bottom:13px}
+  .kpi-ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:0 0 auto}
+  .kpi-ic svg{width:17px;height:17px}
+  .kpi-ic.g{background:var(--good-soft);color:var(--good)}
+  .kpi-ic.a{background:var(--attn-soft);color:var(--attn)}
+  .kpi-ic.c{background:var(--crit-soft);color:var(--crit)}
+  .kpi-ic.i{background:var(--info-soft);color:var(--info)}
+  .kpi-ic.n{background:#eef1f6;color:var(--slate)}
+  .kpi-label{font-size:12px;color:var(--txt-2);font-weight:500;line-height:1.25}
+  .kpi-val{font-family:var(--font-display);font-size:34px;font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+  .kpi-val small{font-size:15px;color:var(--txt-3);font-weight:600}
+  .kpi-delta{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;margin-top:9px;padding:2px 7px;border-radius:20px}
+  .kpi-delta svg{width:12px;height:12px}
+  .kpi-delta.up{background:var(--good-soft);color:var(--good)}
+  .kpi-delta.down{background:var(--crit-soft);color:var(--crit)}
+  .kpi-delta.flat{background:#eef1f6;color:var(--slate)}
+  .kpi .spark{position:absolute;right:0;bottom:0;width:88px;height:40px;opacity:.9}
+
+  /* hero compliance kpi */
+  .kpi.hero{background:linear-gradient(155deg,var(--ink),var(--ink-2));color:#fff;border-color:#1b2740}
+  .kpi.hero .kpi-label{color:#9fb0c8}
+  .kpi.hero .kpi-val{color:#fff}
+  .kpi.hero .kpi-val small{color:#8b9cb5}
+  .kpi.hero .ring-wrap{display:flex;align-items:center;gap:16px}
+  .kpi.hero .barmeter{margin-top:14px;height:7px;border-radius:20px;background:rgba(255,255,255,.12);overflow:hidden}
+  .kpi.hero .barmeter i{display:block;height:100%;width:89.3%;border-radius:20px;background:linear-gradient(90deg,var(--amber),#f2c274)}
+
+  /* ---- chart card ---- */
+  .chart-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:2px}
+  .lg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--txt-2);font-weight:500}
+  .lg i{width:9px;height:9px;border-radius:3px;display:inline-block}
+
+  .area-wrap{position:relative;margin-top:8px}
+  .area-wrap svg{display:block;width:100%;height:auto}
+  .yl{font-size:10.5px;fill:var(--txt-3);font-family:var(--font-mono)}
+  .xl{font-size:11px;fill:var(--txt-3);font-weight:500}
+  .gridline{stroke:var(--line);stroke-width:1;stroke-dasharray:3 4}
+
+  /* donut */
+  .donut-wrap{display:flex;align-items:center;gap:22px;margin-top:6px}
+  .donut-center{position:relative;width:150px;height:150px;flex:0 0 auto}
+  .donut-center svg{transform:rotate(-90deg)}
+  .donut-lab{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+  .donut-lab .big{font-family:var(--font-display);font-size:30px;font-weight:700;letter-spacing:-.03em;line-height:1}
+  .donut-lab .sm{font-size:11px;color:var(--txt-2);font-weight:500;margin-top:2px}
+  .cond-list{flex:1;display:flex;flex-direction:column;gap:11px}
+  .cond-row{display:flex;align-items:center;gap:10px}
+  .cond-row .sw{width:10px;height:10px;border-radius:3px;flex:0 0 auto}
+  .cond-row .nm{font-size:13px;font-weight:500;color:var(--txt)}
+  .cond-row .vv{margin-left:auto;font-family:var(--font-mono);font-weight:600;font-size:13px}
+  .cond-row .pc{width:44px;text-align:right;font-size:11.5px;color:var(--txt-3);font-family:var(--font-mono)}
+
+  /* bars (damage trend) */
+  .bars{display:flex;align-items:flex-end;gap:12px;height:130px;margin-top:14px;padding-top:6px}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end}
+  .bar-col .stack{width:100%;max-width:34px;border-radius:6px 6px 3px 3px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;position:relative}
+  .bar-col .seg-b{width:100%}
+  .bar-col .lab{font-size:11px;color:var(--txt-3);font-weight:500}
+  .bar-col:hover .stack{filter:brightness(1.05)}
+
+  /* driver compliance */
+  .dc-list{display:flex;flex-direction:column}
+  .dc-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .dc-row:last-child{border-bottom:0;padding-bottom:2px}
+  .dc-av{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-weight:600;font-size:12px;color:#fff;flex:0 0 auto}
+  .dc-nm{font-size:13px;font-weight:600;line-height:1.2}
+  .dc-id{font-size:11px;color:var(--txt-3);font-family:var(--font-mono)}
+  .dc-track{flex:1;height:7px;border-radius:20px;background:var(--surface-2);overflow:hidden;max-width:150px;margin-left:auto}
+  .dc-track i{display:block;height:100%;border-radius:20px}
+  .dc-sc{width:44px;text-align:right;font-family:var(--font-mono);font-weight:600;font-size:13px}
+
+  /* aged cases */
+  .aged{display:flex;flex-direction:column;gap:13px;margin-top:6px}
+  .aged-row{display:flex;align-items:center;gap:12px}
+  .aged-row .k{width:64px;font-size:12px;color:var(--txt-2);font-weight:500}
+  .aged-row .tr{flex:1;height:22px;border-radius:6px;background:var(--surface-2);overflow:hidden;position:relative}
+  .aged-row .tr i{display:block;height:100%;border-radius:6px;display:flex;align-items:center;padding-left:9px;color:#fff;font-family:var(--font-mono);font-weight:600;font-size:12px}
+  .aged-row .n{width:26px;text-align:right;font-family:var(--font-mono);font-weight:600;font-size:13px}
+
+  /* alerts feed */
+  .feed{display:flex;flex-direction:column}
+  .feed-item{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .feed-item:last-child{border-bottom:0;padding-bottom:2px}
+  .feed-ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:0 0 auto}
+  .feed-ic svg{width:17px;height:17px}
+  .feed-ic.c{background:var(--crit-soft);color:var(--crit)}
+  .feed-ic.a{background:var(--attn-soft);color:var(--attn)}
+  .feed-ic.i{background:var(--info-soft);color:var(--info)}
+  .feed-ic.g{background:var(--good-soft);color:var(--good)}
+  .feed-tx{flex:1;min-width:0}
+  .feed-tx .t{font-size:13px;font-weight:600;line-height:1.35}
+  .feed-tx .m{font-size:12px;color:var(--txt-2);margin-top:2px}
+  .feed-tx .m code{font-family:var(--font-mono);color:var(--txt);background:var(--surface-2);padding:0 5px;border-radius:5px;font-size:11.5px}
+  .feed-time{font-size:11px;color:var(--txt-3);font-family:var(--font-mono);white-space:nowrap;flex:0 0 auto}
+
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;line-height:1.6}
+  .chip.good{background:var(--good-soft);color:#137a51}
+  .chip.attn{background:var(--attn-soft);color:#a86a12}
+  .chip.crit{background:var(--crit-soft);color:#b3372c}
+  .chip.info{background:var(--info-soft);color:#2c5aa0}
+  .chip .d{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+  .cardlink{margin-top:14px;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--info);cursor:pointer}
+  .cardlink svg{width:14px;height:14px;transition:transform .15s}
+  .cardlink:hover svg{transform:translateX(3px)}
+
+  /* audit coverage radial */
+  .cov-wrap{display:flex;align-items:center;gap:20px;margin-top:8px}
+  .cov-ring{position:relative;width:128px;height:128px;flex:0 0 auto}
+  .cov-ring svg{transform:rotate(-90deg)}
+  .cov-lab{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+  .cov-lab .big{font-family:var(--font-display);font-size:27px;font-weight:700;letter-spacing:-.03em}
+  .cov-lab .sm{font-size:11px;color:var(--txt-2)}
+  .cov-stats{flex:1;display:flex;flex-direction:column;gap:12px}
+  .cov-stat{display:flex;flex-direction:column;gap:2px}
+  .cov-stat .n{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:-.02em}
+  .cov-stat .l{font-size:11.5px;color:var(--txt-2);font-weight:500}
+
+  .foot-note{margin-top:24px;text-align:center;font-size:11.5px;color:var(--txt-3)}
+  .foot-note b{color:var(--txt-2)}
+
+  @media(max-width:1180px){
+    .kpi-row{grid-template-columns:repeat(3,1fr)}
+    .span-8,.span-7,.span-5,.span-4,.span-6{grid-column:span 12 !important}
+  }
+  .span-8{grid-column:span 8}
+  .span-7{grid-column:span 7}
+  .span-6{grid-column:span 6}
+  .span-5{grid-column:span 5}
+  .span-4{grid-column:span 4}
+
+  @media(max-width:920px){
+    .app{grid-template-columns:1fr}
+    .rail{display:none}
+    .kpi-row{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ NAV RAIL ============ -->
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H6v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z" stroke="#241700" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="16" r="1.3" fill="#241700"/><circle cx="17" cy="16" r="1.3" fill="#241700"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">FleetView</div>
+        <div class="brand-sub">Inspection &amp; Audit</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a class="nav-item active" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 13h6V4H4v9zm10 7h6v-9h-6v9zM4 20h6v-4H4v4zM14 4v4h6V4h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" href="vehicles.html">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/></svg>
+        Vehicles
+      </a>
+      <a class="nav-item" href="driver-compliance.html">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Drivers
+      </a>
+      <a class="nav-item" href="assignments.html">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Assignments
+      </a>
+      <a class="nav-item" href="inspections.html">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/></svg>
+        Inspections
+      </a>
+      <a class="nav-item" href="supervisor-audits.html">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Supervisor Audits
+        <span class="nav-badge amber">4</span>
+      </a>
+      <a class="nav-item" href="damage.html">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Damage &amp; Defects
+        <span class="nav-badge">5</span>
+      </a>
+      <a class="nav-item" href="reports.html">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Reports
+      </a>
+
+      <div class="nav-label">Intelligence</div>
+      <a class="nav-item" href="ai-insights.html">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/></svg>
+        AI Insights
+        <span class="nav-badge amber">NEW</span>
+      </a>
+
+      <div class="nav-label">Configure</div>
+      <a class="nav-item" href="checklist-builder.html">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Checklist Templates
+      </a>
+      <a class="nav-item" href="users.html">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="2.8" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="15" r="2.8" stroke="currentColor" stroke-width="1.6"/><path d="M4 19c0-2.5 2.2-4 5-4M20 9c0-2.5-2.2-4-5-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Users &amp; Roles
+      </a>
+      <a class="nav-item" href="settings.html">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.9 7.9 0 000-2l1.6-1.3-1.6-2.8-2 .8a7.6 7.6 0 00-1.7-1l-.3-2.1H10l-.3 2.1a7.6 7.6 0 00-1.7 1l-2-.8L4.4 9.7 6 11a7.9 7.9 0 000 2l-1.6 1.3 1.6 2.8 2-.8a7.6 7.6 0 001.7 1l.3 2.1h3.4l.3-2.1a7.6 7.6 0 001.7-1l2 .8 1.6-2.8L19.4 13z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="rail-foot">
+      <div class="userbox">
+        <div class="avatar">RS</div>
+        <div style="min-width:0">
+          <div class="nm">Rahul Sharma</div>
+          <div class="rl">Fleet Manager</div>
+        </div>
+        <svg style="margin-left:auto" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="#93a3ba" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+
+    <!-- topbar -->
+    <header class="topbar">
+      <div class="depot">
+        <span class="dot"></span> Central Depot
+        <svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M20 20l-3.2-3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <input placeholder="Search vehicles, drivers, damage cases…" />
+        <span class="kbd">⌘K</span>
+      </div>
+      <div class="top-right">
+        <span class="today">Wed, <b>19 Aug 2026</b></span>
+        <button class="icon-btn" title="Notifications"><span class="ping"></span>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19a2 2 0 004 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <button class="icon-btn" title="Help">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M9.6 9.5a2.4 2.4 0 114 1.8c-1 .7-1.6 1.2-1.6 2.2M12 16.5v.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="canvas">
+
+      <!-- page head -->
+      <div class="pagehead">
+        <div>
+          <h1>Fleet Overview</h1>
+          <div class="sub">300 vehicles monitored · <b>268 inspections completed today</b> · updated 2 min ago</div>
+        </div>
+        <div class="ph-actions">
+          <div class="seg">
+            <button>Today</button>
+            <button class="on">7 Days</button>
+            <button>30 Days</button>
+          </div>
+          <button class="btn">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Export
+          </button>
+          <button class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            New Inspection
+          </button>
+        </div>
+      </div>
+
+      <div class="grid">
+
+        <!-- ===== KPI ROW ===== -->
+        <div class="kpi-row">
+          <div class="kpi hero feature">
+            <div class="kpi-top">
+              <div class="kpi-ic" style="background:rgba(232,161,58,.16);color:var(--amber)">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span class="kpi-label">Fleet Compliance</span>
+            </div>
+            <div class="kpi-val">89.3<small>%</small></div>
+            <div class="barmeter"><i></i></div>
+            <div class="kpi-delta up" style="background:rgba(31,157,107,.18);color:#4fd39d">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 15l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              +2.4 pts vs last week
+            </div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-top"><div class="kpi-ic g">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.6"/></svg>
+            </div><span class="kpi-label">Inspections<br>Completed Today</span></div>
+            <div class="kpi-val">268</div>
+            <div class="kpi-delta up"><svg viewBox="0 0 24 24" fill="none"><path d="M5 15l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>89.3% of fleet</div>
+            <svg class="spark" viewBox="0 0 88 40" preserveAspectRatio="none"><path d="M0 30 L14 26 L28 28 L42 20 L56 22 L70 14 L88 12" fill="none" stroke="var(--good)" stroke-width="2" stroke-linecap="round"/><path d="M0 30 L14 26 L28 28 L42 20 L56 22 L70 14 L88 12 L88 40 L0 40 Z" fill="var(--good)" opacity=".08"/></svg>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-top"><div class="kpi-ic a">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4.5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div><span class="kpi-label">Pending<br>Inspections</span></div>
+            <div class="kpi-val">32</div>
+            <div class="kpi-delta flat"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>before 09:00 shift</div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-top"><div class="kpi-ic c">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div><span class="kpi-label">New Damage<br>Reports</span></div>
+            <div class="kpi-val">5</div>
+            <div class="kpi-delta down"><svg viewBox="0 0 24 24" fill="none"><path d="M19 9l-7 7-7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>2 need review</div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-top"><div class="kpi-ic c">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M8 12h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div><span class="kpi-label">Vehicles<br>Blocked</span></div>
+            <div class="kpi-val">3</div>
+            <div class="kpi-delta flat"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>safety critical</div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-top"><div class="kpi-ic a">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </div><span class="kpi-label">Vehicles<br>With Issues</span></div>
+            <div class="kpi-val">17</div>
+            <div class="kpi-delta up"><svg viewBox="0 0 24 24" fill="none"><path d="M19 9l-7 7-7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>−3 vs yesterday</div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-top"><div class="kpi-ic i">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </div><span class="kpi-label">Supervisor<br>Audits Today</span></div>
+            <div class="kpi-val">22</div>
+            <div class="kpi-delta up"><svg viewBox="0 0 24 24" fill="none"><path d="M5 15l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>7.3% coverage</div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-top"><div class="kpi-ic n">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M8 6h11M8 12h11M8 18h11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M4 6l1 1 1.5-1.5M4 12l1 1 1.5-1.5M4 18l1 1 1.5-1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div><span class="kpi-label">Inspection<br>Mismatches</span></div>
+            <div class="kpi-val">4</div>
+            <div class="kpi-delta down"><svg viewBox="0 0 24 24" fill="none"><path d="M19 9l-7 7-7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>driver vs supervisor</div>
+          </div>
+        </div>
+
+        <!-- ===== INSPECTION COMPLETION TREND ===== -->
+        <div class="card span-8">
+          <div class="card-pad">
+            <div class="card-head">
+              <h3>Inspection Completion Trend</h3>
+              <span class="hint">· last 7 days</span>
+              <div class="more"><svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="18" cy="12" r="1.6" fill="currentColor"/></svg></div>
+            </div>
+            <div class="chart-legend">
+              <span class="lg"><i style="background:var(--good)"></i>Completed</span>
+              <span class="lg"><i style="background:var(--line-strong)"></i>Expected (300)</span>
+              <span class="lg" style="margin-left:auto;color:var(--good);font-weight:600">Avg 258 / day</span>
+            </div>
+            <div class="area-wrap">
+              <svg viewBox="0 0 720 240" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="ga" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="var(--good)" stop-opacity=".22"/>
+                    <stop offset="1" stop-color="var(--good)" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <!-- gridlines -->
+                <line class="gridline" x1="46" y1="30" x2="700" y2="30"/>
+                <line class="gridline" x1="46" y1="80" x2="700" y2="80"/>
+                <line class="gridline" x1="46" y1="130" x2="700" y2="130"/>
+                <line class="gridline" x1="46" y1="180" x2="700" y2="180"/>
+                <!-- y labels -->
+                <text class="yl" x="8" y="34">300</text>
+                <text class="yl" x="8" y="84">250</text>
+                <text class="yl" x="8" y="134">200</text>
+                <text class="yl" x="8" y="184">150</text>
+                <!-- expected line -->
+                <line x1="46" y1="30" x2="700" y2="30" stroke="var(--line-strong)" stroke-width="1.5" stroke-dasharray="5 5"/>
+                <!-- area -->
+                <path d="M46 96 L155 72 L264 84 L373 58 L482 66 L591 46 L700 40 L700 210 L46 210 Z" fill="url(#ga)"/>
+                <!-- line -->
+                <path d="M46 96 L155 72 L264 84 L373 58 L482 66 L591 46 L700 40" fill="none" stroke="var(--good)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- points -->
+                <g fill="#fff" stroke="var(--good)" stroke-width="2.4">
+                  <circle cx="46" cy="96" r="4"/><circle cx="155" cy="72" r="4"/><circle cx="264" cy="84" r="4"/><circle cx="373" cy="58" r="4"/><circle cx="482" cy="66" r="4"/><circle cx="591" cy="46" r="4"/>
+                  <circle cx="700" cy="40" r="5.5" fill="var(--good)"/>
+                </g>
+                <!-- x labels -->
+                <text class="xl" x="46" y="232" text-anchor="middle">Thu</text>
+                <text class="xl" x="155" y="232" text-anchor="middle">Fri</text>
+                <text class="xl" x="264" y="232" text-anchor="middle">Sat</text>
+                <text class="xl" x="373" y="232" text-anchor="middle">Sun</text>
+                <text class="xl" x="482" y="232" text-anchor="middle">Mon</text>
+                <text class="xl" x="591" y="232" text-anchor="middle">Tue</text>
+                <text class="xl" x="700" y="232" text-anchor="middle">Today</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== VEHICLE CONDITION BREAKDOWN ===== -->
+        <div class="card span-4">
+          <div class="card-pad">
+            <div class="card-head">
+              <h3>Vehicle Condition</h3>
+              <div class="more"><svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="18" cy="12" r="1.6" fill="currentColor"/></svg></div>
+            </div>
+            <div class="donut-wrap">
+              <div class="donut-center">
+                <svg width="150" height="150" viewBox="0 0 150 150">
+                  <circle cx="75" cy="75" r="58" fill="none" stroke="var(--surface-2)" stroke-width="18"/>
+                  <!-- good 243/300 = 81% -->
+                  <circle cx="75" cy="75" r="58" fill="none" stroke="var(--good)" stroke-width="18" stroke-linecap="round"
+                    stroke-dasharray="295.3 364.4" stroke-dashoffset="0"/>
+                  <!-- attention 37 = 12.3% -->
+                  <circle cx="75" cy="75" r="58" fill="none" stroke="var(--attn)" stroke-width="18"
+                    stroke-dasharray="44.9 364.4" stroke-dashoffset="-297.3"/>
+                  <!-- critical 12 = 4% -->
+                  <circle cx="75" cy="75" r="58" fill="none" stroke="var(--crit)" stroke-width="18"
+                    stroke-dasharray="14.6 364.4" stroke-dashoffset="-344.2"/>
+                  <!-- maintenance 8 -->
+                  <circle cx="75" cy="75" r="58" fill="none" stroke="var(--slate)" stroke-width="18"
+                    stroke-dasharray="9.7 364.4" stroke-dashoffset="-360.8"/>
+                </svg>
+                <div class="donut-lab"><div class="big">300</div><div class="sm">vehicles</div></div>
+              </div>
+              <div class="cond-list">
+                <div class="cond-row"><span class="sw" style="background:var(--good)"></span><span class="nm">Good</span><span class="vv">243</span><span class="pc">81%</span></div>
+                <div class="cond-row"><span class="sw" style="background:var(--attn)"></span><span class="nm">Attention</span><span class="vv">37</span><span class="pc">12%</span></div>
+                <div class="cond-row"><span class="sw" style="background:var(--crit)"></span><span class="nm">Critical</span><span class="vv">12</span><span class="pc">4%</span></div>
+                <div class="cond-row"><span class="sw" style="background:var(--slate)"></span><span class="nm">Maintenance</span><span class="vv">8</span><span class="pc">3%</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== DAMAGE TREND ===== -->
+        <div class="card span-4">
+          <div class="card-pad">
+            <div class="card-head">
+              <h3>New Damage Trend</h3>
+              <span class="hint">· weekly</span>
+            </div>
+            <div class="chart-legend">
+              <span class="lg"><i style="background:var(--crit)"></i>Critical</span>
+              <span class="lg"><i style="background:var(--attn)"></i>Moderate</span>
+              <span class="lg"><i style="background:var(--amber)"></i>Minor</span>
+            </div>
+            <div class="bars">
+              <div class="bar-col"><div class="stack" style="height:52%"><div class="seg-b" style="height:14%;background:var(--crit)"></div><div class="seg-b" style="height:30%;background:var(--attn)"></div><div class="seg-b" style="height:56%;background:var(--amber)"></div></div><span class="lab">W1</span></div>
+              <div class="bar-col"><div class="stack" style="height:70%"><div class="seg-b" style="height:12%;background:var(--crit)"></div><div class="seg-b" style="height:34%;background:var(--attn)"></div><div class="seg-b" style="height:54%;background:var(--amber)"></div></div><span class="lab">W2</span></div>
+              <div class="bar-col"><div class="stack" style="height:44%"><div class="seg-b" style="height:10%;background:var(--crit)"></div><div class="seg-b" style="height:28%;background:var(--attn)"></div><div class="seg-b" style="height:62%;background:var(--amber)"></div></div><span class="lab">W3</span></div>
+              <div class="bar-col"><div class="stack" style="height:88%"><div class="seg-b" style="height:18%;background:var(--crit)"></div><div class="seg-b" style="height:32%;background:var(--attn)"></div><div class="seg-b" style="height:50%;background:var(--amber)"></div></div><span class="lab">W4</span></div>
+              <div class="bar-col"><div class="stack" style="height:36%"><div class="seg-b" style="height:16%;background:var(--crit)"></div><div class="seg-b" style="height:30%;background:var(--attn)"></div><div class="seg-b" style="height:54%;background:var(--amber)"></div></div><span class="lab">This</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== SUPERVISOR AUDIT COVERAGE ===== -->
+        <div class="card span-4">
+          <div class="card-pad">
+            <div class="card-head">
+              <h3>Supervisor Audit Coverage</h3>
+            </div>
+            <div class="cov-wrap">
+              <div class="cov-ring">
+                <svg width="128" height="128" viewBox="0 0 128 128">
+                  <circle cx="64" cy="64" r="52" fill="none" stroke="var(--surface-2)" stroke-width="14"/>
+                  <circle cx="64" cy="64" r="52" fill="none" stroke="var(--info)" stroke-width="14" stroke-linecap="round"
+                    stroke-dasharray="242 327" stroke-dashoffset="0"/>
+                </svg>
+                <div class="cov-lab"><div class="big">74%</div><div class="sm">30-day</div></div>
+              </div>
+              <div class="cov-stats">
+                <div class="cov-stat"><span class="n">222</span><span class="l">Vehicles audited</span></div>
+                <div class="cov-stat"><span class="n">78</span><span class="l">Awaiting audit</span></div>
+                <div class="cov-stat"><span class="n" style="color:var(--crit)">6</span><span class="l">No audit in 21+ days</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== OPEN DAMAGE CASES BY AGE ===== -->
+        <div class="card span-4">
+          <div class="card-pad">
+            <div class="card-head">
+              <h3>Open Damage Cases</h3>
+              <span class="hint">· by age</span>
+            </div>
+            <div class="aged">
+              <div class="aged-row"><span class="k">0–2 days</span><div class="tr"><i style="width:82%;background:var(--good)">14</i></div></div>
+              <div class="aged-row"><span class="k">3–7 days</span><div class="tr"><i style="width:56%;background:var(--attn)">9</i></div></div>
+              <div class="aged-row"><span class="k">8–14 days</span><div class="tr"><i style="width:30%;background:#e07b2a">5</i></div></div>
+              <div class="aged-row"><span class="k">15+ days</span><div class="tr"><i style="width:18%;background:var(--crit)">3</i></div></div>
+            </div>
+            <div class="cardlink">View all 31 open cases
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== DRIVER COMPLIANCE ===== -->
+        <div class="card span-4">
+          <div class="card-pad">
+            <div class="card-head">
+              <h3>Driver Compliance</h3>
+              <span class="hint">· agreement score</span>
+            </div>
+            <div class="dc-list">
+              <div class="dc-row">
+                <div class="dc-av" style="background:linear-gradient(140deg,#1f9d6b,#137a51)">AK</div>
+                <div><div class="dc-nm">Ahmed Khan</div><div class="dc-id">DRV-0142</div></div>
+                <div class="dc-track"><i style="width:96%;background:var(--good)"></i></div>
+                <div class="dc-sc" style="color:var(--good)">96%</div>
+              </div>
+              <div class="dc-row">
+                <div class="dc-av" style="background:linear-gradient(140deg,#3a72c4,#274a86)">JM</div>
+                <div><div class="dc-nm">John Mathew</div><div class="dc-id">DRV-0098</div></div>
+                <div class="dc-track"><i style="width:93%;background:var(--good)"></i></div>
+                <div class="dc-sc" style="color:var(--good)">93%</div>
+              </div>
+              <div class="dc-row">
+                <div class="dc-av" style="background:linear-gradient(140deg,#e0952a,#c9821b)">RK</div>
+                <div><div class="dc-nm">Ravi Kumar</div><div class="dc-id">DRV-0211</div></div>
+                <div class="dc-track"><i style="width:88%;background:var(--attn)"></i></div>
+                <div class="dc-sc" style="color:var(--attn)">88%</div>
+              </div>
+              <div class="dc-row">
+                <div class="dc-av" style="background:linear-gradient(140deg,#d8483c,#b3372c)">SA</div>
+                <div><div class="dc-nm">Sameer Ali</div><div class="dc-id">DRV-0184</div></div>
+                <div class="dc-track"><i style="width:79%;background:var(--crit)"></i></div>
+                <div class="dc-sc" style="color:var(--crit)">79%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== RECENT ALERTS ===== -->
+        <div class="card span-8">
+          <div class="card-pad">
+            <div class="card-head">
+              <h3>Recent Alerts &amp; Activity</h3>
+              <span class="chip crit" style="margin-left:8px"><span class="d"></span>3 critical</span>
+              <div class="more"><svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="18" cy="12" r="1.6" fill="currentColor"/></svg></div>
+            </div>
+            <div class="feed">
+              <div class="feed-item">
+                <div class="feed-ic c"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+                <div class="feed-tx">
+                  <div class="t">Safety-critical defect — vehicle blocked</div>
+                  <div class="m"><code>VEH-211</code> Force Traveller · tyre sidewall damage reported by Ravi Kumar · <span class="chip crit"><span class="d"></span>Blocked</span></div>
+                </div>
+                <div class="feed-time">07:24</div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-ic a"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+                <div class="feed-tx">
+                  <div class="t">New damage reported — supervisor review required</div>
+                  <div class="m"><code>DMG-00182</code> · <code>VEH-087</code> rear bumper scratch · reported by John · custody window flagged</div>
+                </div>
+                <div class="feed-time">07:12</div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-ic i"><svg viewBox="0 0 24 24" fill="none"><path d="M8 6h11M8 12h11M8 18h11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+                <div class="feed-tx">
+                  <div class="t">Inspection mismatch detected</div>
+                  <div class="m"><code>VEH-104</code> · supervisor found 2 items marked OK by driver — interior cleanliness, rear bumper · <span class="chip info"><span class="d"></span>Review</span></div>
+                </div>
+                <div class="feed-time">06:58</div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-ic g"><svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/></svg></div>
+                <div class="feed-tx">
+                  <div class="t">Supervisor audit completed — 93.3% agreement</div>
+                  <div class="m"><code>VEH-067</code> Toyota Innova audited by Joseph Daniel · 28 of 30 items matched</div>
+                </div>
+                <div class="feed-time">06:40</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="foot-note">FleetView — Fleet Inspection &amp; Accountability Platform · <b>Demo prototype</b> · sample data for proposal presentation</div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // segmented control demo interaction
+  document.querySelectorAll('.seg').forEach(seg=>{
+    seg.addEventListener('click',e=>{
+      if(e.target.tagName!=='BUTTON')return;
+      seg.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+      e.target.classList.add('on');
+    });
+  });
+</script>
+</body>
+</html>

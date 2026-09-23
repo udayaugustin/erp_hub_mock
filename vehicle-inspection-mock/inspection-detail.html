@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView — Inspection INS-24817</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/portal.css" />
+<style>
+  /* checklist */
+  .ck-group{margin-bottom:22px}
+  .ck-group:last-child{margin-bottom:0}
+  .ck-gt{display:flex;align-items:center;gap:9px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-3);font-weight:600;margin-bottom:8px}
+  .ck-gt .ct{font-family:var(--font-mono);color:var(--txt-2)}
+  .ck-item{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .ck-item:last-child{border-bottom:0}
+  .ck-name{font-size:13.5px;font-weight:500;flex:1}
+  .ck-res{margin-left:auto;flex:0 0 auto}
+  .res{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+  .res.ok{background:var(--good-soft);color:#137a51}
+  .res.no{background:var(--crit-soft);color:#b3372c}
+  .res.na{background:#eef1f6;color:var(--slate)}
+  .ck-flag{background:var(--crit-soft);border:1px solid #f3cfca;border-radius:11px;padding:11px 13px;margin-top:6px}
+  .ck-flag .ft{font-size:13px;font-weight:600;color:#b3372c;display:flex;align-items:center;gap:8px}
+  .ck-flag .fc{font-size:12.5px;color:var(--txt-2);margin-top:6px}
+  .ck-flag .fmeta{display:flex;align-items:center;gap:10px;margin-top:9px;font-size:11.5px;color:var(--txt-3);font-family:var(--font-mono)}
+  .photo-tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--info)}
+  .photo-tag svg{width:13px;height:13px}
+
+  /* photo grid */
+  .pg{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}
+  .pgc{aspect-ratio:4/3;border-radius:10px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:inset 0 0 0 1px rgba(16,29,50,.06)}
+  .pgc .lbl{position:relative;z-index:1;font-size:10.5px;font-weight:600;color:#fff;padding:2px 8px;text-shadow:0 1px 3px rgba(0,0,0,.55)}
+  .pgc .ts{position:relative;z-index:1;font-family:var(--font-mono);font-size:9.5px;color:rgba(255,255,255,.9);padding:0 8px 7px;text-shadow:0 1px 3px rgba(0,0,0,.55)}
+
+  /* sidebar cards */
+  .sb-card+.sb-card{margin-top:16px}
+  .kv{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .kv:last-child{border-bottom:0}
+  .kv .k{color:var(--txt-2);font-weight:500}
+  .kv .v{margin-left:auto;font-weight:600}
+  .kv .v.mono{font-family:var(--font-mono)}
+  .lock{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--txt-2)}
+  .lock svg{width:15px;height:15px;color:var(--txt-3);flex:0 0 auto}
+  .issue{display:flex;gap:12px;padding:13px;border:1px solid #f0dcbf;background:var(--amber-soft);border-radius:12px}
+  .issue .ic{width:34px;height:34px;border-radius:9px;background:#fff;display:grid;place-items:center;color:var(--attn);flex:0 0 auto;border:1px solid #f0dcbf}
+  .issue .ic svg{width:18px;height:18px}
+  /* mini timeline */
+  .mtl{position:relative;margin-left:6px;padding-left:22px}
+  .mtl::before{content:"";position:absolute;left:4px;top:5px;bottom:5px;width:2px;background:var(--line)}
+  .mtl-i{position:relative;padding-bottom:16px}
+  .mtl-i:last-child{padding-bottom:0}
+  .mtl-d{position:absolute;left:-22px;top:2px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--txt-3)}
+  .mtl-d.good{border-color:var(--good)}.mtl-d.info{border-color:var(--info)}.mtl-d.attn{border-color:var(--attn)}
+  .mtl-t{font-size:12.5px;font-weight:600}
+  .mtl-m{font-family:var(--font-mono);font-size:11px;color:var(--txt-3);margin-top:2px}
+  @media(max-width:1180px){.pg{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ NAV RAIL ============ -->
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H6v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z" stroke="#241700" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="16" r="1.3" fill="#241700"/><circle cx="17" cy="16" r="1.3" fill="#241700"/></svg>
+      </div>
+      <div><div class="brand-name">FleetView</div><div class="brand-sub">Inspection &amp; Audit</div></div>
+    </div>
+    <nav class="nav">
+      <a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24" fill="none"><path d="M4 13h6V4H4v9zm10 7h6v-9h-6v9zM4 20h6v-4H4v4zM14 4v4h6V4h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Dashboard</a>
+      <a class="nav-item" href="vehicles.html"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/></svg>Vehicles</a>
+      <a class="nav-item" href="driver-compliance.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Drivers</a>
+      <a class="nav-item" href="assignments.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Assignments</a>
+      <a class="nav-item active" href="inspections.html"><svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/></svg>Inspections</a>
+      <a class="nav-item" href="supervisor-audits.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Supervisor Audits<span class="nav-badge amber">4</span></a>
+      <a class="nav-item" href="damage.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Damage &amp; Defects<span class="nav-badge">5</span></a>
+      <a class="nav-item" href="reports.html"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Reports</a>
+      <div class="nav-label">Intelligence</div>
+      <a class="nav-item" href="ai-insights.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/></svg>AI Insights<span class="nav-badge amber">NEW</span></a>
+      <div class="nav-label">Configure</div>
+      <a class="nav-item" href="checklist-builder.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Checklist Templates</a>
+      <a class="nav-item" href="users.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="2.8" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="15" r="2.8" stroke="currentColor" stroke-width="1.6"/><path d="M4 19c0-2.5 2.2-4 5-4M20 9c0-2.5-2.2-4-5-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Users &amp; Roles</a>
+      <a class="nav-item" href="settings.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.9 7.9 0 000-2l1.6-1.3-1.6-2.8-2 .8a7.6 7.6 0 00-1.7-1l-.3-2.1H10l-.3 2.1a7.6 7.6 0 00-1.7 1l-2-.8L4.4 9.7 6 11a7.9 7.9 0 000 2l-1.6 1.3 1.6 2.8 2-.8a7.6 7.6 0 001.7 1l.3 2.1h3.4l.3-2.1a7.6 7.6 0 001.7-1l2 .8 1.6-2.8L19.4 13z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Settings</a>
+    </nav>
+    <div class="rail-foot"><div class="userbox"><div class="avatar">RS</div><div style="min-width:0"><div class="nm">Rahul Sharma</div><div class="rl">Fleet Manager</div></div><svg style="margin-left:auto" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="#93a3ba" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="depot"><span class="dot"></span> Central Depot<svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="search"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M20 20l-3.2-3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><input placeholder="Search vehicles, drivers, damage cases…" /><span class="kbd">⌘K</span></div>
+      <div class="top-right"><span class="today">Wed, <b>19 Aug 2026</b></span>
+        <button class="icon-btn" title="Notifications"><span class="ping"></span><svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19a2 2 0 004 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        <button class="icon-btn" title="Help"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M9.6 9.5a2.4 2.4 0 114 1.8c-1 .7-1.6 1.2-1.6 2.2M12 16.5v.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+      </div>
+    </header>
+
+    <div class="canvas">
+      <div class="breadcrumb">
+        <a href="inspections.html">Inspections</a>
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="mono" style="color:var(--txt-2)">INS-24817</span>
+      </div>
+
+      <div class="pagehead">
+        <div>
+          <h1>Inspection <span class="mono" style="font-family:var(--font-mono);font-size:22px">INS-24817</span></h1>
+          <div class="sub"><span class="mono">VEH-087</span> Toyota Hiace · driver Ahmed Khan · Wed 19 Aug 2026 · 07:10</div>
+        </div>
+        <div class="ph-actions">
+          <span class="chip attn" style="font-size:12px;padding:5px 12px"><span class="d"></span>Supervisor review pending</span>
+          <a class="btn" href="inspection-comparison.html"><svg viewBox="0 0 24 24" fill="none"><path d="M8 6h11M8 12h11M8 18h11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Compare</a>
+          <button class="btn"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Export PDF</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- ===== MAIN COLUMN ===== -->
+        <div class="span-8" style="display:flex;flex-direction:column;gap:16px">
+
+          <!-- CHECKLIST -->
+          <div class="card"><div class="card-pad">
+            <div class="card-head" style="margin-bottom:16px"><h3>Checklist</h3><span class="hint">· 30 items · 1 flagged</span>
+              <span class="chip good" style="margin-left:auto"><span class="d"></span>28 OK</span>
+              <span class="chip crit"><span class="d"></span>1 Not OK</span>
+              <span class="chip neutral">1 N/A</span>
+            </div>
+
+            <div class="ck-group">
+              <div class="ck-gt">Exterior <span class="ct">· 10 items</span></div>
+              <div class="ck-item"><span class="ck-name">Body panels</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Scratches</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Dents</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Windscreen</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Side mirrors</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Doors</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Headlights</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Tail lights</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Indicators</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item" style="flex-direction:column;align-items:stretch">
+                <div style="display:flex;align-items:flex-start;gap:12px"><span class="ck-name">Rear bumper</span><span class="ck-res"><span class="res no">Not OK</span></span></div>
+                <div class="ck-flag">
+                  <div class="ft"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Rear bumper — Not OK</div>
+                  <div class="fc">"Fresh scratch on rear bumper, lower-right corner. Not present on my last check-out." — Ahmed Khan</div>
+                  <div class="fmeta">
+                    <span class="photo-tag"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/></svg>2 photos attached</span>
+                    <span>· 07:14</span>
+                    <a href="damage-detail.html" style="color:var(--info);font-weight:600;margin-left:auto">DMG-00182 →</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ck-group">
+              <div class="ck-gt">Interior <span class="ct">· 7 items</span></div>
+              <div class="ck-item"><span class="ck-name">Driver seat</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Passenger seats</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Seat belts</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Dashboard</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">A/C</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Cleanliness</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Floor</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+            </div>
+
+            <div class="ck-group">
+              <div class="ck-gt">Safety <span class="ct">· 3 items</span></div>
+              <div class="ck-item"><span class="ck-name">Fire extinguisher</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">First-aid kit</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Emergency triangle</span><span class="ck-res"><span class="res na">N/A</span></span></div>
+            </div>
+
+            <div class="ck-group">
+              <div class="ck-gt">Mechanical <span class="ct">· 8 items</span></div>
+              <div class="ck-item"><span class="ck-name">Brakes</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Horn</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Warning lights</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Engine indication</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Fuel level</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Oil warning</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Battery</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+              <div class="ck-item"><span class="ck-name">Wipers</span><span class="ck-res"><span class="res ok">OK</span></span></div>
+            </div>
+          </div></div>
+
+          <!-- PHOTOS -->
+          <div class="card"><div class="card-pad">
+            <div class="card-head" style="margin-bottom:16px"><h3>Captured Photos</h3><span class="hint">· 10 photos · geo &amp; time stamped</span></div>
+            <div class="pg">
+              <div class="pgc" style="background:linear-gradient(140deg,#5a708f,#33475f)"><span class="lbl">Front</span><span class="ts">07:11:02</span></div>
+              <div class="pgc" style="background:linear-gradient(140deg,#6a7f9c,#3d5170)"><span class="lbl">Rear</span><span class="ts">07:11:20</span></div>
+              <div class="pgc" style="background:linear-gradient(140deg,#7d6a8f,#4a3d63)"><span class="lbl">Front-left</span><span class="ts">07:11:38</span></div>
+              <div class="pgc" style="background:linear-gradient(140deg,#5f8a83,#345a54)"><span class="lbl">Front-right</span><span class="ts">07:11:55</span></div>
+              <div class="pgc" style="background:linear-gradient(140deg,#8f7d5a,#63533a)"><span class="lbl">Rear-left</span><span class="ts">07:12:10</span></div>
+              <div class="pgc" style="background:linear-gradient(140deg,#8f5a5a,#633a3a);box-shadow:inset 0 0 0 2px var(--crit)"><span class="lbl">Rear-right ⚑</span><span class="ts">07:12:31</span></div>
+              <div class="pgc" style="background:linear-gradient(140deg,#5a708f,#33475f)"><span class="lbl">Driver seat</span><span class="ts">07:13:04</span></div>
+              <div class="pgc" style="background:linear-gradient(140deg,#6a7f9c,#3d5170)"><span class="lbl">Dashboard</span><span class="ts">07:13:22</span></div>
+              <div class="pgc" style="background:linear-gradient(140deg,#7d6a8f,#4a3d63)"><span class="lbl">Rear seats</span><span class="ts">07:13:40</span></div>
+              <div class="pgc" style="background:linear-gradient(140deg,#5f8a83,#345a54)"><span class="lbl">Floor</span><span class="ts">07:13:58</span></div>
+            </div>
+          </div></div>
+
+          <!-- REPORTED ISSUES -->
+          <div class="card"><div class="card-pad">
+            <div class="card-head" style="margin-bottom:14px"><h3>Reported Issues</h3><span class="hint">· 1</span></div>
+            <div class="issue">
+              <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap"><span style="font-size:13.5px;font-weight:600">Rear bumper scratch</span><span class="chip attn"><span class="d"></span>Minor</span><span class="chip info"><span class="d"></span>Under Review</span></div>
+                <div style="font-size:12.5px;color:var(--txt-2);margin-top:5px">New condition first identified between the last known healthy inspection and this inspection. Supervisor review required — driver fault not assumed.</div>
+                <a href="damage-detail.html" class="cardlink" style="margin-top:9px">Open damage case DMG-00182
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              </div>
+            </div>
+          </div></div>
+        </div>
+
+        <!-- ===== SIDEBAR ===== -->
+        <div class="span-4">
+          <div class="card sb-card"><div class="card-pad">
+            <div class="card-head" style="margin-bottom:10px"><h3>Details</h3></div>
+            <div class="kv"><span class="k">Vehicle</span><a class="v mono" style="color:var(--info)" href="vehicle-profile.html">VEH-087</a></div>
+            <div class="kv"><span class="k">Model</span><span class="v">Toyota Hiace</span></div>
+            <div class="kv"><span class="k">Driver</span><span class="v">Ahmed Khan</span></div>
+            <div class="kv"><span class="k">Driver ID</span><span class="v mono">DRV-0142</span></div>
+            <div class="kv"><span class="k">Odometer</span><span class="v mono">84,421 km</span></div>
+            <div class="kv"><span class="k">Fuel level</span><span class="v">3/4</span></div>
+            <div class="kv"><span class="k">Submitted</span><span class="v mono">19 Aug · 07:10</span></div>
+            <div class="kv"><span class="k">Template</span><span class="v">Van · Standard v4</span></div>
+          </div></div>
+
+          <div class="card sb-card"><div class="card-pad">
+            <div class="card-head" style="margin-bottom:10px"><h3>Supervisor Status</h3></div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <span class="chip attn" style="font-size:12px;padding:5px 12px"><span class="d"></span>Pending review</span>
+            </div>
+            <div class="kv"><span class="k">Assigned to</span><span class="v">Joseph Daniel</span></div>
+            <div class="kv"><span class="k">Supervisor ID</span><span class="v mono">SUP-0014</span></div>
+            <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center;margin-top:12px">Start Audit</button>
+          </div></div>
+
+          <div class="card sb-card"><div class="card-pad">
+            <div class="card-head" style="margin-bottom:12px"><h3>Audit Info</h3></div>
+            <div class="lock" style="margin-bottom:9px">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 11V8a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.7"/></svg>
+              Submitted &amp; locked — record is immutable once the driver submits.
+            </div>
+            <div class="lock">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+              Evidence chain: vehicle + driver + timestamp + photo + checklist captured.
+            </div>
+          </div></div>
+
+          <div class="card sb-card"><div class="card-pad">
+            <div class="card-head" style="margin-bottom:14px"><h3>Timeline</h3></div>
+            <div class="mtl">
+              <div class="mtl-i"><div class="mtl-d attn"></div><div class="mtl-t">Awaiting supervisor audit</div><div class="mtl-m">now</div></div>
+              <div class="mtl-i"><div class="mtl-d good"></div><div class="mtl-t">Inspection submitted &amp; locked</div><div class="mtl-m">19 Aug · 07:14</div></div>
+              <div class="mtl-i"><div class="mtl-d info"></div><div class="mtl-t">Photos captured (10)</div><div class="mtl-m">19 Aug · 07:11–07:14</div></div>
+              <div class="mtl-i"><div class="mtl-d"></div><div class="mtl-t">Inspection started</div><div class="mtl-m">19 Aug · 07:10</div></div>
+              <div class="mtl-i"><div class="mtl-d good"></div><div class="mtl-t">Vehicle checked out</div><div class="mtl-m">19 Aug · 07:08</div></div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="foot-note">FleetView — Fleet Inspection &amp; Accountability Platform · <b>Demo prototype</b> · sample data for proposal presentation</div>
+    </div>
+  </div>
+</div>
+<span class="demo-tag">Demo prototype</span>
+</body>
+</html>

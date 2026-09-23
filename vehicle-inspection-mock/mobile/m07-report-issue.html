@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FleetView · Report Issue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link href="../assets/mobile.css" rel="stylesheet" />
+<style>
+  .flabel{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-3);margin:0 0 9px}
+  .flabel .req{color:var(--crit);margin-left:4px}
+  .fchips{display:flex;flex-wrap:wrap;gap:8px}
+  .fchip{font-size:12.5px;font-weight:600;padding:9px 13px;border-radius:11px;border:1.5px solid var(--line-strong);background:var(--surface);color:var(--txt-2);cursor:pointer;transition:.12s}
+  .fchip.on{background:var(--amber-soft);border-color:var(--amber);color:var(--amber-deep)}
+  .fchip.on.sev-min{background:var(--good-soft);border-color:var(--good);color:#137a51}
+  .fchip.crit.on{background:var(--crit-soft);border-color:var(--crit);color:#b3372c}
+  .fsec{margin-bottom:20px}
+  .addtile{aspect-ratio:16/8;border-radius:13px;border:1.5px dashed var(--line-strong);background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--txt-3);cursor:pointer}
+  .addtile svg{width:26px;height:26px}
+  .addtile .cap{font-size:12px;font-weight:600}
+  .ta{width:100%;min-height:92px;border:1.5px solid var(--line-strong);border-radius:13px;padding:13px;font-family:var(--font-ui);font-size:14px;color:var(--txt);resize:none;line-height:1.5}
+  .ta:focus{outline:none;border-color:var(--amber)}
+  .enforce{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;color:#a86a12;background:var(--attn-soft);border-radius:10px;padding:8px 11px;margin-top:10px}
+  .enforce svg{width:14px;height:14px;flex:0 0 auto}
+  .veh-line{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt-2);margin-bottom:14px}
+  .veh-line .mono{font-weight:600;color:var(--txt)}
+  .phototile{aspect-ratio:16/8}
+</style>
+</head>
+<body>
+  <div class="stage-head">
+    <div class="kick">Driver App · Inspection</div>
+    <h1>Report Issue</h1>
+    <p>Opens when an item is marked “Not OK”. Structured capture — location, type, severity, photo and comment are all required before the issue can be saved.</p>
+  </div>
+
+  <div class="stage">
+    <div class="phone-wrap">
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="sig">
+            <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+            <svg viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 5.5a10 10 0 0 1 14 0"/><path d="M4.5 8a6.5 6.5 0 0 1 9 0"/><path d="M7 10.5a3 3 0 0 1 4 0"/><circle cx="9" cy="12.4" r="1" fill="currentColor" stroke="none"/></svg>
+            <svg viewBox="0 0 26 13" fill="none"><rect x="1" y="1" width="21" height="11" rx="3" stroke="currentColor" stroke-width="1.3"/><rect x="3" y="3" width="15" height="7" rx="1.5" fill="currentColor"/><rect x="23.4" y="4.5" width="2" height="4" rx="1" fill="currentColor"/></svg>
+          </span>
+        </div>
+
+        <div class="mscroll">
+          <div class="appbar">
+            <a class="back" href="#" aria-label="Back">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </a>
+            <div>
+              <div class="ttl">Report Issue</div>
+              <div class="sub">Exterior · Scratches · item marked Not OK</div>
+            </div>
+          </div>
+
+          <div class="mpad" style="padding-top:6px">
+            <div class="veh-line">
+              <span class="mono">VEH-087</span> · Toyota Hiace ·
+              <span class="mono">KA-01-AB-1234</span>
+            </div>
+
+            <!-- Location -->
+            <div class="fsec">
+              <p class="flabel">Select Location <span class="req">required</span></p>
+              <div class="fchips">
+                <button class="fchip">Front bumper</button>
+                <button class="fchip on">Rear bumper</button>
+                <button class="fchip">Front-left</button>
+                <button class="fchip">Front-right</button>
+                <button class="fchip">Rear-left</button>
+                <button class="fchip">Rear-right</button>
+                <button class="fchip">Windscreen</button>
+                <button class="fchip">Left door</button>
+                <button class="fchip">Right door</button>
+                <button class="fchip">Roof</button>
+                <button class="fchip">Interior</button>
+                <button class="fchip">Wheel / tyre</button>
+              </div>
+            </div>
+
+            <!-- Issue type -->
+            <div class="fsec">
+              <p class="flabel">Select Issue Type <span class="req">required</span></p>
+              <div class="fchips">
+                <button class="fchip on">Scratch</button>
+                <button class="fchip">Dent</button>
+                <button class="fchip">Crack</button>
+                <button class="fchip">Broken</button>
+                <button class="fchip">Missing</button>
+                <button class="fchip">Stain</button>
+                <button class="fchip">Tear</button>
+                <button class="fchip">Mechanical</button>
+                <button class="fchip">Other</button>
+              </div>
+            </div>
+
+            <!-- Severity -->
+            <div class="fsec">
+              <p class="flabel">Severity <span class="req">required</span></p>
+              <div class="fchips">
+                <button class="fchip on sev-min">Minor</button>
+                <button class="fchip">Moderate</button>
+                <button class="fchip">Major</button>
+                <button class="fchip crit">Safety Critical</button>
+              </div>
+            </div>
+
+            <!-- Photo -->
+            <div class="fsec">
+              <p class="flabel">Add Photo <span class="req">required</span></p>
+              <div class="photogrid">
+                <div class="photocard done phototile">
+                  <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+                  <span class="ts">19 AUG 2026 · 07:11</span>
+                </div>
+                <div class="addtile">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4l-1.5-2z"/><circle cx="12" cy="13" r="3.2"/></svg>
+                  <span class="cap">Add another</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Comment -->
+            <div class="fsec">
+              <p class="flabel">Comment <span class="req">required</span></p>
+              <textarea class="ta">New scratch noticed on rear bumper, not present yesterday.</textarea>
+              <div class="enforce">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+                Comment &amp; photo required — an issue can’t be saved without both.
+              </div>
+            </div>
+          </div>
+
+          <div class="cta-dock">
+            <a class="cta cta-amber" href="m08-damage-diagram.html">
+              Save Issue
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+        </div>
+      </div></div>
+      <div class="phone-cap">M07 · <b>report-issue</b></div>
+    </div>
+  </div>
+
+  <div class="stage-foot">FleetView Driver App · <a href="../index.html">All screens</a> · <a href="m06-checklist.html">‹ prev</a> · <a href="m08-damage-diagram.html">next ›</a></div>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView · M05 Guided Photos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link href="../assets/mobile.css" rel="stylesheet" />
+<style>
+  .prog-wrap{padding:14px 18px 4px}
+  .prog-wrap .row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+  .prog-wrap .row .t{font-size:13px;font-weight:600}
+  .prog-wrap .row .n{font-family:var(--font-mono);font-size:12px;color:var(--amber-deep);font-weight:600}
+  .sec-lbl{padding:16px 18px 8px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-3);font-weight:700}
+  .photogrid{padding:0 18px}
+  .photocard .cap{color:inherit}
+  .photocard.done .cap{color:#fff}
+  .photocard .idx{position:absolute;top:7px;left:9px;font-family:var(--font-mono);font-size:10px;color:var(--txt-3);font-weight:600}
+  .photocard.done .idx{color:rgba(255,255,255,.85)}
+  .crit-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--crit);margin-left:5px;vertical-align:middle}
+  .hint-box{display:flex;gap:9px;align-items:flex-start;margin:16px 18px 0;padding:11px 13px;background:var(--info-soft);border-radius:12px}
+  .hint-box svg{width:16px;height:16px;color:var(--info);flex:0 0 auto;margin-top:1px}
+  .hint-box p{font-size:11.5px;color:#2c5aa0;line-height:1.5}
+</style>
+</head>
+<body>
+  <div class="stage-head">
+    <div class="kick">Driver App</div>
+    <h1>Guided Photos</h1>
+    <p>Guided, not free-form — the app asks for each angle in order so evidence is complete and comparable.</p>
+  </div>
+  <div class="stage">
+    <div class="phone-wrap">
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span class="sig">
+          <svg viewBox="0 0 20 20" fill="currentColor"><rect x="1" y="11" width="3" height="6" rx="1"/><rect x="6" y="8" width="3" height="9" rx="1"/><rect x="11" y="5" width="3" height="12" rx="1"/><rect x="16" y="2" width="3" height="15" rx="1"/></svg>
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7.6a12 12 0 0 1 16 0"/><path d="M4.9 10.7a8 8 0 0 1 10.2 0"/><path d="M7.7 13.8a4 4 0 0 1 4.6 0"/><circle cx="10" cy="16.6" r="1" fill="currentColor" stroke="none"/></svg>
+          <svg viewBox="0 0 26 20" style="width:22px" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="20" height="10" rx="2.5"/><rect x="3" y="7" width="13" height="6" rx="1" fill="currentColor" stroke="none"/><path d="M23.5 8.5v3" stroke-linecap="round"/></svg>
+        </span></div>
+        <div class="appbar">
+          <a href="m04-previous-condition.html" class="back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
+          <div><div class="ttl">Guided Photos</div><div class="sub">VEH-087 · Toyota Hiace</div></div>
+        </div>
+        <div class="mscroll">
+          <div class="prog-wrap">
+            <div class="row"><span class="t">Capture progress</span><span class="n">4 of 10 photos</span></div>
+            <div class="mprog"><i style="width:40%"></i></div>
+          </div>
+
+          <div class="sec-lbl">Exterior · 6 angles</div>
+          <div class="photogrid">
+            <div class="photocard done"><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span class="idx">01</span><div class="cap">Front</div><span class="ts">19 AUG 07:06</span></div>
+            <div class="photocard done"><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span class="idx">02</span><div class="cap">Rear</div><span class="ts">19 AUG 07:07</span></div>
+            <div class="photocard done"><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span class="idx">03</span><div class="cap">Front-left</div><span class="ts">19 AUG 07:07</span></div>
+            <div class="photocard done"><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span><span class="idx">04</span><div class="cap">Front-right</div><span class="ts">19 AUG 07:08</span></div>
+            <div class="photocard"><span class="idx">05</span><span class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span><div class="cap">Rear-left<span class="crit-dot"></span></div></div>
+            <div class="photocard"><span class="idx">06</span><span class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span><div class="cap">Rear-right<span class="crit-dot"></span></div></div>
+          </div>
+
+          <div class="sec-lbl">Interior · 4 angles</div>
+          <div class="photogrid">
+            <div class="photocard"><span class="idx">07</span><span class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span><div class="cap">Dashboard</div></div>
+            <div class="photocard"><span class="idx">08</span><span class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span><div class="cap">Driver seat</div></div>
+            <div class="photocard"><span class="idx">09</span><span class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span><div class="cap">Rear seats</div></div>
+            <div class="photocard"><span class="idx">10</span><span class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></span><div class="cap">Floor</div></div>
+          </div>
+
+          <div class="hint-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg>
+            <p><b>Critical photos are camera-captured</b> — angles marked with a red dot must be taken live in-app. Gallery uploads are disabled to keep evidence trustworthy.</p>
+          </div>
+          <div style="height:14px"></div>
+        </div>
+
+        <div class="cta-dock">
+          <a href="m06-checklist.html" style="text-decoration:none"><button class="cta cta-amber">Continue to Checklist
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          </button></a>
+        </div>
+      </div></div>
+      <div class="phone-cap">M05 · <b>guided-photos</b></div>
+    </div>
+  </div>
+  <div class="stage-foot">FleetView Driver App · <a href="../index.html">All screens</a> · <a href="m04-previous-condition.html">M04 Previous Condition</a> ← <b>M05</b> → <a href="m06-checklist.html">M06 Checklist</a></div>
+</body>
+</html>

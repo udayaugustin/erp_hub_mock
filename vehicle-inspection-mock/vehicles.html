@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FleetView — Vehicles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/portal.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ NAV RAIL ============ -->
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H6v1a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z" stroke="#241700" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="16" r="1.3" fill="#241700"/><circle cx="17" cy="16" r="1.3" fill="#241700"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">FleetView</div>
+        <div class="brand-sub">Inspection &amp; Audit</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24" fill="none"><path d="M4 13h6V4H4v9zm10 7h6v-9h-6v9zM4 20h6v-4H4v4zM14 4v4h6V4h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Dashboard</a>
+      <a class="nav-item active" href="vehicles.html"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="17" r="1.6" stroke="currentColor" stroke-width="1.6"/></svg>Vehicles</a>
+      <a class="nav-item" href="driver-compliance.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Drivers</a>
+      <a class="nav-item" href="assignments.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Assignments</a>
+      <a class="nav-item" href="inspections.html"><svg viewBox="0 0 24 24" fill="none"><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/></svg>Inspections</a>
+      <a class="nav-item" href="supervisor-audits.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Supervisor Audits<span class="nav-badge amber">4</span></a>
+      <a class="nav-item" href="damage.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3l9-16z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Damage &amp; Defects<span class="nav-badge">5</span></a>
+      <a class="nav-item" href="reports.html"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Reports</a>
+      <div class="nav-label">Intelligence</div>
+      <a class="nav-item" href="ai-insights.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.6"/></svg>AI Insights<span class="nav-badge amber">NEW</span></a>
+      <div class="nav-label">Configure</div>
+      <a class="nav-item" href="checklist-builder.html"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Checklist Templates</a>
+      <a class="nav-item" href="users.html"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="2.8" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="15" r="2.8" stroke="currentColor" stroke-width="1.6"/><path d="M4 19c0-2.5 2.2-4 5-4M20 9c0-2.5-2.2-4-5-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Users &amp; Roles</a>
+      <a class="nav-item" href="settings.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a7.9 7.9 0 000-2l1.6-1.3-1.6-2.8-2 .8a7.6 7.6 0 00-1.7-1l-.3-2.1H10l-.3 2.1a7.6 7.6 0 00-1.7 1l-2-.8L4.4 9.7 6 11a7.9 7.9 0 000 2l-1.6 1.3 1.6 2.8 2-.8a7.6 7.6 0 001.7 1l.3 2.1h3.4l.3-2.1a7.6 7.6 0 001.7-1l2 .8 1.6-2.8L19.4 13z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Settings</a>
+    </nav>
+    <div class="rail-foot">
+      <div class="userbox">
+        <div class="avatar">RS</div>
+        <div style="min-width:0"><div class="nm">Rahul Sharma</div><div class="rl">Fleet Manager</div></div>
+        <svg style="margin-left:auto" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="#93a3ba" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="depot"><span class="dot"></span> Central Depot
+        <svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M20 20l-3.2-3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <input placeholder="Search vehicles, drivers, damage cases…" /><span class="kbd">⌘K</span>
+      </div>
+      <div class="top-right">
+        <span class="today">Wed, <b>19 Aug 2026</b></span>
+        <button class="icon-btn" title="Notifications"><span class="ping"></span><svg viewBox="0 0 24 24" fill="none"><path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19a2 2 0 004 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        <button class="icon-btn" title="Help"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M9.6 9.5a2.4 2.4 0 114 1.8c-1 .7-1.6 1.2-1.6 2.2M12 16.5v.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+      </div>
+    </header>
+
+    <div class="canvas">
+      <div class="pagehead">
+        <div>
+          <h1>Vehicles</h1>
+          <div class="sub"><b>300 vehicles</b> across 4 depots · 3 blocked · 17 with open issues</div>
+        </div>
+        <div class="ph-actions">
+          <button class="btn">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 20h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Export
+          </button>
+          <button class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Add Vehicle
+          </button>
+        </div>
+      </div>
+
+      <!-- filter bar -->
+      <div class="filterbar">
+        <div class="selectbox"><span class="lb">Depot:</span> All depots <svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="selectbox"><span class="lb">Type:</span> All types <svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="selectbox"><span class="lb">Condition:</span> Any <svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="selectbox"><span class="lb">Status:</span> Any <svg viewBox="0 0 24 24" fill="none"><path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="search-mini" style="margin-left:auto">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M20 20l-3.2-3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <input placeholder="Fleet ID or registration…" />
+        </div>
+      </div>
+
+      <!-- table -->
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Fleet ID</th><th>Registration</th><th>Vehicle</th><th>Type</th><th>Depot</th>
+              <th>Assigned Driver</th><th>Inspection</th><th>Condition</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="location.href='vehicle-profile.html'">
+              <td><span class="t-id">VEH-087</span></td>
+              <td><span class="mono">KA-01-AB-1234</span></td>
+              <td><div class="cell-lead"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5"/></svg></span><div><div style="font-weight:600">Toyota Hiace</div><div class="t-sub">84,421 km</div></div></div></td>
+              <td>Van</td><td>Central Depot</td>
+              <td><div class="cell-lead"><span class="row-av" style="background:linear-gradient(140deg,#1f9d6b,#137a51)">AK</span>Ahmed Khan</div></td>
+              <td><span class="chip good"><span class="d"></span>Cleared</span></td>
+              <td><span class="chip good">Good</span></td>
+              <td><span class="chip good"><span class="d"></span>Available</span></td>
+              <td><div class="tbl-actions"><span class="act-ic" title="View"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.6"/></svg></span><span class="act-ic" title="QR code"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M14 14h3v3M20 14v.01M17 20h3M20 17v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></div></td>
+            </tr>
+            <tr onclick="location.href='vehicle-profile.html'">
+              <td><span class="t-id">VEH-104</span></td>
+              <td><span class="mono">KA-01-CD-5678</span></td>
+              <td><div class="cell-lead"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/><circle cx="7.5" cy="18" r="1.4" stroke="currentColor" stroke-width="1.5"/><circle cx="16.5" cy="18" r="1.4" stroke="currentColor" stroke-width="1.5"/></svg></span><div><div style="font-weight:600">Toyota Coaster</div><div class="t-sub">142,880 km</div></div></div></td>
+              <td>Bus</td><td>Central Depot</td>
+              <td><div class="cell-lead"><span class="row-av" style="background:linear-gradient(140deg,#3a72c4,#274a86)">JM</span>John Mathew</div></td>
+              <td><span class="chip attn"><span class="d"></span>Mismatch</span></td>
+              <td><span class="chip attn">Attention</span></td>
+              <td><span class="chip attn"><span class="d"></span>Supervisor Review</span></td>
+              <td><div class="tbl-actions"><span class="act-ic" title="View"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.6"/></svg></span><span class="act-ic" title="QR code"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M14 14h3v3M20 14v.01M17 20h3M20 17v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></div></td>
+            </tr>
+            <tr onclick="location.href='vehicle-profile.html'">
+              <td><span class="t-id">VEH-211</span></td>
+              <td><span class="mono">KA-05-EF-4412</span></td>
+              <td><div class="cell-lead"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5"/></svg></span><div><div style="font-weight:600">Force Traveller</div><div class="t-sub">98,110 km</div></div></div></td>
+              <td>Van</td><td>Depot B</td>
+              <td><div class="cell-lead"><span class="row-av" style="background:linear-gradient(140deg,#e0952a,#c9821b)">RK</span>Ravi Kumar</div></td>
+              <td><span class="chip crit"><span class="d"></span>Blocked</span></td>
+              <td><span class="chip crit">Critical</span></td>
+              <td><span class="chip crit"><span class="d"></span>Blocked · Maintenance</span></td>
+              <td><div class="tbl-actions"><span class="act-ic" title="View"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.6"/></svg></span><span class="act-ic" title="QR code"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M14 14h3v3M20 14v.01M17 20h3M20 17v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></div></td>
+            </tr>
+            <tr onclick="location.href='vehicle-profile.html'">
+              <td><span class="t-id">VEH-067</span></td>
+              <td><span class="mono">KA-03-GH-7821</span></td>
+              <td><div class="cell-lead"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M5 11l1.4-3.2A2 2 0 018.2 6.6h7.6a2 2 0 011.8 1.2L19 11v4H5v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="8" cy="16" r="1.4" stroke="currentColor" stroke-width="1.5"/><circle cx="16" cy="16" r="1.4" stroke="currentColor" stroke-width="1.5"/></svg></span><div><div style="font-weight:600">Toyota Innova</div><div class="t-sub">61,204 km</div></div></div></td>
+              <td>Car</td><td>Depot B</td>
+              <td><div class="cell-lead"><span class="row-av" style="background:linear-gradient(140deg,#7a5cc4,#5a3fa0)">SA</span>Sameer Ali</div></td>
+              <td><span class="chip good"><span class="d"></span>Cleared</span></td>
+              <td><span class="chip good">Good</span></td>
+              <td><span class="chip good"><span class="d"></span>Available</span></td>
+              <td><div class="tbl-actions"><span class="act-ic" title="View"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.6"/></svg></span><span class="act-ic" title="QR code"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M14 14h3v3M20 14v.01M17 20h3M20 17v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></div></td>
+            </tr>
+            <tr onclick="location.href='vehicle-profile.html'">
+              <td><span class="t-id">VEH-021</span></td>
+              <td><span class="mono">KA-01-AB-9902</span></td>
+              <td><div class="cell-lead"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5"/></svg></span><div><div style="font-weight:600">Toyota Hiace</div><div class="t-sub">37,540 km</div></div></div></td>
+              <td>Van</td><td>Central Depot</td>
+              <td><span class="t-sub">— Unassigned</span></td>
+              <td><span class="chip neutral"><span class="d"></span>Due</span></td>
+              <td><span class="chip good">Good</span></td>
+              <td><span class="chip neutral"><span class="d"></span>Inspection Due</span></td>
+              <td><div class="tbl-actions"><span class="act-ic" title="View"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.6"/></svg></span><span class="act-ic" title="QR code"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M14 14h3v3M20 14v.01M17 20h3M20 17v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></div></td>
+            </tr>
+            <tr onclick="location.href='vehicle-profile.html'">
+              <td><span class="t-id">VEH-178</span></td>
+              <td><span class="mono">KA-05-JK-3120</span></td>
+              <td><div class="cell-lead"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/><circle cx="7.5" cy="18" r="1.4" stroke="currentColor" stroke-width="1.5"/><circle cx="16.5" cy="18" r="1.4" stroke="currentColor" stroke-width="1.5"/></svg></span><div><div style="font-weight:600">Ashok Leyland</div><div class="t-sub">205,619 km</div></div></div></td>
+              <td>Bus</td><td>Depot C</td>
+              <td><div class="cell-lead"><span class="row-av" style="background:linear-gradient(140deg,#3a72c4,#274a86)">PS</span>Prakash Singh</div></td>
+              <td><span class="chip good"><span class="d"></span>Cleared</span></td>
+              <td><span class="chip attn">Attention</span></td>
+              <td><span class="chip info"><span class="d"></span>Assigned</span></td>
+              <td><div class="tbl-actions"><span class="act-ic" title="View"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.6"/></svg></span><span class="act-ic" title="QR code"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M14 14h3v3M20 14v.01M17 20h3M20 17v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></div></td>
+            </tr>
+            <tr onclick="location.href='vehicle-profile.html'">
+              <td><span class="t-id">VEH-242</span></td>
+              <td><span class="mono">KA-03-LM-7745</span></td>
+              <td><div class="cell-lead"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M5 11l1.4-3.2A2 2 0 018.2 6.6h7.6a2 2 0 011.8 1.2L19 11v4H5v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="8" cy="16" r="1.4" stroke="currentColor" stroke-width="1.5"/><circle cx="16" cy="16" r="1.4" stroke="currentColor" stroke-width="1.5"/></svg></span><div><div style="font-weight:600">Maruti Ertiga</div><div class="t-sub">44,988 km</div></div></div></td>
+              <td>Car</td><td>Depot C</td>
+              <td><div class="cell-lead"><span class="row-av" style="background:linear-gradient(140deg,#1f9d6b,#137a51)">NG</span>Naveen G.</div></td>
+              <td><span class="chip info"><span class="d"></span>Under Inspection</span></td>
+              <td><span class="chip good">Good</span></td>
+              <td><span class="chip info"><span class="d"></span>Under Inspection</span></td>
+              <td><div class="tbl-actions"><span class="act-ic" title="View"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.6"/></svg></span><span class="act-ic" title="QR code"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M14 14h3v3M20 14v.01M17 20h3M20 17v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></div></td>
+            </tr>
+            <tr onclick="location.href='vehicle-profile.html'">
+              <td><span class="t-id">VEH-301</span></td>
+              <td><span class="mono">KA-01-NP-2288</span></td>
+              <td><div class="cell-lead"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5"/></svg></span><div><div style="font-weight:600">Mahindra Bolero</div><div class="t-sub">12,006 km</div></div></div></td>
+              <td>Van</td><td>Central Depot</td>
+              <td><span class="t-sub">— Unassigned</span></td>
+              <td><span class="chip good"><span class="d"></span>Cleared</span></td>
+              <td><span class="chip good">Good</span></td>
+              <td><span class="chip good"><span class="d"></span>Available</span></td>
+              <td><div class="tbl-actions"><span class="act-ic" title="View"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.6"/></svg></span><span class="act-ic" title="QR code"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M14 14h3v3M20 14v.01M17 20h3M20 17v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></div></td>
+            </tr>
+            <tr onclick="location.href='vehicle-profile.html'">
+              <td><span class="t-id">VEH-133</span></td>
+              <td><span class="mono">KA-05-QR-6610</span></td>
+              <td><div class="cell-lead"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13v4H3v-4z" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5"/></svg></span><div><div style="font-weight:600">Force Traveller</div><div class="t-sub">117,430 km</div></div></div></td>
+              <td>Van</td><td>Depot B</td>
+              <td><div class="cell-lead"><span class="row-av" style="background:linear-gradient(140deg,#e0952a,#c9821b)">MI</span>Mohammed I.</div></td>
+              <td><span class="chip attn"><span class="d"></span>Pending</span></td>
+              <td><span class="chip attn">Attention</span></td>
+              <td><span class="chip info"><span class="d"></span>Assigned</span></td>
+              <td><div class="tbl-actions"><span class="act-ic" title="View"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.6"/></svg></span><span class="act-ic" title="QR code"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M14 14h3v3M20 14v.01M17 20h3M20 17v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></div></td>
+            </tr>
+            <tr onclick="location.href='vehicle-profile.html'">
+              <td><span class="t-id">VEH-256</span></td>
+              <td><span class="mono">KA-03-ST-4098</span></td>
+              <td><div class="cell-lead"><span class="veh-thumb"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/><circle cx="7.5" cy="18" r="1.4" stroke="currentColor" stroke-width="1.5"/><circle cx="16.5" cy="18" r="1.4" stroke="currentColor" stroke-width="1.5"/></svg></span><div><div style="font-weight:600">Toyota Coaster</div><div class="t-sub">88,742 km</div></div></div></td>
+              <td>Bus</td><td>Depot C</td>
+              <td><span class="t-sub">— Under Maintenance</span></td>
+              <td><span class="chip neutral"><span class="d"></span>N/A</span></td>
+              <td><span class="chip neutral">Maintenance</span></td>
+              <td><span class="chip neutral"><span class="d"></span>Under Maintenance</span></td>
+              <td><div class="tbl-actions"><span class="act-ic" title="View"><svg viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.6"/></svg></span><span class="act-ic" title="QR code"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="14" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M14 14h3v3M20 14v.01M17 20h3M20 17v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="foot-note">Showing 10 of <b>300 vehicles</b> · FleetView demo prototype · sample data</div>
+    </div>
+  </div>
+</div>
+<span class="demo-tag">Demo prototype</span>
+</body>
+</html>
