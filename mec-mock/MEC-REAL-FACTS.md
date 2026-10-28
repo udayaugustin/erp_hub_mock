@@ -2,6 +2,9 @@
 
 ## Real (public business directories, October 2026 — not confirmed by MEC)
 
+Re-verification was attempted on 28 October 2026 and failed: the sandbox blocked every directory
+and search host. These rows are carried forward from the earlier brief, not re-checked.
+
 | Fact | Source |
 |------|--------|
 | Legal name: **Muscat Engineering Consultancy LLC** | decypha.com company list; clodura.ai; aeroleads.com |

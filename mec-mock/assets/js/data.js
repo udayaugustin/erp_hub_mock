@@ -47,29 +47,29 @@ const TENANTS = [{ ...MEC, short: 'MEC', sector: 'Engineering & project manageme
 
 /* --- the six streams — THE spine of this mock ------------------------------
    dir: in (MEC receives) | out (MEC issues)
-   mode: live (cleared per document)
+   mode: live (sent per document; the outcome arrives asynchronously)
    position: settled | proposed (Fawtara's reading, to confirm)               */
 const STREAMS = [
   { id: 'lumpsum',  n: 1, group: 'seller', dir: 'out', title: 'Lump-sum engineering · milestones',
-    role: 'MEC as seller', origin: 'Enterprise ERP', target: 'OTA — cleared',
+    role: 'MEC as seller', origin: 'Enterprise ERP', target: 'OTA — via the ASP',
     doc: 'Standard tax invoice', mode: 'live', position: 'settled',
     today: 6, mtd: 58,
-    blurb: 'FEED and detailed-engineering contracts billed on certified milestones. The ERP raises the invoice when the client signs off a deliverable; the Hub clears it live — the canonical flow. Retention and advance recovery have a treatment to confirm.' },
+    blurb: 'FEED and detailed-engineering contracts billed on certified milestones. The ERP raises the invoice when the client signs off a deliverable; the Hub validates and sends it — the canonical flow. Retention and advance recovery have a treatment to confirm.' },
   { id: 'manhour',  n: 2, group: 'seller', dir: 'out', title: 'Reimbursable manhours · PMC & site',
-    role: 'MEC as seller', origin: 'Enterprise ERP', target: 'OTA — cleared',
+    role: 'MEC as seller', origin: 'Enterprise ERP', target: 'OTA — via the ASP',
     doc: 'Standard tax invoice', mode: 'live', position: 'settled',
     today: 9, mtd: 71,
     blurb: 'Project management, owner’s-engineer and site-supervision contracts billed monthly from client-approved timesheets — hours by discipline times the contract rate. Same B2B invoice, same pipe.' },
   { id: 'adjust',   n: 3, group: 'seller', dir: 'out', title: 'Credit & debit notes · disputes, escalation',
-    role: 'MEC as seller', origin: 'Enterprise ERP', target: 'OTA — cleared',
+    role: 'MEC as seller', origin: 'Enterprise ERP', target: 'OTA — via the ASP',
     doc: 'Credit / debit note', mode: 'live', position: 'settled',
     today: 3, mtd: 26,
-    blurb: 'Manhours the client disputes after invoicing, and rate escalation agreed later. Each note references the original invoice and is cleared like any other document.' },
+    blurb: 'Manhours the client disputes after invoicing, and rate escalation agreed later. Each note references the original invoice and is sent like any other document.' },
   { id: 'export',   n: 4, group: 'seller', dir: 'out', title: 'Services to clients outside Oman',
-    role: 'MEC as seller', origin: 'Enterprise ERP', target: 'OTA — cleared',
+    role: 'MEC as seller', origin: 'Enterprise ERP', target: 'OTA — via the ASP',
     doc: 'Zero-rated tax invoice', mode: 'live', position: 'proposed',
     today: 1, mtd: 5,
-    blurb: 'Engineering delivered from Muscat for a client with no establishment in Oman, at 0% VAT with a reason code. Fawtara’s reading of the zero-rating — and of recharges to MEC’s own branches abroad — is to confirm with the OTA.' },
+    blurb: 'Engineering delivered from Muscat for a client with no establishment in Oman, at 0% VAT with a reason code. Fawtara’s reading of the zero-rating — and of recharges to any branches of MEC abroad — is to confirm with the OTA.' },
   { id: 'subcon',   n: 5, group: 'buyer', dir: 'in',  title: 'Subcontractors & suppliers in Oman',
     role: 'MEC as buyer', origin: 'Peppol inbound', target: 'Enterprise ERP',
     doc: 'Supplier tax invoice', mode: 'live', position: 'settled',
@@ -97,9 +97,9 @@ const OTA_POSITIONS = [
     ],
     channels: 'Does not apply where the client has an Omani branch that receives the service, or where engineering supports an asset in Oman. That boundary is an assumption until the OTA confirms it.',
     tag: 'Fawtara’s recommended reading — to confirm with OTA' },
-  { id: 'branch', agenda: 'Recharges to MEC’s own branches abroad',
+  { id: 'branch', agenda: 'Recharges to branches abroad (if any)',
     headline: 'Head office to branch — a supply, or not?',
-    basis: 'MEC works through branches outside Oman. When Muscat staff work on a branch’s project, the cost is recharged. Whether a recharge within one legal person is a supply is not settled for e-invoicing.',
+    basis: 'Only conditional: one public directory lists branches in Saudi Arabia, Qatar, Kuwait and India, and that is unverified. If MEC does work through branches of the same LLC, Muscat staff on a branch’s project would be recharged — and whether a recharge within one legal person is a supply is not settled for e-invoicing.',
     treatment: [
       'Working assumption: head office and its own branch are one legal person, so a recharge is an internal book entry and raises no tax invoice.',
       'The recharge is kept out of the e-invoicing pipe entirely — the ERP flags it as internal and the Hub never collects it.',
@@ -107,13 +107,13 @@ const OTA_POSITIONS = [
     ],
     channels: 'Decides which documents enter the pipe at all — so it is settled before build, not after.',
     tag: 'Fawtara’s recommended reading — to confirm with OTA' },
-  { id: 'retention', agenda: 'Retention and advance payments',
+  { id: 'retention', agenda: 'Retention money and advance payments',
     headline: 'When is VAT due on retention, and on an advance?',
-    basis: 'Clients hold back a retention on each certified milestone, released at handover. They also pay an advance that is recovered from later invoices. When VAT falls due on each is not settled.',
+    basis: 'Illustratively, clients hold back retention money on each certified milestone, released at handover, and pay an advance that is recovered from later invoices. Whether MEC’s contracts work this way is a discovery question. When VAT falls due on each is not settled.',
     treatment: [
       'Recommended: VAT on the full certified value when the milestone is invoiced. Retention is a payment term, not a reduction of the taxable amount — so its later release raises no new invoice.',
       'An advance payment gets its own tax invoice when it is received, because payment fixes the tax point.',
-      'Each later milestone shows the advance recovered as an amount already paid that references the advance invoice — VAT is not charged twice.'
+      'Each later milestone shows the advance recovered as a prepaid amount (BT-113) that references the advance invoice — VAT is not charged twice, and the payable (BT-115) is the invoice total less that advance. Retention is not reported on the e-invoice.'
     ],
     channels: 'Touches every lump-sum contract, so it decides how the milestone invoice itself is built.',
     tag: 'Fawtara’s recommended reading — to confirm with OTA' },
@@ -146,7 +146,7 @@ const GROUP = {
   aspAvgMs: 364,
   /* the monthly timesheet billing run that carries manhour invoices */
   cycle: { id: 'MEC-TS-2026-07', period: 'July 2026', customers: 24, invoiced: 22,
-           held: 2, window: '03–06 Aug 2026', clearedAt: '06 Aug 2026, 15:40 GST' },
+           held: 2, window: '03–06 Aug 2026', sentAt: '06 Aug 2026, 15:40 GST' },
 
   /* Fri 14 → Thu 20 Aug. Friday and Saturday are the Omani weekend. */
   week: [0, 0, 12, 9, 15, 11, 19],
@@ -199,7 +199,7 @@ const STAGE_NOTE = [
   'Transmit the valid XML',
   'Acknowledgement and final status',
   'UUID, status and QR held on the interface for the ERP to collect',
-  'Long-term legal record, with the acknowledgements'
+  'Acknowledgements and final status added to the record archived before sending'
 ];
 const STAGE_COUNT = [2, 4, 3, 5, 2, 4, 2];
 
@@ -350,7 +350,7 @@ const ERP_INVOICES = [
 const CONTRACT = {
   no: 'C-2025-118', client: 'Ghaba North Petroleum LLC', po: 'GNP-PO-4471',
   title: 'Detailed engineering — Ghaba North gathering lines & manifold',
-  value: 1240000.000, advancePct: 10, retentionPct: 5,
+  value: 1240000.000, advancePct: 10, retentionPct: 10,
   milestones: [
     { n: 1, name: 'Kick-off, design basis and HAZID',             pct: 10, state: 'Invoiced', inv: 'MEC-INV-2026-00214' },
     { n: 2, name: 'Process & P&IDs issued for review',            pct: 15, state: 'Invoiced', inv: 'MEC-INV-2026-00267' },
@@ -362,6 +362,25 @@ const CONTRACT = {
   ],
   variation: { no: 'VO-03', name: 'Additional pig-launcher tie-in at manifold B', value: 12400.000 }
 };
+
+/* --- how the tracked invoice settles ---------------------------------------
+   One place for the numbers, so the ERP, the XML, the retention screen and the
+   mapping all agree. Under Fawtara's reading (to confirm with OTA):
+     - VAT is due on the full certified value (net + VO-03);
+     - the advance already paid is BT-113, so the e-invoice payable (BT-115)
+       is the invoice total less that advance;
+     - retention is a payment term: it is held back in cash but is NOT a
+       reduction of the taxable amount or of BT-115.                          */
+const SETTLEMENT = (function () {
+  const ms4 = CONTRACT.value * 0.15;
+  const net = ms4 + CONTRACT.variation.value;
+  const total = net * (1 + VAT_RATE / 100);
+  const advNet = ms4 * CONTRACT.advancePct / 100;
+  const prepaid = advNet * (1 + VAT_RATE / 100);
+  const retention = net * CONTRACT.retentionPct / 100;
+  return { ms4, net, total, advNet, prepaid, payable: total - prepaid,
+           retention, cashDue: total - prepaid - retention };
+})();   /* prepaid 19,530.000 · payable 188,790.000 · retention 19,840.000 · cash due 168,950.000 */
 
 /* --- timesheets & manhour billing (origin screen) --------------------------
    Monthly PMC / owner's-engineer invoices are built from client-approved
@@ -384,7 +403,7 @@ const TIMESHEETS = {
     { role: 'HSE Advisor',                           code: 'HSE-01', heads: 1, hours: 176, rate: 21.000 },
     { role: 'Document Controller',                   code: 'DC-01',  heads: 1, hours: 184, rate: 9.500 }
   ],
-  note: 'Each month’s invoice is built from the hours the client approved, by discipline, at the contract rate. The ERP raises it; the Hub clears it — the same pipe as every milestone invoice.',
+  note: 'Each month’s invoice is built from the hours the client approved, by discipline, at the contract rate. The ERP raises it; the Hub validates and sends it — the same pipe as every milestone invoice.',
   assumption: 'Assumption · to confirm with MEC: the timesheet cut-off each month, and whether the client approves hours before or after the invoice is posted.',
   rows: [
     { cust: 'Duqm Water & Utilities Company SAOC', contract: 'PMC-2024-07', booked: 2496, approved: 2496, disputed: 0,  amount: 56006.000, no: 'MEC-INV-2026-00386', state: 'Invoiced' },
@@ -397,7 +416,7 @@ const TIMESHEETS = {
 /* --- processing logs ------------------------------------------------------- */
 const LOGS = [
   { ts: '09:12:37.114', lv: 'info', txt: 'Poll tick — Enterprise ERP, watermark 2026-08-20T09:12:02Z' },
-  { ts: '09:12:37.288', lv: 'info', txt: 'Fetched raw payload · 14.2 KB · 28 fields (allowlist applied)' },
+  { ts: '09:12:37.288', lv: 'info', txt: 'Fetched raw payload · 14.2 KB · 29 fields (allowlist applied)' },
   { ts: '09:12:37.401', lv: 'ok',   txt: 'Idempotency check passed — MEC-INV-2026-00382 not previously seen' },
   { ts: '09:12:37.553', lv: 'info', txt: 'Mapping profile MEC/v2 applied — 47 of 48 fields resolved' },
   { ts: '09:12:37.700', lv: 'info', txt: 'Scenario detected: B2B lump-sum milestone · services · standard rate 5%' },
@@ -490,7 +509,8 @@ const ERP_SCHEMA = [
   { f: 'NetAmount',                  t: 'decimal', ex: '198400.00' },
   { f: 'TaxAmount',                  t: 'decimal', ex: '9920.00' },
   { f: 'InvoiceTotal',               t: 'decimal', ex: '208320.00' },
-  { f: 'AmountDue',                  t: 'decimal', ex: '208320.00' },
+  { f: 'PrepaidAmount',               t: 'decimal', ex: '19530.00' },
+  { f: 'AmountDue',                  t: 'decimal', ex: '188790.00' },
   { f: 'TaxRate',                    t: 'decimal', ex: '5.0' },
   { f: 'ServiceCode',                t: 'string',  ex: 'ENG-DD-MS04' },
   { f: 'ServiceDescription',         t: 'string',  ex: 'Detailed engineering — Milestone 4: 60% model review (IFR)' },
@@ -567,7 +587,10 @@ const MAPPING = [
     { erp: 'NetAmount',              std: 'BT-109', stdName: 'Sum of line net amounts', xf: 'decimal:3', req: 'Mandatory', ok: true },
     { erp: 'TaxAmount',              std: 'BT-110', stdName: 'Invoice total VAT amount', xf: 'decimal:3', req: 'Mandatory', ok: true },
     { erp: 'InvoiceTotal',           std: 'BT-112', stdName: 'Invoice total with VAT',  xf: 'decimal:3', req: 'Mandatory', ok: true },
-    { erp: 'AmountDue',              std: 'BT-115', stdName: 'Amount due for payment',  xf: 'decimal:3', req: 'Mandatory', ok: true },
+    { erp: 'PrepaidAmount',          std: 'BT-113', stdName: 'Prepaid amount',          xf: 'decimal:3', req: 'Conditional', ok: true,
+      dnote: 'The advance already invoiced and paid, recovered on this milestone. Retention is not reported here — it is a payment term. To confirm with the OTA.' },
+    { erp: 'AmountDue',              std: 'BT-115', stdName: 'Amount due for payment',  xf: 'decimal:3', req: 'Mandatory', ok: true,
+      dnote: 'Invoice total less the prepaid amount. Retention held back in cash does not reduce it.' },
     { erp: 'TaxRate',                std: 'BT-119', stdName: 'VAT category rate',       xf: 'pct',       req: 'Mandatory', ok: true },
     { erp: '—',                      std: 'IBT-118-1', stdName: 'Tax scheme code',       xf: 'const:VAT', req: 'Mandatory', ok: true, derived: true, constant: true,
       dnote: 'Always VAT for Oman.' }
@@ -656,7 +679,7 @@ const BOUNDARY_HUB = [
 /* --- why Fawtara — differentiators (value screen) -------------------------- */
 const FAWTARA_VALUE = [
   { k: 'Accredited by the OTA', d: 'A licensed Accredited Service Provider (ASP) — the reporting leg to the OTA is ours, not a bolt-on.', ico: 'shield' },
-  { k: 'Data residency in Oman', d: 'Invoice data and the legal archive are held in-country. No client or contract data leaves Oman to be reported.', ico: 'lock' },
+  { k: 'Where the data is held', d: 'Where invoice data and the legal archive are held is agreed during solution design, not assumed here.', ico: 'lock' },
   { k: 'Built for project billing', d: 'Milestone certificates and approved timesheets travel with the invoice, so a client query is answered from one record.', ico: 'queue' },
   { k: 'One pipe, every stream', d: 'Milestone, manhour, credit-note, export, subcontractor and reverse-charge documents all run through one integration and one console.', ico: 'send' },
   { k: 'OTA-interface alignment', d: 'PINT-OM validation before anything is sent, and outcome tracking on all three Peppol legs after.', ico: 'check' },

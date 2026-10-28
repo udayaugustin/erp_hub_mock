@@ -23,7 +23,7 @@
 <body class="surface-hub" data-surface="hub" data-nav="adjustments"
       data-step="hub-adjustments"
       data-crumbs="Operations / Credit &amp; debit notes"
-      data-hint="Hours a client rejects after invoicing go out as a credit note, agreed rate escalation as a debit note — each referencing the original invoice, each cleared live.">
+      data-hint="Hours a client rejects after invoicing go out as a credit note, agreed rate escalation as a debit note — each referencing the original invoice, each sent like any invoice.">
 
 <main class="main">
   <div class="page">
@@ -45,7 +45,7 @@
 
     <section style="margin-top:0">
       <div class="section-head">
-        <div class="grow"><div class="eyebrow">Stream 3 · settled</div><h2>Notes cleared today — disputes and escalation</h2></div>
+        <div class="grow"><div class="eyebrow">Stream 3 · settled</div><h2>Notes sent today — disputes and escalation</h2></div>
         <span class="small dim" id="noteCount"></span>
       </div>
       <div class="card card-tight">
@@ -98,9 +98,9 @@
   const DN_HOURS = 1260, DN_UPLIFT = 2.500;        /* = 3,150.000 */
 
   document.getElementById('sub').textContent =
-    `${GROUP.name} — corrections after an invoice has gone out, cleared live like any invoice. ${DEMO_DAY} ${DEMO_CLOCK}.`;
+    `${GROUP.name} — corrections after an invoice has gone out, sent like any invoice. ${DEMO_DAY} ${DEMO_CLOCK}.`;
   document.getElementById('dateTag').textContent = DEMO_DATE;
-  document.getElementById('statePill').outerHTML = pill('ok', 'Clearing normally');
+  document.getElementById('statePill').outerHTML = pill('ok', 'Sending normally');
 
   document.getElementById('tiles').innerHTML = [
     stat({ label: 'Notes today', value: num(stream('adjust').today), meta: num(stream('adjust').mtd) + ' month to date', tone: 'var(--accent)' }),
@@ -122,7 +122,7 @@
       <td class="small">${reason[n.type]}</td>
       <td class="nowrap"><span class="id">${n.against}</span></td>
       <td class="r num" style="font-weight:600">${omr(n.total)}</td>
-      <td>${pill('ok', 'Cleared')}</td>
+      <td>${pill('ok', 'Sent')}</td>
     </tr>`).join('');
 
   function twoCol(left, right) { return `<div class="grid2"><div>${left}</div><div>${right}</div></div>`; }
@@ -141,7 +141,7 @@
        <span>VAT · 5%</span><span class="v">${omr(cn.vat)}</span>
        <span class="tot">Total</span><span class="v tot" style="color:var(--accent-hi)">${omr(cn.total)}</span>
      </div>
-     <p class="small dim" style="margin:10px 0 0">Type code 381. References <span class="id">${cn.against}</span> and is cleared like an invoice. The original is never edited.</p>`);
+     <p class="small dim" style="margin:10px 0 0">Type code 381. References <span class="id">${cn.against}</span> and is sent like an invoice. The original is never edited.</p>`);
 
   document.getElementById('exDebit').innerHTML = twoCol(
     `<div class="small dim" style="margin-bottom:8px">Original invoice <span class="id">${dn.against}</span> · ${CUSTOMERS[dn.cust].name} · April–June hours</div>

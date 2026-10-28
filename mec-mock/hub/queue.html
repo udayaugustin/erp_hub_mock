@@ -48,7 +48,7 @@
           <h1>Live Pipeline</h1>
           <span id="flightPill"></span>
         </div>
-        <p class="page-sub">Milestone and manhour invoices, notes and exports, cleared to the OTA one document at a time.</p>
+        <p class="page-sub">Milestone and manhour invoices, notes and exports, sent through the ASP one document at a time.</p>
       </div>
       <div class="page-actions">
         <select class="select select-sm" id="refresh" style="width:auto">
@@ -136,7 +136,7 @@
   document.getElementById('tiles').innerHTML = [
     stat({ label: 'In flight now', value: num(inFlight),
            meta: `On the sales pipeline · busiest at ${STAGES[busiest]}`, tone: 'var(--accent)' }),
-    stat({ label: 'Project invoices cleared today', value: num(B2B.today),
+    stat({ label: 'Project invoices sent today', value: num(B2B.today),
            meta: `${num(B2B.mtd)} month to date · milestones and manhours`, tone: 'var(--ok)' }),
     stat({ label: 'Needs attention', value: num(failed),
            meta: failed ? 'Held at Validate — total mismatch' : 'No failures in flight', tone: failed ? 'var(--fail)' : 'var(--ok)' })
@@ -201,18 +201,18 @@
     : pill('ok', 'None retrying');
 
   document.getElementById('tableFoot').textContent =
-    `${b2bRows.length} outbound documents shown · ${num(B2B.today)} cleared today · tracked invoice ${TRACKED} highlighted.`;
+    `${b2bRows.length} outbound documents shown · ${num(B2B.today)} sent today · tracked invoice ${TRACKED} highlighted.`;
 
   /* ---------- one pipe for every sales stream ------------------------------- */
   const cyc = GROUP.cycle;
   document.getElementById('batchNote').innerHTML =
-    `<p class="small" style="margin:0 0 12px">Milestone invoices, manhour invoices, credit and debit notes and exports all clear <b>live</b>,
+    `<p class="small" style="margin:0 0 12px">Milestone invoices, manhour invoices, credit and debit notes and exports all go <b>live</b>,
      one document at a time, on the pipeline above. The monthly timesheet billing run simply raises many invoices in a
-     short window — each one is cleared and tracked on its own.</p>` +
+     short window — each one is sent and tracked on its own.</p>` +
     kv([
       ['Billing run', `<span class="id">${cyc.id}</span>`],
       ['Period', cyc.period],
-      ['Manhour contracts', `<span class="num">${num(cyc.invoiced)}</span> of ${num(cyc.customers)} invoiced and cleared`],
+      ['Manhour contracts', `<span class="num">${num(cyc.invoiced)}</span> of ${num(cyc.customers)} invoiced and sent`],
       ['Window', cyc.window],
       ['Held for client approval', `<span class="num">${num(cyc.held)}</span>`]
     ], true);

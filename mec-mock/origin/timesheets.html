@@ -41,7 +41,7 @@
           <h1>Timesheets &amp; Manhour Billing</h1>
           <span class="tag" id="periodTag"></span>
         </div>
-        <p class="page-sub">Reimbursable contracts are billed monthly on the hours the client approves, by discipline and grade — then the invoice is posted and cleared like any other.</p>
+        <p class="page-sub">Reimbursable contracts are billed monthly on the hours the client approves, by discipline and grade — then the invoice is posted and sent like any other.</p>
       </div>
       <div class="page-actions">
         <button class="btn btn-sm">Approved timesheets</button>
@@ -217,7 +217,7 @@
        <span>VAT · 5%</span><span class="v">${omr(vat)}</span>
        <span class="tot">Invoice total (OMR)</span><span class="v tot" style="color:var(--accent-hi)">${omr(net + vat)}</span>
      </div>
-     <p class="small dim" style="margin:12px 0 0">Posted in the ERP as a normal receivable, with the approved timesheet attached. The Hub clears it on the same pipe as the milestone invoice.</p>`;
+     <p class="small dim" style="margin:12px 0 0">Posted in the ERP as a normal receivable, with the approved timesheet attached. The Hub validates and sends it on the same pipe as the milestone invoice.</p>`;
 
   const d0 = disputedRows[0];
   document.getElementById('dispTag').textContent = d0.contract;

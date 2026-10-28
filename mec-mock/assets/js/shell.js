@@ -18,7 +18,7 @@
    Five acts, agenda-shaped. Reorder here and the whole walkthrough reorders. */
 const ACTS = [
   { n: 'I',   t: 'The pipe, and the whole picture',        d: 'Sign in, then all six streams on one screen' },
-  { n: 'II',  t: 'MEC as seller — lump-sum milestones',     d: 'A certified milestone, cleared to the OTA end to end' },
+  { n: 'II',  t: 'MEC as seller — lump-sum milestones',     d: 'A certified milestone, validated and reported end to end' },
   { n: 'III', t: 'MEC as seller — manhours and adjustments', d: 'Timesheet billing, credit and debit notes' },
   { n: 'IV',  t: 'The open questions',                      d: 'Export of services, branch recharges, retention — Fawtara’s reading' },
   { n: 'V',   t: 'As buyer, and the record',                d: 'Subcontractors, imported services, reports and value' }
@@ -35,9 +35,9 @@ const WALKTHROUGH = [
   { id: 'erp-billing',   act: 1, sfc: 'erp', href: '../origin/billing.html',
     name: 'A milestone invoice',             blurb: 'Raised in the Enterprise ERP when the client certifies Milestone 4.' },
   { id: 'hub-queue',     act: 1, sfc: 'hub', href: '../hub/queue.html',
-    name: 'Validated and cleared to the OTA', blurb: 'The nine stages, and what is sitting in each.' },
+    name: 'Validated, sent and reported', blurb: 'The nine stages, and what is sitting in each.' },
   { id: 'hub-document',  act: 1, sfc: 'hub', href: '../hub/document.html',
-    name: 'The cleared e-invoice',           blurb: 'The official XML, proven correct before anything is sent.' },
+    name: 'The validated e-invoice',           blurb: 'The official XML, proven correct before anything is sent.' },
 
   /* Act III — manhour billing and adjustments */
   { id: 'erp-timesheets', act: 2, sfc: 'erp', href: '../origin/timesheets.html',
@@ -49,7 +49,7 @@ const WALKTHROUGH = [
   { id: 'hub-export',    act: 3, sfc: 'hub', href: '../hub/export.html',
     name: 'Export of services and branch recharges', blurb: 'Zero-rated at 0% with a reason code; branch recharges kept out. To confirm with OTA.' },
   { id: 'hub-retention', act: 3, sfc: 'hub', href: '../hub/retention.html',
-    name: 'Retention and advance payments',  blurb: 'When is VAT due — and how is it not charged twice? To confirm with OTA.' },
+    name: 'Retention money and advance payments',  blurb: 'When is VAT due — and how is it not charged twice? To confirm with OTA.' },
 
   /* Act V — MEC as buyer, the record, and the value */
   { id: 'hub-inbound',   act: 4, sfc: 'hub', href: '../hub/inbound.html',
@@ -57,7 +57,7 @@ const WALKTHROUGH = [
   { id: 'hub-reports',   act: 4, sfc: 'hub', href: '../hub/reports.html',
     name: 'Reports and reconciliation',      blurb: 'VAT by stream, billing by project, the position register.' },
   { id: 'hub-value',     act: 4, sfc: 'hub', href: '../hub/value.html',
-    name: 'Why Fawtara',                     blurb: 'Accreditation, Oman data residency, built for project billing.' },
+    name: 'Why Fawtara',                     blurb: 'Accreditation, built for project billing.' },
   { id: 'erp-sync',      act: 4, sfc: 'erp', href: '../origin/sync.html',
     name: 'The answer, back on the invoice', blurb: 'Reference, status and QR on the original ERP record.' }
 ];
@@ -75,7 +75,7 @@ const NAV = {
     ]},
     { label: 'OTA positions', items: [
       { key: 'export',    name: 'Export & branches',  href: 'export.html',    ico: 'doc', tag: 'TBC' },
-      { key: 'retention', name: 'Retention & advances', href: 'retention.html', ico: 'doc', tag: 'TBC' }
+      { key: 'retention', name: 'Retention money & advances', href: 'retention.html', ico: 'doc', tag: 'TBC' }
     ]},
     { label: 'Records', items: [
       { key: 'history',   name: 'Processing History', href: 'history.html',   ico: 'history' },

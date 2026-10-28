@@ -40,7 +40,7 @@
 <body class="surface-hub" data-surface="hub" data-nav="export"
       data-step="hub-export"
       data-crumbs="OTA positions / Export &amp; branches"
-      data-hint="How Fawtara reads engineering exported to clients outside Oman — zero-rated with a reason code — and recharges to MEC's own branches abroad. To confirm with the OTA.">
+      data-hint="How Fawtara reads engineering exported to clients outside Oman — zero-rated with a reason code — and recharges to any branches abroad. To confirm with the OTA.">
 
 <main class="main">
   <div class="page">
@@ -120,7 +120,7 @@
 
   /* framing — a position brought to the meeting, not a settled rule */
   document.getElementById('frame').innerHTML = teach(
-    'Engineering exported to clients outside Oman, and recharges to MEC&rsquo;s own branches abroad, are treatments the OTA has not yet settled. What follows is ' +
+    'Engineering exported to clients outside Oman, and recharges to any branches of MEC abroad, are treatments the OTA has not yet settled. What follows is ' +
     '<strong>Fawtara&rsquo;s recommended reading</strong> — a position to bring to the OTA, not a ruling. ' +
     'Each carries the amber <em>to confirm with OTA</em> tag until it is agreed.');
 
@@ -146,7 +146,7 @@
             '<div class="k">VAT · 0%</div><div class="v">' + omr(inv.vat) + '</div>' +
             '<div class="k">Total</div><div class="v big">' + omr(inv.total) + '</div>' +
           '</div>' +
-          '<div class="mono tiny dim">' + inv.no + ' · scenario Export · cleared live</div>' +
+          '<div class="mono tiny dim">' + inv.no + ' · scenario Export · sent per document</div>' +
         '</div>' +
       '</div>' +
       '<div class="card">' +
@@ -170,7 +170,7 @@
 
   document.getElementById('page-sub').innerHTML =
     'Fawtara&rsquo;s reading: engineering for a client outside Oman is zero-rated with a reason code and archived evidence, and ' +
-    'recharges to MEC&rsquo;s own branches abroad stay out of the pipe. Both to confirm with the OTA.';
+    'recharges to any branches of MEC abroad stay out of the pipe. Both to confirm with the OTA.';
 
   document.getElementById('closing').innerHTML = notice('warn',
     '<strong>Nothing on this screen is a settled rule.</strong> It is the position Fawtara recommends and will put ' +

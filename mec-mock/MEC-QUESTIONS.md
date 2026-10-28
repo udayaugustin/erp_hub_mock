@@ -10,3 +10,5 @@
 8. Which services are bought from abroad (software, studies), and how is reverse-charge VAT recorded today?
 9. Do subcontractors already send e-invoices, and is a PO number always quoted?
 10. Are disputed hours handled by credit note or by re-issuing the invoice?
+11. Are the advance and retention terms standard across lump-sum contracts, and is the retention rate the same on every contract?
+12. Do any clients outside Oman receive engineering for an asset located in Oman?

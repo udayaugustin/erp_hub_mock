@@ -191,7 +191,7 @@
      <span class="mono-hl">0248:OM1100387215</span> and the buyer identifier resolves to Commercial Registration
      <span class="mono-hl">1072946</span>. The purchase-order number then codes the draft to the right project.`);
 
-  /* ---- Section A: cleared drafts table ---- */
+  /* ---- Section A: landed drafts table ---- */
   function stageCell(r) {
     const cls = r.state === 'failed' ? 'bad' : r.state === 'active' ? 'mid' : 'on';
     return `<span class="stagelbl ${cls}"><span class="stagenum">${r.stage + 1}/${IN_STAGES.length}</span>${IN_STAGES[r.stage]}</span>`;

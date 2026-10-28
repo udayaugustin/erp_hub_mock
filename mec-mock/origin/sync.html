@@ -110,7 +110,7 @@
   /* ---- closing strip ---------------------------------------------------- */
   document.getElementById('closeStrip').innerHTML = notice('ok',
     '<b>The loop is closed.</b> Invoice MEC-INV-2026-00382 left the Enterprise ERP as a normal receivable, was mapped, ' +
-    'validated and cleared to the OTA through Fawtara — and its reference, status and QR are now written back onto the ' +
+    'validated, sent through the ASP and reported to the OTA by Fawtara — and its reference, status and QR are now written back onto the ' +
     'same invoice, on the same screen the finance team already uses.');
 
   /* ---- written-back result --------------------------------------------- */
@@ -156,7 +156,8 @@
     ['Line items', String(INV.lines)],
     ['Net amount', '<span class="num">' + omr(INV.net) + '</span>'],
     ['VAT (5%)', '<span class="num">' + omr(INV.vat) + '</span>'],
-    ['Total payable', '<span class="num" style="color:var(--accent-hi);font-weight:600">' + omr(INV.total) + ' OMR</span>']
+    ['Invoice total', '<span class="num">' + omr(INV.total) + ' OMR</span>'],
+    ['Payable on the e-invoice', '<span class="num" style="color:var(--accent-hi);font-weight:600">' + omr(SETTLEMENT.payable) + ' OMR</span>']
   ], true);
 
   /* ---- QR code — deterministic pseudo-pattern, 21×21. Self-contained. --- */

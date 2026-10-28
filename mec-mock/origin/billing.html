@@ -186,7 +186,10 @@
     ['Due date', inv.due],
     ['Net amount', '<span class="num">' + omr(inv.net) + '</span>'],
     ['VAT (5%)', '<span class="num">' + omr(inv.vat) + '</span>'],
-    ['Total payable', '<span class="num" style="color:var(--accent-hi);font-weight:600">' + omr(inv.total) + ' OMR</span>'],
+    ['Invoice total', '<span class="num">' + omr(inv.total) + ' OMR</span>'],
+    ['Advance already paid', '<span class="num">−' + omr(SETTLEMENT.prepaid) + ' OMR</span>'],
+    ['Payable on the e-invoice', '<span class="num" style="color:var(--accent-hi);font-weight:600">' + omr(SETTLEMENT.payable) + ' OMR</span>'],
+    ['Retention held (payment term)', '<span class="num">' + omr(SETTLEMENT.retention) + ' OMR</span>'],
     ['Document status', docPill(inv.docStatus)],
     ['E-invoice status', ePill(inv.eStatus)]
   ], true);

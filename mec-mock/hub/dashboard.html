@@ -163,7 +163,7 @@
     stat({ label: 'Failed today', value: num(GROUP.todayFailed), tone: 'var(--fail)',
            meta: `${pct(failedPct)} — owned by the source data` }),
     stat({ label: 'In flight now', value: num(GROUP.todayPending), tone: 'var(--warn)',
-           meta: 'Moving through clearing' }),
+           meta: 'Moving through validation and reporting' }),
     stat({ label: 'Month to date', value: num(GROUP.mtdTotal), tone: 'var(--accent)',
            meta: `${num(GROUP.mtdFailed)} failed this month` }),
     stat({ label: 'Inbound today', value: num(GROUP.inboundToday), tone: 'var(--accent-hi)',
@@ -240,13 +240,13 @@
     <div class="attn">
       <div class="row-tight" style="gap:8px">
         <b class="grow">Monthly timesheet billing run</b>
-        ${pill('ok', 'Cleared')}
+        ${pill('ok', 'Sent')}
       </div>
       <div class="tiny muted" style="margin-top:4px">
         <span class="id">${b.id}</span> — ${b.period} hours: ${num(b.invoiced)} of ${num(b.customers)} manhour contracts
-        invoiced and cleared in the ${b.window} window; ${num(b.held)} held for client approval of disputed hours.
+        invoiced and sent in the ${b.window} window; ${num(b.held)} held for client approval of disputed hours.
       </div>
-      <div class="tiny dim" style="margin-top:4px">Cleared ${b.clearedAt} · <a class="link" href="../origin/timesheets.html">Open the timesheet billing →</a></div>
+      <div class="tiny dim" style="margin-top:4px">Last invoice sent ${b.sentAt} · <a class="link" href="../origin/timesheets.html">Open the timesheet billing →</a></div>
     </div>
 
     <div class="attn">
@@ -255,7 +255,7 @@
         <span class="chip warn num">${num(GROUP.todayFailed)}</span>
       </div>
       <div class="tiny muted" style="margin-top:4px">
-        ${num(GROUP.todayFailed)} documents failed and ${num(GROUP.todayPending)} are in flight through clearing.
+        ${num(GROUP.todayFailed)} documents failed and ${num(GROUP.todayPending)} are in flight between validation and reporting.
         Failures are corrected in the source data and reprocessed — nothing is silently dropped.
       </div>
       <div class="tiny dim" style="margin-top:4px"><a class="link" href="queue.html">Open the live pipeline →</a></div>

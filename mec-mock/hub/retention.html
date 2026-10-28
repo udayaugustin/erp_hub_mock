@@ -42,7 +42,7 @@
 </head>
 <body class="surface-hub" data-surface="hub" data-nav="retention"
       data-step="hub-retention"
-      data-crumbs="OTA positions / Retention &amp; advances"
+      data-crumbs="OTA positions / Retention money &amp; advances"
       data-hint="How Fawtara reads retention and advance payments on lump-sum contracts — VAT on the full certified value, the advance taxed once. To confirm with the OTA.">
 
 <main class="main">
@@ -51,7 +51,7 @@
     <div class="page-head">
       <div class="grow">
         <div class="page-title">
-          <h1>Retention &amp; advance payments</h1>
+          <h1>Retention money &amp; advance payments</h1>
           <span class="pill pill-warn"><i class="dot"></i>To confirm</span>
         </div>
         <p class="page-sub" id="page-sub"></p>
@@ -140,11 +140,11 @@
 
   var C = CONTRACT;
   var inv = INVOICES.filter(function (d) { return d.no === 'MEC-INV-2026-00382'; })[0];
-  var ms4 = C.value * 0.15, vo = C.variation.value;
-  var net = ms4 + vo, vat = net * VAT_RATE / 100, gross = net + vat;
-  var advRec = ms4 * C.advancePct / 100, advRecGross = advRec * 1.05;
-  var ret = net * C.retentionPct / 100;
-  var due = gross - advRecGross - ret;
+  var S = SETTLEMENT;
+  var ms4 = S.ms4, vo = C.variation.value;
+  var net = S.net, vat = net * VAT_RATE / 100, gross = S.total;
+  var advRecGross = S.prepaid, ret = S.retention;
+  var payable = S.payable, due = S.cashDue;
 
   document.getElementById('example').innerHTML =
     '<div class="card">' +
@@ -163,14 +163,15 @@
         '<div class="invln" style="margin-top:14px">' +
           '<div class="h">Settlement</div><div class="h r"></div><div class="h r">OMR</div>' +
           '<div>Invoice total with VAT</div><div></div><div class="r">' + omr(gross) + '</div>' +
-          '<div class="short-row">Advance recovered · ' + C.advancePct + '% of Milestone 4, VAT already paid · paid amount (BT-113)</div><div></div><div class="r short-row">−' + omr(advRecGross) + '</div>' +
-          '<div class="short-row">Retention held · ' + C.retentionPct + '% of net · payment term, not a reduction</div><div></div><div class="r short-row">−' + omr(ret) + '</div>' +
-          '<div class="tot">Amount due now</div><div></div><div class="r tot">' + omr(due) + '</div>' +
+          '<div class="short-row">Advance recovered · ' + C.advancePct + '% of Milestone 4, VAT already paid · prepaid amount (BT-113)</div><div></div><div class="r short-row">−' + omr(advRecGross) + '</div>' +
+          '<div class="tot">Payable on the e-invoice (BT-115)</div><div></div><div class="r tot">' + omr(payable) + '</div>' +
+          '<div class="short-row">Retention held · ' + C.retentionPct + '% of net · payment term, not on the e-invoice</div><div></div><div class="r short-row">−' + omr(ret) + '</div>' +
+          '<div class="tot">Cash due now</div><div></div><div class="r tot">' + omr(due) + '</div>' +
         '</div>' +
         '<div class="exminor" style="font-size:13px;color:var(--text-mid);margin-top:12px;line-height:1.5">' +
           'The advance of OMR ' + omr(C.value * C.advancePct / 100) + ' was invoiced with VAT when it was received, so the recovery ' +
           'references that advance invoice and VAT is <strong>not charged twice</strong>. The retention is released at handover ' +
-          'as a payment, with no new invoice. The tracked invoice clears today at its full taxable value; showing the advance ' +
+          'as a payment, with no new invoice. The tracked invoice is sent today at its full taxable value; showing the advance ' +
           'and retention amounts on the e-invoice itself is part of what is being confirmed.</div>' +
       '</div>' +
     '</div>';

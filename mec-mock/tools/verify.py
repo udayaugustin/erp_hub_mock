@@ -32,6 +32,8 @@ BANNED_VISIBLE = [
     (r'OM-CIUS-\d', 'Schematron version pinned'),
     (r'within \d+ hours?', 'SLA committed'),
     (r'Rejected by the tax authority', 'wrong regulatory model'),
+    (r'\bclear(?:ed|s|ing|ance)\b', 'wrong regulatory model: the OTA does not clear invoices — the ASP validates and reports'),
+    (r'data residency|in-country|stay(?:s)? in Oman', 'data-residency claim stated as fact'),
 ]
 REAL_COMPANIES = ['OQ ', 'Oman LNG', 'OMIFCO', 'Petroleum Development Oman', 'Oman Oil Marketing', 'Sohar Aluminium', 'Muscat Municipality',
                   'Emirates Steel', 'Al Maha Petroleum', 'Renaissance Services',
@@ -40,7 +42,7 @@ REAL_COMPANIES = ['OQ ', 'Oman LNG', 'OMIFCO', 'Petroleum Development Oman', 'Om
 # Clone-drift: strings from earlier mocks that must never survive in this one
 # (single entity, generic ERP label — named ERP products, other clients and
 # telecom vocabulary are all drift). Scanned in visible HTML and in full JS.
-CLONE_DRIFT = ['Vodafone', 'vodafone', 'VOD-', 'prepaid', 'postpaid', 'top-up', 'Top-up',
+CLONE_DRIFT = ['Vodafone', 'vodafone', 'VOD-', 'prepaid top', 'prepaid plan', 'prepaid voucher', 'postpaid', 'top-up', 'Top-up',
                'SIM ', 'MSISDN', 'subscriber', 'bundle', 'Ooredoo', 'Omantel',
                'Oman Telecom', 'telecom', 'Telecom', 'telco', 'Consumer billing','Towell', 'WJ Towell', 'WJT-', 'wjtowell', 'ERPNext', 'Odoo',
                'Enhance Group', 'Orbit Rental', 'Readymix', 'Mazoon',
@@ -213,6 +215,18 @@ with sync_playwright() as pw:
         if 'MEC-INV-2026-00382' not in pg.inner_text('body'):
             fail(f'{rel}  tracked invoice MEC-INV-2026-00382 missing')
 
+    # --- the tracked invoice settles the same way on every screen ------------
+    load('hub/document.html')
+    body = pg.inner_text('body')
+    for want in ['208,320.000', '188,790.000']:
+        if want not in body:
+            fail(f'hub/document.html  missing settlement figure {want}')
+    load('origin/billing.html')
+    body = pg.inner_text('body')
+    for want in ['188,790.000', '19,840.000']:
+        if want not in body:
+            fail(f'origin/billing.html  missing settlement figure {want}')
+
     # --- the OTA-position screens must carry the "to confirm" flag ----------
     for rel in ['hub/export.html', 'hub/retention.html', 'hub/inbound.html']:
         load(rel)
@@ -271,7 +285,7 @@ with sync_playwright() as pw:
     # --- retention screen: VAT on full value, advance recovered once --------
     load('hub/retention.html')
     body = pg.inner_text('body')
-    for want in ['198,400.000', '9,920.000', '19,530.000', '178,870.000']:
+    for want in ['198,400.000', '9,920.000', '19,530.000', '168,950.000', '188,790.000']:
         if want not in body:
             fail(f'hub/retention.html  missing figure {want}')
 

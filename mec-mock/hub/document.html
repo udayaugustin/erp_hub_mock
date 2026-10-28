@@ -180,7 +180,8 @@
   <cac:LegalMonetaryTotal>
     <cbc:TaxExclusiveAmount currencyID="OMR">198400.000</cbc:TaxExclusiveAmount>
     <cbc:TaxInclusiveAmount currencyID="OMR">208320.000</cbc:TaxInclusiveAmount>
-    <cbc:PayableAmount currencyID="OMR">208320.000</cbc:PayableAmount>
+    <cbc:PrepaidAmount currencyID="OMR">19530.000</cbc:PrepaidAmount>
+    <cbc:PayableAmount currencyID="OMR">188790.000</cbc:PayableAmount>
   </cac:LegalMonetaryTotal>
   <!-- … 2 invoice lines · Milestone 4 (C62) and variation VO-03 · services … -->
 </Invoice>`;
@@ -211,7 +212,9 @@
     ['Contract', 'C-2025-118 · Milestone 4 + VO-03'],
     ['Net amount', '<span class="num">' + omr(DOC.net) + '</span>'],
     ['VAT amount', '<span class="num">' + omr(DOC.vat) + '</span>'],
-    ['Total payable', '<span class="num" style="color:var(--accent-hi);font-weight:600">' + omr(DOC.total) + '</span>']
+    ['Invoice total', '<span class="num">' + omr(DOC.total) + '</span>'],
+    ['Advance already paid (BT-113)', '<span class="num">−' + omr(SETTLEMENT.prepaid) + '</span>'],
+    ['Payable on the e-invoice (BT-115)', '<span class="num" style="color:var(--accent-hi);font-weight:600">' + omr(SETTLEMENT.payable) + '</span>']
   ]);
 
   document.getElementById('sellerBlock').innerHTML = kv([
