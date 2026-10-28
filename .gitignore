@@ -1,0 +1,5 @@
+# Local secrets — never commit tokens or keys
+.env
+.env.*
+*.local.json
+.claude/settings.local.json

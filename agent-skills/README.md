@@ -49,3 +49,33 @@ This folder is a snapshot. When you change an agent or skill in `.claude/`, re-c
 ```bash
 cp -r .claude/agents .claude/skills agent-skills/
 ```
+
+## Deploying with jarvis-fleet (MCP)
+
+The repo's `.mcp.json` connects Claude Code to the jarvis-fleet deploy server. It never contains
+the token, only the `${JARVIS_FLEET_TOKEN}` placeholder, which Claude Code fills from your
+environment.
+
+**Get the token** from the team lead privately (password manager or a direct message), never via
+the repo, an issue, or a shared channel.
+
+**Local (Windows, PowerShell):**
+
+```powershell
+[Environment]::SetEnvironmentVariable("JARVIS_FLEET_TOKEN", "<token>", "User")
+```
+
+**Local (macOS / Linux):** add `export JARVIS_FLEET_TOKEN="<token>"` to `~/.zshrc` or `~/.bashrc`.
+
+Fully restart Claude Code afterwards, and approve `jarvis-fleet` when asked.
+
+**Cloud sessions (claude.ai/code):** open your environment's settings and:
+1. Add `JARVIS_FLEET_TOKEN=<token>` under environment variables. Use a personal environment,
+   because anyone using that environment can read its variables.
+2. Set **Network access** to **Custom** and allow `mcp.13.140.175.74.sslip.io`, keeping the
+   default package-manager list ticked.
+
+**Rules**
+- Never paste the token into `.mcp.json`, a commit, a chat, or a screenshot.
+- If the token leaks, tell the team lead so it can be rotated.
+- Without the token, jarvis-fleet just fails to connect; everything else keeps working.
