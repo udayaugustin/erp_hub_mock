@@ -34,10 +34,14 @@ const WALKTHROUGH = [
   /* Act II — lump-sum milestone: the canonical clear-to-OTA flow */
   { id: 'erp-billing',   act: 1, sfc: 'erp', href: '../origin/billing.html',
     name: 'A milestone invoice',             blurb: 'Raised in the Enterprise ERP when the client certifies Milestone 4.' },
+  { id: 'hub-mapping',   act: 1, sfc: 'hub', href: '../hub/mapping.html',
+    name: 'Mapping the ERP fields',          blurb: 'MEC’s invoice fields pointed at the PINT-OM fields — chosen by an analyst, no code.' },
   { id: 'hub-queue',     act: 1, sfc: 'hub', href: '../hub/queue.html',
     name: 'Validated, sent and reported', blurb: 'The nine stages, and what is sitting in each.' },
   { id: 'hub-document',  act: 1, sfc: 'hub', href: '../hub/document.html',
     name: 'The validated e-invoice',           blurb: 'The official XML, proven correct before anything is sent.' },
+  { id: 'hub-asp',       act: 1, sfc: 'hub', href: '../hub/asp.html',
+    name: 'Three acknowledgements back',     blurb: 'The ASP, the OTA report and the client’s delivery — each on its own timeline.' },
 
   /* Act III — manhour billing and adjustments */
   { id: 'erp-timesheets', act: 2, sfc: 'erp', href: '../origin/timesheets.html',
@@ -56,13 +60,14 @@ const WALKTHROUGH = [
     name: 'Subcontractor invoices in, and the reverse charge', blurb: 'Peppol invoices land as drafts; a foreign supplier’s PDF is self-accounted.' },
   { id: 'hub-reports',   act: 4, sfc: 'hub', href: '../hub/reports.html',
     name: 'Reports and reconciliation',      blurb: 'VAT by stream, billing by project, the position register.' },
+  { id: 'hub-boundary',  act: 4, sfc: 'hub', href: '../hub/boundary.html',
+    name: 'Who does what',                   blurb: 'What MEC provides, what Fawtara provides — the delivery boundary.' },
   { id: 'hub-value',     act: 4, sfc: 'hub', href: '../hub/value.html',
     name: 'Why Fawtara',                     blurb: 'Accreditation, built for project billing.' },
   { id: 'erp-sync',      act: 4, sfc: 'erp', href: '../origin/sync.html',
     name: 'The answer, back on the invoice', blurb: 'Reference, status and QR on the original ERP record.' }
 ];
-/* hub/asp.html, hub/mapping.html, hub/history.html and hub/boundary.html are
-   reachable from the console but are not guided steps. */
+/* hub/history.html is reachable from the console but is not a guided step. */
 
 const NAV = {
   hub: [

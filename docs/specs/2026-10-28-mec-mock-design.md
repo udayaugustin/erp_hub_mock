@@ -38,7 +38,7 @@ vocabulary (nominations, take-or-pay, MMBtu) must be removed. `CLONE_DRIFT` guar
 
 - `assets/js/data.js`: six STREAMS, four OTA_POSITIONS, CONTRACT (C-2025-118, milestones, VO-03,
   advance and retention), TIMESHEETS, INVOICES, INBOUND, MAPPING.
-- `assets/js/shell.js` and `index.html`: 13 steps in 5 acts.
+- `assets/js/shell.js` and `index.html`: 16 steps in 5 acts (mapping, ASP exchange and delivery boundary added as guided steps).
 - `origin/billing.html` (milestone invoices and contract milestones), `origin/timesheets.html`
   (replaces nominations), `origin/sync.html`.
 - `hub/adjustments.html`, `hub/export.html` (export of services; branch recharges as a

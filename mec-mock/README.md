@@ -36,15 +36,17 @@ Served at `/mec-mock/`. Static HTML/CSS/JS, no build step. Structurally cloned f
 - **Imported services** — the Hub records the foreign PDF, computes reverse-charge VAT and lands a
   flagged draft; a self-billed e-document is built only if the OTA requires one.
 
-## Walkthrough (13 steps, 5 acts)
+## Walkthrough (16 steps, 5 acts)
 
 Generated from `WALKTHROUGH` / `ACTS` in `assets/js/shell.js`:
 
 1. Signing in · 2. All six streams on one screen · 3. A milestone invoice (origin) ·
-4. Validated, sent and reported · 5. The validated e-invoice · 6. Monthly billing from approved
-timesheets (origin) · 7. Credit and debit notes · 8. Export of services and branch recharges ·
-9. Retention money and advance payments · 10. Subcontractor invoices in, and the reverse charge ·
-11. Reports and reconciliation · 12. Why Fawtara · 13. The answer, back on the invoice.
+4. Mapping the ERP fields · 5. Validated, sent and reported · 6. The validated e-invoice ·
+7. Three acknowledgements back · 8. Monthly billing from approved timesheets (origin) ·
+9. Credit and debit notes · 10. Export of services and branch recharges ·
+11. Retention money and advance payments · 12. Subcontractor invoices in, and the reverse charge ·
+13. Reports and reconciliation · 14. Who does what · 15. Why Fawtara ·
+16. The answer, back on the invoice.
 
 The tracked invoice **MEC-INV-2026-00382** (contract C-2025-118, Milestone 4 = 15% of
 OMR 1,240,000 plus variation VO-03, net OMR 198,400.000, VAT 9,920.000, total 208,320.000) is
