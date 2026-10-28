@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timesheets &amp; Manhour Billing — MEC Enterprise ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  .erp-hero { display:flex; align-items:center; gap:14px; padding:14px 16px;
+    border:1px solid var(--line); border-radius:12px; background:var(--bg-alt);
+    margin-bottom:16px; }
+  .erp-hero .mk { width:38px; height:38px; flex:none; border-radius:9px;
+    display:grid; place-items:center; font-weight:700; font-size:18px;
+    color:#fff; background:linear-gradient(135deg,#4a5a68,#2f3b46); }
+  .erp-hero .h1 { font-weight:700; font-size:15px; }
+  .erp-hero .h2 { font-size:13px; color:var(--text-mid); margin-top:2px; line-height:1.5; }
+    .dayx { display:flex; align-items:flex-end; gap:3px; height:120px; padding-top:8px; }
+  .dayx .c { flex:1; position:relative; background:var(--accent); border-radius:2px 2px 0 0; min-height:4px; opacity:.85; }
+  .dayx .c.lo { background:var(--line-hard); opacity:.5; }
+  .dayax { display:flex; justify-content:space-between; font-size:11px; color:var(--text-lo); margin-top:5px; }
+  .dcq { position:relative; }
+  .calc { display:grid; grid-template-columns:1fr auto; gap:7px 16px; font-size:13.5px; }
+  .calc .v { text-align:right; font-variant-numeric:tabular-nums; font-weight:600; }
+  .calc .tot { border-top:1px solid var(--line-hard); padding-top:8px; font-weight:700; }
+</style>
+</head>
+<body class="surface-erp" data-surface="erp" data-nav="timesheets"
+      data-step="erp-timesheets"
+      data-crumbs="Project billing / Timesheets &amp; Manhours"
+      data-hint="Monthly PMC and site-supervision invoices are built from client-approved timesheets — hours by discipline at the contract rate — before the invoice is posted.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Timesheets &amp; Manhour Billing</h1>
+          <span class="tag" id="periodTag"></span>
+        </div>
+        <p class="page-sub">Reimbursable contracts are billed monthly on the hours the client approves, by discipline and grade — then the invoice is posted and cleared like any other.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm">Approved timesheets</button>
+      </div>
+    </div>
+
+    <div class="erp-hero">
+      <div class="mk">M</div>
+      <div class="grow">
+        <div class="h1">MEC · Enterprise ERP</div>
+        <div class="h2">Engineers book hours to the contract every day. At month end the client approves them, the ERP
+          prices each discipline at the contract rate, and raises the invoice. The e-invoicing Hub reads it only after
+          it is posted.</div>
+      </div>
+    </div>
+
+    <div class="grid g4 mb16" id="tiles"></div>
+
+    <div class="split-wide">
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow" id="dayTitle"></h2>
+              <span class="small dim">Hours per day · <b id="dayTotal"></b> booked</span>
+            </div>
+            <div class="card-body">
+              <div class="dayx" id="dayChart"></div>
+              <div class="dayax"><span>1 Jul</span><span>Friday and Saturday off</span><span>31 Jul</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">Manhour contracts billed this cycle</h2>
+              <span class="tag">standard-rated · 5% VAT</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="tbl" style="min-width:820px">
+                  <thead>
+                    <tr>
+                      <th>Client</th>
+                      <th>Contract</th>
+                      <th class="r">Booked</th>
+                      <th class="r">Approved</th>
+                      <th class="r">Disputed</th>
+                      <th class="r">Net (OMR)</th>
+                      <th>Invoice</th>
+                      <th>State</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rows"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-foot">
+              <span class="small dim">Hours. Only approved hours are invoiced. Illustrative figures.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Invoice lines by discipline</h2><span class="tag" id="linesTag"></span></div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="tbl" style="min-width:600px">
+                  <thead><tr><th>Discipline</th><th>Rate code</th><th class="r">Staff</th><th class="r">Hours</th><th class="r">Rate (OMR/h)</th><th class="r">Net (OMR)</th></tr></thead>
+                  <tbody id="lines"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Invoice build</h2><span class="tag" id="buildTag"></span></div>
+            <div class="card-body" id="build"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Disputed hours</h2><span class="tag" id="dispTag"></span></div>
+            <div class="card-body" id="disp"></div>
+          </div>
+        </section>
+
+        <section id="assumeWrap"></section>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  const T = TIMESHEETS, F = T.focus;
+  const booked = T.daily.reduce((a, b) => a + b, 0);
+  const net = T.lines.reduce((a, l) => a + l.hours * l.rate, 0);
+  const vat = Math.round(net * VAT_RATE / 100 * 1000) / 1000;
+  const lineHours = T.lines.reduce((a, l) => a + l.hours, 0);
+  const approved = T.rows.reduce((a, r) => a + r.approved, 0);
+  const disputedRows = T.rows.filter(r => r.disputed > 0);
+  const disputed = disputedRows.reduce((a, r) => a + r.disputed, 0);
+
+  document.getElementById('periodTag').textContent = T.period;
+
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Contracts this cycle', value: num(T.rows.length),
+           meta: 'shown of ' + num(GROUP.cycle.customers) + ' manhour contracts', tone: 'var(--accent)' }),
+    stat({ label: 'Hours approved', value: num(approved),
+           meta: 'across the contracts shown · ' + T.period, tone: 'var(--info)' }),
+    stat({ label: 'Hours disputed', value: num(disputed),
+           meta: disputedRows.length + ' contracts · not invoiced', tone: 'var(--warn)' }),
+    stat({ label: 'Held for client approval', value: num(GROUP.cycle.held),
+           meta: 'not yet posted', tone: 'var(--ok)' })
+  ].join('');
+
+  document.getElementById('dayTitle').textContent = 'Hours booked — ' + F.contract + ' · ' + F.title;
+  document.getElementById('dayTotal').textContent = num(booked) + ' h';
+  const max = Math.max.apply(null, T.daily);
+  document.getElementById('dayChart').innerHTML = T.daily.map((v, i) =>
+    `<div class="c ${v === 0 ? 'lo' : ''}" style="height:${v ? (v / max) * 100 : 4}%" title="${i + 1} Jul · ${v ? num(v) + ' h' : 'weekend'}"></div>`
+  ).join('');
+
+  function statePill(s) {
+    const map = { 'Invoiced': ['ok', 'Invoiced'], 'Client approval': ['warn', 'Client approval'] };
+    const m = map[s] || ['idle', s];
+    return `<span class="pill pill-${m[0]}"><i class="dot"></i>${m[1]}</span>`;
+  }
+  document.getElementById('rows').innerHTML = T.rows.map(r => `
+    <tr class="${r.no === F.invoice ? 'is-sel' : ''}">
+      <td class="nowrap">${r.cust}</td>
+      <td class="nowrap"><span class="mono" style="font-size:12px">${r.contract}</span></td>
+      <td class="r num">${num(r.booked)}</td>
+      <td class="r num" style="font-weight:600">${num(r.approved)}</td>
+      <td class="r num" style="${r.disputed ? 'color:var(--warn);font-weight:600' : ''}">${r.disputed ? num(r.disputed) : '—'}</td>
+      <td class="r num">${omr(r.amount)}</td>
+      <td class="nowrap"><span class="mono" style="font-size:11.5px">${r.no}</span></td>
+      <td>${statePill(r.state)}</td>
+    </tr>`).join('');
+
+  document.getElementById('linesTag').textContent = F.invoice + ' · ' + T.lines.length + ' lines';
+  document.getElementById('lines').innerHTML = T.lines.map(l => `
+    <tr>
+      <td>${l.role}</td>
+      <td><span class="mono" style="font-size:12px">${l.code}</span></td>
+      <td class="r num">${l.heads}</td>
+      <td class="r num">${num(l.hours)}</td>
+      <td class="r num">${omr(l.rate)}</td>
+      <td class="r num">${omr(l.hours * l.rate)}</td>
+    </tr>`).join('') +
+    `<tr><td style="font-weight:600">Total</td><td></td><td></td>
+       <td class="r num" style="font-weight:600">${num(lineHours)}</td><td></td>
+       <td class="r num" style="font-weight:600">${omr(net)}</td></tr>`;
+
+  document.getElementById('buildTag').textContent = F.invoice;
+  document.getElementById('build').innerHTML =
+    `<div class="small dim" style="margin-bottom:10px">${F.customer} · ${F.contract} · ${T.period}</div>
+     <div class="calc">
+       <span>Approved hours</span><span class="v">${num(lineHours)} h</span>
+       <span>Disciplines</span><span class="v">${T.lines.length} lines · unit HUR</span>
+       <span>Net amount</span><span class="v">${omr(net)}</span>
+       <span>VAT · 5%</span><span class="v">${omr(vat)}</span>
+       <span class="tot">Invoice total (OMR)</span><span class="v tot" style="color:var(--accent-hi)">${omr(net + vat)}</span>
+     </div>
+     <p class="small dim" style="margin:12px 0 0">Posted in the ERP as a normal receivable, with the approved timesheet attached. The Hub clears it on the same pipe as the milestone invoice.</p>`;
+
+  const d0 = disputedRows[0];
+  document.getElementById('dispTag').textContent = d0.contract;
+  document.getElementById('disp').innerHTML =
+    `<div class="small dim" style="margin-bottom:10px">${d0.cust}</div>
+     <div class="calc">
+       <span>Hours booked</span><span class="v">${num(d0.booked)}</span>
+       <span>Approved by the client</span><span class="v">${num(d0.approved)}</span>
+       <span class="tot">Disputed</span><span class="v tot" style="color:var(--warn)">${num(d0.disputed)} h</span>
+     </div>
+     <p class="small dim" style="margin:12px 0 0">Disputed hours stay off the invoice until agreed. If the client rejects hours <b>after</b>
+       they were invoiced, the fix is a credit note that references the original — see <a class="link" href="../hub/adjustments.html">credit and debit notes</a>.</p>`;
+
+  document.getElementById('assumeWrap').innerHTML =
+    `<div class="card"><div class="card-body">
+      ${notice('warn', '<b>Assumption · to confirm</b><div class="small" style="margin-top:5px;line-height:1.6">' + T.assumption + '</div>')}
+    </div></div>`;
+</script>
+</body>
+</html>

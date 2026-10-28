@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Credit &amp; debit notes — MEC E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* page-local to hub/adjustments.html */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:760px){.grid2{grid-template-columns:1fr}}
+  .calc{display:grid;grid-template-columns:1fr auto;gap:7px 16px;font-size:13.5px}
+  .calc .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+  .calc .tot{border-top:1px solid var(--line-hard);padding-top:8px;font-weight:700}
+  .cite{font-family:var(--font-mono);font-size:12px}
+  .grid2 > div + div{border-left:1px solid var(--line);padding-left:14px}
+  @media (max-width:760px){.grid2 > div + div{border-left:0;padding-left:0}}
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="adjustments"
+      data-step="hub-adjustments"
+      data-crumbs="Operations / Credit &amp; debit notes"
+      data-hint="Hours a client rejects after invoicing go out as a credit note, agreed rate escalation as a debit note — each referencing the original invoice, each cleared live.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Credit &amp; Debit Notes</h1>
+          <span id="statePill"></span>
+        </div>
+        <p class="page-sub" id="sub"></p>
+      </div>
+      <div class="page-actions">
+        <span class="tag" id="dateTag"></span>
+      </div>
+    </div>
+
+    <div class="grid g4 mb16" id="tiles"></div>
+
+    <section style="margin-top:0">
+      <div class="section-head">
+        <div class="grow"><div class="eyebrow">Stream 3 · settled</div><h2>Notes cleared today — disputes and escalation</h2></div>
+        <span class="small dim" id="noteCount"></span>
+      </div>
+      <div class="card card-tight">
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Note</th><th>Client</th><th>Type</th><th>Reason</th>
+                <th>Original invoice</th><th class="r">Total (OMR)</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="noteRows"></tbody>
+          </table>
+        </div>
+        <div class="card-foot"><span class="tiny dim">Each note carries the original invoice number as its preceding-invoice reference, so the OTA can match the two.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2 class="grow">Worked example — hours rejected after invoicing</h2></div>
+      <div class="card"><div class="card-body" id="exCredit"></div></div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2 class="grow">Worked example — rate escalation agreed later</h2></div>
+      <div class="card"><div class="card-body" id="exDebit"></div></div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2 class="grow">What is <em>not</em> a note</h2></div>
+      <div class="card"><div class="card-body" id="notNote"></div></div>
+    </section>
+
+    <section>
+      <div id="assumption"></div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  const notes = INVOICES.filter(d => d.stream === 'adjust');
+  const cn = notes.find(n => n.type === 'Credit Note');
+  const dn = notes.find(n => n.type === 'Debit Note');
+  /* page-local working for the two examples */
+  const CN_HOURS = 180, CN_RATE = 27.000;          /* = 4,860.000 */
+  const DN_HOURS = 1260, DN_UPLIFT = 2.500;        /* = 3,150.000 */
+
+  document.getElementById('sub').textContent =
+    `${GROUP.name} — corrections after an invoice has gone out, cleared live like any invoice. ${DEMO_DAY} ${DEMO_CLOCK}.`;
+  document.getElementById('dateTag').textContent = DEMO_DATE;
+  document.getElementById('statePill').outerHTML = pill('ok', 'Clearing normally');
+
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Notes today', value: num(stream('adjust').today), meta: num(stream('adjust').mtd) + ' month to date', tone: 'var(--accent)' }),
+    stat({ label: 'Credit notes', value: num(notes.filter(n => n.type === 'Credit Note').length), meta: 'shown below', tone: 'var(--warn)' }),
+    stat({ label: 'Debit notes', value: num(notes.filter(n => n.type === 'Debit Note').length), meta: 'shown below', tone: 'var(--ok)' }),
+    stat({ label: 'Net effect today', value: omr(notes.reduce((a, n) => a + n.total, 0)), meta: 'OMR, VAT included', tone: 'var(--info)' })
+  ].join('');
+
+  document.getElementById('noteCount').textContent = notes.length + ' notes shown';
+  const reason = {
+    'Credit Note': 'Disputed hours — client rejected June site hours already invoiced',
+    'Debit Note':  'Rate escalation — Q2 uplift agreed after invoicing'
+  };
+  document.getElementById('noteRows').innerHTML = notes.map(n => `
+    <tr>
+      <td class="nowrap"><span class="id" style="font-weight:600">${n.no}</span><div class="tiny dim num">${n.created}</div></td>
+      <td>${CUSTOMERS[n.cust].name}</td>
+      <td class="nowrap"><span class="chip info">${n.type}</span></td>
+      <td class="small">${reason[n.type]}</td>
+      <td class="nowrap"><span class="id">${n.against}</span></td>
+      <td class="r num" style="font-weight:600">${omr(n.total)}</td>
+      <td>${pill('ok', 'Cleared')}</td>
+    </tr>`).join('');
+
+  function twoCol(left, right) { return `<div class="grid2"><div>${left}</div><div>${right}</div></div>`; }
+
+  document.getElementById('exCredit').innerHTML = twoCol(
+    `<div class="small dim" style="margin-bottom:8px">Original invoice <span class="id">${cn.against}</span> · ${CUSTOMERS[cn.cust].name} · June 2026 hours</div>
+     <div class="calc">
+       <span>Senior Mechanical Engineer hours invoiced</span><span class="v">${num(352)} h</span>
+       <span>Rejected at the client’s month-end audit</span><span class="v">${num(CN_HOURS)} h</span>
+       <span>Contract rate</span><span class="v">${omr(CN_RATE)} / h</span>
+       <span class="tot">To reverse</span><span class="v tot">${num(CN_HOURS)} × ${omr(CN_RATE)}</span>
+     </div>`,
+    `<div class="small dim" style="margin-bottom:8px">Credit note <span class="id">${cn.no}</span></div>
+     <div class="calc">
+       <span>Net</span><span class="v">${omr(cn.net)}</span>
+       <span>VAT · 5%</span><span class="v">${omr(cn.vat)}</span>
+       <span class="tot">Total</span><span class="v tot" style="color:var(--accent-hi)">${omr(cn.total)}</span>
+     </div>
+     <p class="small dim" style="margin:10px 0 0">Type code 381. References <span class="id">${cn.against}</span> and is cleared like an invoice. The original is never edited.</p>`);
+
+  document.getElementById('exDebit').innerHTML = twoCol(
+    `<div class="small dim" style="margin-bottom:8px">Original invoice <span class="id">${dn.against}</span> · ${CUSTOMERS[dn.cust].name} · April–June hours</div>
+     <div class="calc">
+       <span>Hours invoiced at the old rate</span><span class="v">${num(DN_HOURS)} h</span>
+       <span>Escalation agreed in August</span><span class="v">+${omr(DN_UPLIFT)} / h</span>
+       <span class="tot">To add</span><span class="v tot">${num(DN_HOURS)} × ${omr(DN_UPLIFT)}</span>
+     </div>`,
+    `<div class="small dim" style="margin-bottom:8px">Debit note <span class="id">${dn.no}</span></div>
+     <div class="calc">
+       <span>Net</span><span class="v">${omr(dn.net)}</span>
+       <span>VAT · 5%</span><span class="v">${omr(dn.vat)}</span>
+       <span class="tot">Total</span><span class="v tot" style="color:var(--accent-hi)">${omr(dn.total)}</span>
+     </div>
+     <p class="small dim" style="margin:10px 0 0">Type code 383. References <span class="id">${dn.against}</span>, so the uplift is tied to the hours it relates to.</p>`);
+
+  document.getElementById('notNote').innerHTML =
+    `<p class="small" style="margin:0 0 8px"><b>A variation order is new work, not a correction.</b> When the client approves a
+       variation (such as <span class="id">${CONTRACT.variation.no}</span> on contract <span class="id">${CONTRACT.no}</span>), it is billed as a line on the next
+       milestone invoice — the tracked invoice <span class="id">MEC-INV-2026-00382</span> carries it — not as a debit note.</p>
+     <p class="small" style="margin:0"><b>Retention release and advance recovery are not notes either.</b> They change what the client pays,
+       not what was supplied. How they are shown is on the <a class="link" href="retention.html">retention and advances</a> screen, still to confirm with the OTA.</p>`;
+
+  document.getElementById('assumption').innerHTML = notice('warn',
+    `<b>Assumption · to confirm with MEC and OTA</b><br>That rejected hours and rate escalation are issued as credit and debit notes (rather than a cancelled and re-issued invoice), and that the OTA accepts debit notes under PINT-OM.`);
+</script>
+</body>
+</html>
