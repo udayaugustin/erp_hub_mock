@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sales Invoices — Peniel finance system</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* origin hero strip — same visual language, local to the billing screens */
+  .erp-hero { display:flex; align-items:center; gap:14px; padding:14px 16px;
+    border:1px solid var(--line); border-radius:12px; background:var(--bg-alt);
+    margin-bottom:16px; }
+  .erp-hero .mk { width:38px; height:38px; flex:none; border-radius:9px;
+    display:grid; place-items:center; font-weight:700; font-size:18px;
+    color:#fff; background:linear-gradient(135deg,#4a5a68,#2f3b46); }
+  .erp-hero .h1 { font-weight:700; font-size:15px; }
+  .erp-hero .h2 { font-size:13px; color:var(--text-mid); margin-top:2px; line-height:1.5; }
+  .line-tbl td { padding:7px 10px; }
+  .sel-mark { font-size:10.5px; font-weight:700; letter-spacing:.04em;
+    text-transform:uppercase; color:var(--accent-hi); }
+</style>
+</head>
+<body class="surface-erp" data-surface="erp" data-nav="billing"
+      data-step="erp-billing"
+      data-crumbs="Sales &amp; billing / Invoices"
+      data-hint="An invoice raised in Peniel&rsquo;s finance system the day the go-live stage was signed off &mdash; posted as usual, before Fawtara ever sees it.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Project Invoices</h1>
+          <span class="tag">Accounts receivable</span>
+        </div>
+        <p class="page-sub">Licence, implementation, renewal, training and hardware invoices, raised and posted in Peniel&rsquo;s finance system.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm">Export</button>
+        <button class="btn btn-sm btn-primary">New invoice</button>
+      </div>
+    </div>
+
+    <div class="erp-hero">
+      <div class="mk">P</div>
+      <div class="grow">
+        <div class="h1">Peniel · Finance system</div>
+        <div class="h2">This is where the invoice is born. It is created when an implementation stage is signed off and
+          the licences bought with it are assigned, then posted here as an ordinary receivable &mdash; the e-invoicing Hub
+          only reads it afterwards. Nothing on this screen depends on Fawtara.</div>
+      </div>
+    </div>
+
+    <div class="split-wide">
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">Posted &amp; draft invoices</h2>
+              <span class="small dim" id="listCount"></span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="tbl" style="min-width:900px">
+                  <thead>
+                    <tr>
+                      <th>Invoice&nbsp;no.</th>
+                      <th>Client</th>
+                      <th>Contract</th>
+                      <th>Date</th>
+                      <th>Due</th>
+                      <th class="r">Net</th>
+                      <th class="r">VAT</th>
+                      <th class="r">Total (OMR)</th>
+                      <th>Document</th>
+                      <th>E-invoice</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rows"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-foot">
+              <span class="small dim">The highlighted row is the invoice followed end to end through the walkthrough.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">Selected invoice</h2>
+              <span class="sel-mark">Tracked</span>
+            </div>
+            <div class="card-body" id="detail"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Line summary</h2><span class="tag">2 lines</span></div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="tbl line-tbl" style="min-width:0">
+                  <thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Net (OMR)</th></tr></thead>
+                  <tbody id="lines"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Implementation stages</h2><span class="tag" id="cTag"></span></div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="tbl line-tbl" style="min-width:0">
+                  <thead><tr><th>#</th><th>Stage</th><th class="r">%</th><th>State</th></tr></thead>
+                  <tbody id="ms"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-foot"><span class="tiny dim" id="msFoot"></span></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  /* ---- pills for the two status columns --------------------------------- */
+  function docPill(s) {
+    const map = { 'Posted': 'ok', 'Draft': 'idle' };
+    return `<span class="pill pill-${map[s] || 'idle'}"><i class="dot"></i>${s}</span>`;
+  }
+  function ePill(s) {
+    const map = {
+      'Acknowledged': 'ok', 'In Progress': 'warn',
+      'Rejected by ASP': 'fail', 'Not Applicable': 'idle'
+    };
+    return `<span class="pill pill-${map[s] || 'idle'}"><i class="dot"></i>${s}</span>`;
+  }
+
+  const TRACKED = 'PTI-INV-2026-00418';
+
+  /* ---- invoice list ----------------------------------------------------- */
+  document.getElementById('rows').innerHTML = ERP_INVOICES.map(r => {
+    const sel = r.no === TRACKED;
+    return `<tr class="${sel ? 'is-sel' : ''}">
+      <td class="nowrap"><span class="mono" style="font-size:12.5px">${r.no}</span>
+        ${sel ? '<div class="sel-mark" style="margin-top:2px">◆ Tracked end to end</div>' : ''}</td>
+      <td>${r.cust}</td>
+      <td class="nowrap"><span class="mono" style="font-size:12px">${r.project}</span>
+        <div class="tiny dim">${r.basis}</div></td>
+      <td class="nowrap">${r.date}</td>
+      <td class="nowrap">${r.due}</td>
+      <td class="r num">${omr(r.net)}</td>
+      <td class="r num">${omr(r.vat)}</td>
+      <td class="r num" style="font-weight:600">${omr(r.total)}</td>
+      <td>${docPill(r.docStatus)}</td>
+      <td>${ePill(r.eStatus)}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('listCount').textContent = ERP_INVOICES.length + ' invoices';
+
+  /* ---- selected invoice detail (the tracked one) ------------------------ */
+  const inv = ERP_INVOICES.find(r => r.no === TRACKED);
+  document.getElementById('detail').innerHTML = kv([
+    ['Invoice no.', '<span class="mono" style="font-size:12px">' + inv.no + '</span>'],
+    ['Client', inv.cust],
+    ['Contract', '<span class="mono" style="font-size:12px">' + CONTRACT.no + '</span> · PO ' + CONTRACT.po],
+    ['Billing basis', 'Stage 4 go-live signed off · plus 12 ERPNext user licences'],
+    ['Issue date', inv.date],
+    ['Due date', inv.due],
+    ['Net amount', '<span class="num">' + omr(inv.net) + '</span>'],
+    ['VAT (5%)', '<span class="num">' + omr(inv.vat) + '</span>'],
+    ['Invoice total', '<span class="num">' + omr(inv.total) + ' OMR</span>'],
+    ['Advance already paid', '<span class="num">−' + omr(SETTLEMENT.prepaid) + ' OMR</span>'],
+    ['Payable on the e-invoice', '<span class="num" style="color:var(--accent-hi);font-weight:600">' + omr(SETTLEMENT.payable) + ' OMR</span>'],
+    ['Retention held (payment term)', '<span class="num">' + omr(SETTLEMENT.retention) + ' OMR</span>'],
+    ['Document status', docPill(inv.docStatus)],
+    ['E-invoice status', ePill(inv.eStatus)]
+  ], true);
+
+  /* ---- line summary for the tracked invoice (page-local detail) --------- */
+  const LINES = [
+    { s: 'ERPNext implementation &amp; data migration — 14 consultant days', q: '14 DAY', net: SETTLEMENT.services },
+    { s: 'ERPNext user licences — partner rate', q: '12 C62', net: SETTLEMENT.licences }
+  ];
+  document.getElementById('lines').innerHTML = LINES.map(l =>
+    `<tr><td>${l.s}</td><td class="r num">${l.q}</td><td class="r num">${omr(l.net)}</td></tr>`
+  ).join('') +
+    `<tr><td style="font-weight:600">Net total</td><td></td>
+       <td class="r num" style="font-weight:600">${omr(inv.net)}</td></tr>`;
+  /* ---- the implementation project behind the tracked invoice ------------ */
+  document.getElementById('cTag').textContent = CONTRACT.no + ' · OMR ' + omr(CONTRACT.value);
+  const MS_PILL = { 'Invoiced': 'ok', 'In progress': 'warn', 'Not started': 'idle' };
+  document.getElementById('ms').innerHTML = CONTRACT.milestones.map(m => `
+    <tr class="${m.inv === TRACKED ? 'is-sel' : ''}">
+      <td class="num">${m.n}</td>
+      <td>${m.name}${m.inv ? `<div class="tiny dim mono">${m.inv}</div>` : ''}</td>
+      <td class="r num">${m.pct}</td>
+      <td class="nowrap"><span class="pill pill-${MS_PILL[m.state]}"><i class="dot"></i>${m.state}</span></td>
+    </tr>`).join('');
+  const billed = CONTRACT.milestones.filter(m => m.state === 'Invoiced').reduce((a, m) => a + m.pct, 0);
+  document.getElementById('msFoot').textContent =
+    `${CONTRACT.title}. ${billed}% of the contract invoiced to date. ` +
+    `The advance already invoiced is recovered as a prepaid amount on each stage invoice; retention at ${CONTRACT.retentionPct}% is a payment term, not a reduction of the taxable amount.`;
+</script>
+</body>
+</html>

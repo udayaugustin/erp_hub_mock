@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foreign-currency vendor purchases &mdash; Peniel E-Invoicing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+/* page-local — OTA positions */
+.otatag {
+  display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+  font-size: 12px; font-weight: 600; letter-spacing: .02em; line-height: 1.35;
+  padding: 4px 10px; border-radius: var(--r-sm); white-space: normal;
+  color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warn) 34%, transparent);
+}
+.otatag svg { width: 13px; height: 13px; flex: none; }
+.pcard { margin-bottom: 16px; }
+.pcard .card-head { align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+.pcard h3 { font-size: 18px; font-weight: 700; margin-top: 2px; line-height: 1.25; }
+.plabel { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-lo); margin-bottom: 5px; }
+.basis { font-size: 14.5px; line-height: 1.55; }
+.treat { margin: 6px 0 0; padding-left: 20px; }
+.treat li { font-size: 14.5px; line-height: 1.55; margin-bottom: 7px; }
+.treat li:last-child { margin-bottom: 0; }
+.pblock + .pblock { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.channels { font-size: 13.5px; line-height: 1.5; color: var(--text-mid); }
+.fx { display: grid; grid-template-columns: 1fr auto auto; gap: 4px 14px; font-size: 13.5px; }
+.fx .h { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-lo); }
+.fx .r { text-align: right; font-variant-numeric: tabular-nums; }
+.fx .tot { border-top: 1px solid var(--line-hard); margin-top: 5px; padding-top: 7px; font-weight: 700; }
+.fx .src { color: var(--text-mid); }
+.big-n { font-family: var(--font-mono); font-size: 26px; font-weight: 600; line-height: 1; letter-spacing: -.01em; }
+.big-cap { font-size: 12.5px; color: var(--text-mid); margin-top: 6px; line-height: 1.45; }
+.contrast { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.chd { font-size: 15px; font-weight: 700; margin-top: 2px; }
+@media (max-width: 760px) { .contrast { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body class="surface-hub" data-surface="hub" data-nav="currency"
+      data-step="hub-currency"
+      data-crumbs="OTA positions / Foreign-currency vendor purchases"
+      data-hint="Most of Peniel&rsquo;s principals invoice in USD or AED. Which amount goes on the Omani record &mdash; and which rate &mdash; is a written policy decision, not something the platform can guess. To confirm with the OTA.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Foreign-currency vendor purchases</h1>
+          <span class="pill pill-warn"><i class="dot"></i>To confirm</span>
+        </div>
+        <p class="page-sub" id="page-sub"></p>
+      </div>
+    </div>
+
+    <div id="frame" class="mb16"></div>
+
+    <section>
+      <div class="section-head">
+        <div class="grow">
+          <div class="eyebrow">Recommended position</div>
+          <h2>What Fawtara takes to the OTA</h2>
+        </div>
+      </div>
+      <div id="positions"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="grow">
+          <div class="eyebrow">The documents actually in the pipe</div>
+          <h2>Two principals, two currencies, one OMR record</h2>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body" style="padding:0">
+          <div class="table-wrap">
+            <table class="tbl" style="min-width:880px">
+              <thead>
+                <tr>
+                  <th>Document</th>
+                  <th>Principal</th>
+                  <th class="r">Source amount</th>
+                  <th class="r">Rate</th>
+                  <th class="r">OMR equivalent</th>
+                  <th class="r">VAT self-accounted</th>
+                  <th>Treatment</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card-foot">
+          <span class="small dim">OMR converted at the rate held on the record. The source amount and rate travel with the document so an auditor can re-perform the conversion.</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="grow">
+          <div class="eyebrow">Worked example</div>
+          <h2>One USD principal invoice, end to end</h2>
+        </div>
+      </div>
+      <div id="example"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="grow">
+          <div class="eyebrow">Why it matters</div>
+          <h2>Two defensible rates, two different input-VAT figures</h2>
+        </div>
+      </div>
+      <div id="contrast"></div>
+    </section>
+
+    <div id="closing" class="mt24"></div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+(function () {
+
+  function positionCard(p) {
+    var lis = p.treatment.map(function (t) { return '<li>' + t + '</li>'; }).join('');
+    return '<div class="card pcard">' +
+      '<div class="card-head">' +
+        '<div class="grow">' +
+          '<div class="eyebrow">Agenda · ' + p.agenda + '</div>' +
+          '<h3>' + p.headline + '</h3>' +
+        '</div>' +
+        '<span class="otatag">' + icon('clock', 'otatag-ico') + p.tag + '</span>' +
+      '</div>' +
+      '<div class="card-body">' +
+        '<div class="pblock">' +
+          '<div class="plabel">Basis</div>' +
+          '<div class="basis">' + p.basis + '</div>' +
+        '</div>' +
+        '<div class="pblock">' +
+          '<div class="plabel">How Fawtara reads the treatment</div>' +
+          '<ol class="treat">' + lis + '</ol>' +
+        '</div>' +
+        '<div class="pblock">' +
+          '<div class="plabel">Why it matters</div>' +
+          '<div class="channels">' + p.channels + '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function pos(id) { return OTA_POSITIONS.filter(function (p) { return p.id === id; })[0]; }
+
+  document.getElementById('page-sub').innerHTML =
+    'Peniel buys licences and hosting from principals abroad and resells them here. The supplier invoices in USD or AED; the ' +
+    'Omani e-invoice is in OMR to three decimals. Which rate is used, and which amount is the record, is a policy decision ' +
+    'that should be written down before go-live. To confirm with the OTA.';
+
+  document.getElementById('frame').innerHTML = teach(
+    'An Omani VAT-registered business that receives a service from a supplier with no place of business in Oman accounts for ' +
+    'the VAT itself &mdash; the <strong>reverse charge</strong>. The supplier charges no Omani VAT; Peniel books both the input ' +
+    'and the output side, netting to zero cash but leaving a recoverable input-VAT amount. What is <em>not</em> settled is what ' +
+    'the Omani record should carry for a foreign-currency document, and whether that needs a self-billed e-document. Below is ' +
+    '<strong>Fawtara&rsquo;s recommended reading</strong> to bring to the OTA, carrying the amber <em>to confirm</em> tag.');
+
+  document.getElementById('positions').innerHTML = positionCard(pos('currency'));
+
+  var foreign = INBOUND.filter(function (d) { return d.kind === 'pdf'; });
+
+  document.getElementById('rows').innerHTML = foreign.map(function (d) {
+    var s = SUPPLIERS[d.supplier];
+    var ratePct = (d.fxRate * 100).toFixed(2) + '%';
+    return '<tr>' +
+      '<td class="nowrap"><span class="mono" style="font-size:11.5px">' + d.no + '</span></td>' +
+      '<td class="nowrap">' + s.name + '<div class="tiny dim">' + s.country + ' · ' + d.cur + '</div></td>' +
+      '<td class="r num">' + d.cur + ' ' + d.fxAmount.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + '</td>' +
+      '<td class="r num" style="color:var(--text-mid)">' + ratePct + '</td>' +
+      '<td class="r num" style="font-weight:600">' + omr(d.net) + '</td>' +
+      '<td class="r num">' + omr(d.vat) + '</td>' +
+      '<td><span class="pill pill-warn"><i class="dot"></i>Reverse charge</span></td>' +
+    '</tr>';
+  }).join('');
+
+  var d0 = foreign[0], s0 = SUPPLIERS[d0.supplier];
+  var grossForeign = d0.fxAmount;
+  var omrNet = grossForeign * d0.fxRate;
+  var omrVat = omrNet * VAT_RATE / 100;
+
+  document.getElementById('example').innerHTML =
+    '<div class="card">' +
+      '<div class="card-head">' +
+        '<div class="grow"><div class="eyebrow">' + s0.name + ' · ' + s0.role + ' · ' + d0.cur + '</div>' +
+          '<h3 style="font-size:16px;font-weight:700;margin-top:2px">' + d0.no + ' under Fawtara&rsquo;s reading</h3></div>' +
+        '<span class="chip warn">Rate policy and self-billing &middot; to confirm</span>' +
+      '</div>' +
+      '<div class="card-body">' +
+        '<div class="fx">' +
+          '<div class="h">What the principal charged</div><div class="h r">' + d0.cur + '</div><div class="h r">OMR</div>' +
+          '<div class="src">Annual principal licence fee · 40 seats</div>' +
+            '<div class="r">' + grossForeign.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + '</div>' +
+            '<div class="r">&mdash;</div>' +
+          '<div class="src">Rate held on the record</div><div class="r">' + (d0.fxRate * 100).toFixed(2) + '%</div><div class="r">&mdash;</div>' +
+          '<div class="tot">Net on the Omani record</div><div class="r tot"></div><div class="r tot">' + omr(omrNet) + '</div>' +
+        '</div>' +
+        '<div class="fx" style="margin-top:14px">' +
+          '<div class="h">Reverse-charge accounting</div><div class="h r"></div><div class="h r">OMR</div>' +
+          '<div>Supplier charged Omani VAT</div><div></div><div class="r">0.000</div>' +
+          '<div class="src">Input VAT recoverable · 5% of the OMR net</div><div></div><div class="r">' + omr(omrVat) + '</div>' +
+          '<div class="src">Output VAT self-accounted · same amount</div><div></div><div class="r">' + omr(omrVat) + '</div>' +
+          '<div class="tot">Net cash VAT to Peniel</div><div></div><div class="r tot">0.000</div>' +
+        '</div>' +
+        '<div class="exminor" style="font-size:13px;color:var(--text-mid);margin-top:12px;line-height:1.5">' +
+          'The reverse charge is cash-neutral but not paperwork-neutral: the ' + omr(omrVat) + ' is reported as both input and ' +
+          'output VAT in the return, and the OMR amount must be repeatable from the archived record. The document sits ' +
+          '<strong>held</strong> as a draft until finance confirms the rate policy &mdash; it is not sent anywhere.</div>' +
+      '</div>' +
+    '</div>';
+
+  var rateAlt = 0.3860;
+  document.getElementById('contrast').innerHTML =
+    '<div class="contrast">' +
+      '<div class="card"><div class="card-body">' +
+        '<div class="row" style="gap:8px;margin-bottom:8px">' + icon('check', 'nav-ico') +
+          '<span class="chd">One rate, written down</span></div>' +
+        '<div class="big-n" style="color:var(--ok)">' + omr(omrVat) + '</div>' +
+        '<div class="big-cap">Fawtara&rsquo;s reading: convert at the rate agreed in the finance policy and hold the source ' +
+          'amount, the rate and the OMR equivalent on the archived record. Same answer every month, and an auditor can re-perform it.</div>' +
+      '</div></div>' +
+      '<div class="card"><div class="card-body">' +
+        '<div class="row" style="gap:8px;margin-bottom:8px">' + icon('alert', 'nav-ico') +
+          '<span class="chd">Whatever rate the day used</span></div>' +
+        '<div class="big-n" style="color:var(--warn)">' + omr(omrNet * rateAlt * VAT_RATE / 100) + '</div>' +
+        '<div class="big-cap">The alternative: the rate in force on some other date. The input-VAT figure moves, the month&rsquo;s ' +
+          'recoverable amount moves with it, and nobody can say which one was right without the working.</div>' +
+      '</div></div>' +
+    '</div>';
+
+  document.getElementById('closing').innerHTML = notice('warn',
+    '<strong>This is a recommended position, not a settled rule.</strong> Fawtara will put the foreign-currency treatment to ' +
+    'the OTA, and Peniel decides the rate policy in writing. If the OTA requires a self-billed e-document for reverse-charge ' +
+    'purchases, an inbound document type is added and the mapping changes.');
+
+})();
+</script>
+</body>
+</html>

@@ -16,5 +16,6 @@ COPY oib-mock/      /usr/share/nginx/html/oib-mock/
 COPY vehicle-inspection-mock/ /usr/share/nginx/html/vehicle-inspection-mock/
 COPY igc-mock/      /usr/share/nginx/html/igc-mock/
 COPY mec-mock/      /usr/share/nginx/html/mec-mock/
+COPY peniel-mock/   /usr/share/nginx/html/peniel-mock/
 
 EXPOSE 80

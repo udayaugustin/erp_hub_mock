@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Renewal Runs &mdash; Peniel finance system</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  .erp-hero { display:flex; align-items:center; gap:14px; padding:14px 16px;
+    border:1px solid var(--line); border-radius:12px; background:var(--bg-alt);
+    margin-bottom:16px; }
+  .erp-hero .mk { width:38px; height:38px; flex:none; border-radius:9px;
+    display:grid; place-items:center; font-weight:700; font-size:18px;
+    color:#fff; background:linear-gradient(135deg,#4a5a68,#2f3b46); }
+  .erp-hero .h1 { font-weight:700; font-size:15px; }
+  .erp-hero .h2 { font-size:13px; color:var(--text-mid); margin-top:2px; line-height:1.5; }
+  .calc { display:grid; grid-template-columns:1fr auto; gap:7px 16px; font-size:13.5px; }
+  .calc .v { text-align:right; font-variant-numeric:tabular-nums; font-weight:600; }
+  .calc .tot { border-top:1px solid var(--line-hard); padding-top:8px; font-weight:700; }
+  .funnel { display:flex; flex-direction:column; gap:6px; }
+  .funnel .bar { display:flex; align-items:center; gap:10px; }
+  .funnel .bar .n { width:54px; flex:none; text-align:right; font-variant-numeric:tabular-nums;
+    font-size:13px; font-weight:700; }
+  .funnel .bar .t { flex:1; height:22px; border-radius:3px; position:relative; background:var(--bg-alt); }
+  .funnel .bar .fill { position:absolute; inset:0 auto 0 0; border-radius:3px; }
+  .funnel .bar .l { width:100px; flex:none; font-size:11.5px; color:var(--text-mid); }
+</style>
+</head>
+<body class="surface-erp" data-surface="erp" data-nav="subscriptions"
+      data-step="erp-subscriptions"
+      data-crumbs="Sales &amp; billing / Renewal Runs"
+      data-hint="One scheduled run raises every support contract that renews this month &mdash; 214 invoices in an evening. The five the run refused to raise are the point of this screen.">
+
+<main class="main">
+  <div class="page">
+
+    <div class="page-head">
+      <div class="grow">
+        <div class="page-title">
+          <h1>Renewal Runs</h1>
+          <span class="tag" id="runTag"></span>
+        </div>
+        <p class="page-sub">Annual support and subscription renewals are raised by a scheduled run, not by a person. Each customer&rsquo;s contract renews on its own anniversary; the run prices it from the contract, checks the master record, and either raises the invoice or holds it with a reason.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-sm">Run history</button>
+      </div>
+    </div>
+
+    <div class="erp-hero">
+      <div class="mk">P</div>
+      <div class="grow">
+        <div class="h1">Peniel &middot; Finance system &middot; Renewal scheduler</div>
+        <div class="h2">The run is the volume stream: a few hundred small, nearly identical invoices on one evening.
+          It is also the stream a manual process cannot keep up with &mdash; which is why it travels as a batch rather
+          than one document at a time.</div>
+      </div>
+    </div>
+
+    <div class="grid g4 mb16" id="tiles"></div>
+
+    <div class="split-wide">
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">What the run did</h2>
+              <span class="small dim" id="runAt"></span>
+            </div>
+            <div class="card-body">
+              <div class="funnel" id="funnel"></div>
+            </div>
+            <div class="card-foot">
+              <span class="small dim">A held renewal was never raised, so it never reached the e-invoicing pipe at all.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">The run by product</h2>
+              <span class="tag">standard-rated &middot; 5% VAT</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="tbl" style="min-width:640px">
+                  <thead>
+                    <tr>
+                      <th>Support contract</th>
+                      <th class="r">Customers</th>
+                      <th class="r">Net (OMR)</th>
+                      <th class="r">VAT (OMR)</th>
+                      <th class="r">Total (OMR)</th>
+                      <th class="r">Avg / customer</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lines"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-foot">
+              <span class="small dim">Every row sums to the run total below. Illustrative amounts.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head">
+              <h2 class="grow">Held back by the run</h2>
+              <span class="tag" id="heldTag"></span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="tbl" style="min-width:760px">
+                  <thead>
+                    <tr>
+                      <th>Customer</th>
+                      <th>Support contract</th>
+                      <th class="r">Net that would have been raised</th>
+                      <th>Why it was held</th>
+                      <th>Owner</th>
+                    </tr>
+                  </thead>
+                  <tbody id="held"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-foot">
+              <span class="small dim">A held renewal is not an e-invoicing failure &mdash; it is master data that is not good enough to invoice. Fixing the record is what releases it.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div>
+        <section style="margin-top:0">
+          <div class="card">
+            <div class="card-head"><h2 class="grow">Run totals</h2><span class="tag" id="totTag"></span></div>
+            <div class="card-body" id="build"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">How the batch travels</h2><span class="tag" id="methodTag"></span></div>
+            <div class="card-body" id="method"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card">
+            <div class="card-head"><h2 class="grow">One document from the run</h2><span class="tag" id="focusTag"></span></div>
+            <div class="card-body" id="focus"></div>
+          </div>
+        </section>
+
+        <section id="assumeWrap"></section>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script src="../assets/js/shell.js"></script>
+<script>
+  const R = RENEWAL;
+  const lineNet = R.lines.reduce((a, l) => a + l.net, 0);
+  const lineCust = R.lines.reduce((a, l) => a + l.customers, 0);
+  const lineVat = Math.round(lineNet * VAT_RATE / 100 * 1000) / 1000;
+  const heldNet = R.heldRows.reduce((a, h) => a + h.net, 0);
+
+  document.getElementById('runTag').textContent = R.run + ' · ' + R.period;
+  document.getElementById('runAt').textContent = 'Scheduled ' + R.scheduled + ' · completed ' + R.sentAt;
+
+  document.getElementById('tiles').innerHTML = [
+    stat({ label: 'Renewals due this cycle', value: num(R.raised),
+           meta: R.window + ' · every anniversary in the window', tone: 'var(--accent)' }),
+    stat({ label: 'Raised and sent', value: num(R.sent),
+           meta: Math.round(R.sent / R.raised * 100) + '% of the cycle', tone: 'var(--ok)' }),
+    stat({ label: 'Held back', value: num(R.held),
+           meta: 'master data or an open price query', tone: 'var(--warn)' }),
+    stat({ label: 'Net sent (OMR)', value: omr(R.netSent),
+           meta: 'VAT ' + omr(lineVat) + ' at 5%', tone: 'var(--info)' })
+  ].join('');
+
+  document.getElementById('funnel').innerHTML = [
+    { n: R.raised,               l: 'due in the window', v: R.raised },
+    { n: R.raised - R.held,      l: 'raised',            v: R.raised - R.held },
+    { n: R.sent,                 l: 'sent to the ASP',   v: R.sent },
+    { n: R.sent,                 l: 'acknowledged',      v: R.sent }
+  ].map((b, i) => `
+    <div class="bar">
+      <span class="n">${num(b.n)}</span>
+      <span class="t"><span class="fill" style="width:${(b.v / R.raised) * 100}%;
+        background:${i === 0 ? 'var(--line-hard)' : i === 3 ? 'var(--ok)' : 'var(--accent)'};
+        opacity:${i === 3 ? '.55' : '.9'}"></span></span>
+      <span class="l">${b.l}</span>
+    </div>`).join('');
+
+  document.getElementById('lines').innerHTML = R.lines.map(l => {
+    const vat = Math.round(l.net * VAT_RATE / 100 * 1000) / 1000;
+    return `
+    <tr>
+      <td>${l.product}</td>
+      <td class="r num">${num(l.customers)}</td>
+      <td class="r num">${omr(l.net)}</td>
+      <td class="r num" style="color:var(--text-mid)">${omr(vat)}</td>
+      <td class="r num" style="font-weight:600">${omr(l.net + vat)}</td>
+      <td class="r num" style="color:var(--text-mid)">${omr(l.net / l.customers)}</td>
+    </tr>`;
+  }).join('') + `
+    <tr style="background:var(--bg-alt)">
+      <td style="font-weight:700">Total — ${num(lineCust)} renewals sent</td>
+      <td class="r num" style="font-weight:700">${num(lineCust)}</td>
+      <td class="r num" style="font-weight:700">${omr(lineNet)}</td>
+      <td class="r num" style="font-weight:700">${omr(lineVat)}</td>
+      <td class="r num" style="font-weight:700">${omr(lineNet + lineVat)}</td>
+      <td class="r num" style="font-weight:700">${omr(lineNet / lineCust)}</td>
+    </tr>`;
+
+  document.getElementById('heldTag').textContent = num(R.held) + ' documents · ' + omr(heldNet) + ' net never raised';
+  document.getElementById('held').innerHTML = R.heldRows.map(h => `
+    <tr>
+      <td class="nowrap">${h.customer}</td>
+      <td class="nowrap" style="color:var(--text-mid)">${h.product}</td>
+      <td class="r num">${omr(h.net)}</td>
+      <td><span class="small">${h.reason}</span></td>
+      <td><span class="pill pill-${h.owner === 'Finance' ? 'info' : 'warn'}"><i class="dot"></i>${h.owner}</span></td>
+    </tr>`).join('') + `
+    <tr style="background:var(--bg-alt)">
+      <td style="font-weight:700">Held total</td><td></td>
+      <td class="r num" style="font-weight:700">${omr(heldNet)}</td>
+      <td colspan="2"><span class="small dim">Two of the five are a missing field on a customer master record — the same gap that shows up as an IBR-W-031 warning on the outbound side.</span></td>
+    </tr>`;
+
+  document.getElementById('totTag').textContent = R.run;
+  document.getElementById('build').innerHTML =
+    `<div class="small dim" style="margin-bottom:10px">${R.period} cycle · ${R.window}</div>
+     <div class="calc">
+       <span>Renewals due in the cycle</span><span class="v">${num(R.raised)}</span>
+       <span>Held back, not raised</span><span class="v" style="color:var(--warn)">&minus; ${num(R.held)}</span>
+       <span>Invoices raised and sent</span><span class="v">${num(R.sent)}</span>
+       <span>Net amount sent</span><span class="v">${omr(R.netSent)}</span>
+       <span>VAT · 5%</span><span class="v">${omr(lineVat)}</span>
+       <span class="tot">Gross sent (OMR)</span><span class="v tot" style="color:var(--accent-hi)">${omr(R.netSent + lineVat)}</span>
+     </div>
+     <p class="small dim" style="margin:12px 0 0">${R.note}</p>`;
+
+  const M = METHODS[R.method];
+  document.getElementById('methodTag').textContent = 'Method ' + R.method;
+  document.getElementById('method').innerHTML =
+    `<div class="row" style="gap:8px;margin-bottom:10px">
+       <span class="pill pill-ok"><i class="dot"></i>${M.short}</span>
+       <span class="pill pill-idle"><i class="dot"></i>on-site: ${M.onsite}</span>
+     </div>
+     <p class="small" style="margin:0 0 10px;line-height:1.6">${M.how}</p>
+     <div class="calc">
+       <span>Transport</span><span class="v">one batch</span>
+       <span>Documents in the batch</span><span class="v">${num(R.sent)}</span>
+       <span>Individually validated</span><span class="v">${num(R.sent)} of ${num(R.sent)}</span>
+       <span>Individually trackable</span><span class="v">yes</span>
+     </div>
+     <p class="small dim" style="margin:12px 0 0">The batch changes how the documents travel, not what they are: each renewal is its own e-invoice with its own number, UUID, validation result and acknowledgement &mdash; see <a class="link" href="../hub/history.html">the processing history</a>.</p>`;
+
+  const F = R.focus;
+  document.getElementById('focusTag').textContent = F.no;
+  document.getElementById('focus').innerHTML =
+    `<div class="small dim" style="margin-bottom:10px">${F.customer} · ${F.product}</div>
+     <div class="calc">
+       <span>Net</span><span class="v">${omr(F.net)}</span>
+       <span>VAT · 5%</span><span class="v">${omr(F.vat)}</span>
+       <span class="tot">Total</span><span class="v tot">${omr(F.total)}</span>
+     </div>
+     <p class="small dim" style="margin:12px 0 0">Raised by the run, sent and acknowledged like every other document in the batch, then collected by the finance system and printed with its QR on the customer copy.</p>`;
+
+  document.getElementById('assumeWrap').innerHTML =
+    `<div class="card"><div class="card-body">
+      ${notice('warn', '<b>Assumption · to confirm</b><div class="small" style="margin-top:5px;line-height:1.6">' + R.assumption + '</div>')}
+    </div></div>`;
+</script>
+</body>
+</html>
