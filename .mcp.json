@@ -6,6 +6,13 @@
       "headers": {
         "Authorization": "Bearer ${JARVIS_FLEET_TOKEN}"
       }
+    },
+    "mock-builder": {
+      "type": "http",
+      "url": "https://mcp-mock.infyits.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${MOCK_BUILDER_MCP_TOKEN}"
+      }
     }
   }
 }
